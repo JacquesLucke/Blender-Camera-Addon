@@ -28,15 +28,11 @@ def insertRotatingCamera():
     
     setCustomProperty(rotationControler, "rotationProgress", 0.0, -1000.0, 1000.0)
     
-    fcurve = rotationControler.driver_add("rotation_euler", 2)
-    driver = fcurve.driver
-    driver.type = "SCRIPTED"
-    driverVariable = driver.variables.new()
-    driverVariable.name = "rotationProgress"
-    driverVariable.type = "SINGLE_PROP"
-    driverVariable.targets[0].id = rotationControler
-    driverVariable.targets[0].data_path = '["rotationProgress"]'
-    driver.expression = "rotationProgress * 2 * pi"
+    driver = newDriver(rotationControler, "rotation_euler", 2, "SCRIPTED")
+    linkFloatPropertyToDriver(driver, "var", rotationControler, "rotationProgress")
+    driver.expression = "var * 2 * pi"
+    
+    
     
 def setTrackTo(child, trackTo):
     bpy.ops.object.select_all(action = "DESELECT")
@@ -53,6 +49,19 @@ def setParent(child, parent):
 def setCustomProperty(object, propertyName, value, min, max):
     object[propertyName] = value
     object["_RNA_UI"] = { propertyName: {"min": min, "max": max} } 
+    
+def newDriver(object, dataPath, index, type):
+    fcurve = object.driver_add(dataPath, index)
+    driver = fcurve.driver
+    driver.type = type
+    return driver
+
+def linkFloatPropertyToDriver(driver, name, id, dataPath):
+    driverVariable = driver.variables.new()
+    driverVariable.name = name
+    driverVariable.type = "SINGLE_PROP"
+    driverVariable.targets[0].id = id
+    driverVariable.targets[0].data_path = '["' + dataPath + '"]'
     
 insertRotatingCamera()
 
