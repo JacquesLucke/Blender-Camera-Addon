@@ -32,7 +32,8 @@ def insertRotatingCamera():
     linkFloatPropertyToDriver(driver, "var", rotationControler, "rotationProgress")
     driver.expression = "var * 2 * pi"
     
-    
+    mainControler.location = bpy.context.scene.cursor_location
+    mainControler.location.z -= 2
     
 def setTrackTo(child, trackTo):
     bpy.ops.object.select_all(action = "DESELECT")
