@@ -11,7 +11,7 @@ def add_rotating_camera():
     groupsDirectory = pathToBlend + "\\Group\\"
     fileName = "\\" + blendName + "\\Group\\"
     
-    print(getCurrentDirectory())
+    print(getDirectoryToBlends())
     print(pathToBlend)
     print(groupsDirectory)
     print(fileName)
@@ -53,4 +53,5 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
