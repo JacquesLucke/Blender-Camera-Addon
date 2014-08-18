@@ -28,6 +28,16 @@ def insertRotatingCamera():
     
     setCustomProperty(rotationControler, "rotationProgress", 0.0, -1000.0, 1000.0)
     
+    fcurve = rotationControler.driver_add("rotation_euler", 2)
+    driver = fcurve.driver
+    driver.type = "SCRIPTED"
+    driverVariable = driver.variables.new()
+    driverVariable.name = "rotationProgress"
+    driverVariable.type = "SINGLE_PROP"
+    driverVariable.targets[0].id = rotationControler
+    driverVariable.targets[0].data_path = '["rotationProgress"]'
+    driver.expression = "rotationProgress * 2 * pi"
+    
 def setTrackTo(child, trackTo):
     bpy.ops.object.select_all(action = "DESELECT")
     child.select = True
