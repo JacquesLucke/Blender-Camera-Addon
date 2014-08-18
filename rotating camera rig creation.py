@@ -2,6 +2,10 @@ import bpy, math
 
 def insertRotatingCamera():
     
+    position = bpy.context.scene.cursor_location
+    if bpy.context.scene.objects.active:
+        position = bpy.context.scene.objects.active.location
+    
     bpy.ops.mesh.primitive_circle_add(location = [0, 0, -2])
     mainControler = bpy.context.object
     
@@ -32,8 +36,9 @@ def insertRotatingCamera():
     linkFloatPropertyToDriver(driver, "var", rotationControler, "rotationProgress")
     driver.expression = "var * 2 * pi"
     
-    mainControler.location = bpy.context.scene.cursor_location
+    mainControler.location = position
     mainControler.location.z -= 2
+
     
 def setTrackTo(child, trackTo):
     bpy.ops.object.select_all(action = "DESELECT")
