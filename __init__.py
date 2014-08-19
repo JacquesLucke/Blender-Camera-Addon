@@ -244,10 +244,13 @@ class CameraSettingsPanel(bpy.types.Panel):
 		settingsObject = getCurrentSettingsObjectOrNothing()
 		if settingsObject:  
 			col = layout.column(align = True)
-			col.operator("animation.select_main_controler")
-			col.operator("animation.select_target_controler")
-			col.operator("animation.select_position_controler")
-			col.operator("animation.select_camera")
+			col.label("Select")
+			row = col.row(align = True)
+			row.operator("animation.select_main_controler", text = "Main")
+			row.operator("animation.select_target_controler", text = "Target")
+			row = col.row(align = True)
+			row.operator("animation.select_position_controler", text = "Circle")
+			row.operator("animation.select_camera", text = "Camera")
 			
 			col = layout.column(align = True)
 			col.operator("animation.insert_time_rotation_animation")
