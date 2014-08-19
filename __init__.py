@@ -180,7 +180,6 @@ class CameraToolsPanel(bpy.types.Panel):
 	bl_category = "Animation"
 	bl_label = "Camera Tools"
 	
-	
 	def draw(self, context):
 		layout = self.layout
 		
@@ -188,6 +187,18 @@ class CameraToolsPanel(bpy.types.Panel):
 		col = split.column(align = True)
 		
 		col.operator("animation.add_rotating_camera")
+			
+class CameraSettingsPanel(bpy.types.Panel):
+	bl_space_type = "VIEW_3D"
+	bl_region_type = "TOOLS"
+	bl_category = "Animation"
+	bl_label = "Camera Settings"
+	
+	def draw(self, context):
+		layout = self.layout
+		
+		split = layout.split()
+		col = split.column(align = True)
 		
 		settingsObject = getCurrentSettingsObjectOrNothing()
 		if settingsObject:  
@@ -219,11 +230,13 @@ class InsertTimeBasedRotationAnimation(bpy.types.Operator):
 
 def register():
 	bpy.utils.register_class(CameraToolsPanel)
+	bpy.utils.register_class(CameraSettingsPanel)
 	bpy.utils.register_class(AddRotatingCameraOperator)
 	bpy.utils.register_class(InsertTimeBasedRotationAnimation)
 
 def unregister():
 	bpy.utils.unregister_class(CameraToolsPanel)
+	bpy.utils.unregister_class(CameraSettingsPanel)
 	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
 	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
 
