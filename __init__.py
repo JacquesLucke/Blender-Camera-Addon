@@ -225,6 +225,7 @@ def register():
 def unregister():
 	bpy.utils.unregister_class(CameraToolsPanel)
 	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
+	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
 
 if __name__ == "__main__":
 	register()
