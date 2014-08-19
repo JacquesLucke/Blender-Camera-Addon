@@ -1,7 +1,9 @@
 import bpy
 
 cameraRigPropertyName = "Camera Rig Type"
-settingsPropertyName = "Settings Object"
+settingsObjectPropertyName = "Settings Object"
+mainControlerPropertyName = "Main Controler"
+targetControlerPropertyName = "Target Controler"
 rotatingCameraType = "ROTATING"   
 
 def insertRotatingCamera():
@@ -56,11 +58,14 @@ def insertRotatingCamera():
 	setCustomProperty(camera, cameraRigPropertyName, rotatingCameraType)
 	
 	settingsObjectName = rotationControler.name
-	setCustomProperty(mainControler, settingsPropertyName, settingsObjectName)
-	setCustomProperty(targetControler, settingsPropertyName, settingsObjectName)
-	setCustomProperty(positionControler, settingsPropertyName, settingsObjectName)
-	setCustomProperty(rotationControler, settingsPropertyName, settingsObjectName)
-	setCustomProperty(camera, settingsPropertyName, settingsObjectName)
+	setCustomProperty(mainControler, settingsObjectPropertyName, settingsObjectName)
+	setCustomProperty(targetControler, settingsObjectPropertyName, settingsObjectName)
+	setCustomProperty(positionControler, settingsObjectPropertyName, settingsObjectName)
+	setCustomProperty(rotationControler, settingsObjectPropertyName, settingsObjectName)
+	setCustomProperty(camera, settingsObjectPropertyName, settingsObjectName)
+	
+	setCustomProperty(rotationControler, mainControlerPropertyName, mainControler.name)
+	setCustomProperty(rotationControler, targetControlerPropertyName, targetControler.name)
 	
 	mainControler.show_x_ray = True
 	targetControler.show_x_ray = True
@@ -158,11 +163,11 @@ def setConstraintLimitData(constraint, vector):
 def getCurrentSettingsObjectOrNothing():
 	activeObject = bpy.context.active_object
 	if isPartOfRotatingCamera(activeObject):
-		return bpy.data.objects[activeObject[settingsPropertyName]]
+		return bpy.data.objects[activeObject[settingsObjectPropertyName]]
 	
 def isPartOfRotatingCamera(object):
 	if object:
-		if settingsPropertyName in object:
+		if settingsObjectPropertyName in object:
 			return True
 	return False
 	
@@ -172,6 +177,12 @@ def insertTimeBasedRotationAnimation():
 	if settingsObject:
 		driver = newDriver(settingsObject, '["rotationProgress"]')
 		driver.expression = "frame / 100"
+		
+def selectTargetControler():
+	settingsObject = getCurrentSettingsObjectOrNothing()
+	if settingsObject:
+		deselectAll()
+		bpy.data.objects[settingsObject[targetControlerPropertyName]].select = True
 	
 	
 	
@@ -206,13 +217,14 @@ class CameraSettingsPanel(bpy.types.Panel):
 	def draw(self, context):
 		layout = self.layout
 		
-		split = layout.split()
-		col = split.column(align = True)
-		
 		settingsObject = getCurrentSettingsObjectOrNothing()
 		if settingsObject:  
+			col = layout.column(align = True)
+			col.operator("animation.select_target_controler")
+			
+			col = layout.column(align = True)
 			col.operator("animation.insert_time_rotation_animation")
-			self.layout.prop(settingsObject, '["rotationProgress"]', text = "Rotations", slider = False)
+			col.prop(settingsObject, '["rotationProgress"]', text = "Rotations", slider = False)
 		
 		
 		
@@ -231,6 +243,14 @@ class InsertTimeBasedRotationAnimation(bpy.types.Operator):
 	def execute(self, context):
 		insertTimeBasedRotationAnimation()
 		return{"FINISHED"}
+		
+class SelectTargetControlerOperator(bpy.types.Operator):
+	bl_idname = "animation.select_target_controler"
+	bl_label = "Select Target Controler"
+	
+	def execute(self, context):
+		selectTargetControler()
+		return{"FINISHED"}
 
 
 
@@ -242,12 +262,14 @@ def register():
 	bpy.utils.register_class(CameraSettingsPanel)
 	bpy.utils.register_class(AddRotatingCameraOperator)
 	bpy.utils.register_class(InsertTimeBasedRotationAnimation)
+	bpy.utils.register_class(SelectTargetControlerOperator)
 
 def unregister():
 	bpy.utils.unregister_class(CameraToolsPanel)
 	bpy.utils.unregister_class(CameraSettingsPanel)
 	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
 	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
+	bpy.utils.unregister_class(SelectTargetControlerOperator)
 
 if __name__ == "__main__":
 	register()
