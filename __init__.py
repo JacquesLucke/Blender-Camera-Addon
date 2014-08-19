@@ -62,6 +62,9 @@ def insertRotatingCamera():
 	setCustomProperty(rotationControler, settingsPropertyName, settingsObjectName)
 	setCustomProperty(camera, settingsPropertyName, settingsObjectName)
 	
+	mainControler.show_x_ray = True
+	targetControler.show_x_ray = True
+	
 	deselectAll()
 	mainControler.select = True
 
