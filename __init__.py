@@ -39,10 +39,12 @@ def insertRotatingCamera():
     mainControler.location = position
     mainControler.location.z -= 2
     
-    lockObjectToCurrentLocalLocation(rotationControler)
+    lockCurrentLocalRotation(rotationControler, zAxes = False)
+    lockCurrentLocalLocation(rotationControler)
+    lockCurrentLocalScale(rotationControler)
 
-    #bpy.context.scene.objects.active = camera
-    #bpy.ops.view3d.object_as_camera()
+    bpy.context.scene.objects.active = camera
+    bpy.ops.view3d.object_as_camera()
 
     
 def setTrackTo(child, trackTo):
@@ -79,14 +81,50 @@ def deselectAll():
     
 def setActive(object):
     bpy.context.scene.objects.active = object
-    
-def lockObjectToCurrentLocalLocation(object):
+        
+        
+        
+def lockCurrentLocalLocation(object, xAxes = True, yAxes = True, zAxes = True):
     setActive(object)
-    constraint = object.constraints.new(type='LIMIT_LOCATION')
+    constraint = object.constraints.new(type = "LIMIT_LOCATION")
     constraint.owner_space = "LOCAL"
     
-    (x, y, z) = object.location
+    setConstraintLimitData(constraint, object.location)
     
+    constraint.use_min_x = xAxes
+    constraint.use_max_x = xAxes
+    constraint.use_min_y = yAxes
+    constraint.use_max_y = yAxes
+    constraint.use_min_z = zAxes
+    constraint.use_max_z = zAxes
+    
+def lockCurrentLocalRotation(object, xAxes = True, yAxes = True, zAxes = True):
+    setActive(object)
+    constraint = object.constraints.new(type = "LIMIT_ROTATION")
+    constraint.owner_space = "LOCAL"
+    
+    setConstraintLimitData(constraint, object.rotation_euler)
+    
+    constraint.use_limit_x = xAxes
+    constraint.use_limit_y = yAxes
+    constraint.use_limit_z = zAxes
+    
+def lockCurrentLocalScale(object, xAxes = True, yAxes = True, zAxes = True):
+    setActive(object)
+    constraint = object.constraints.new(type = "LIMIT_SCALE")
+    constraint.owner_space = "LOCAL"
+    
+    setConstraintLimitData(constraint, object.scale)
+    
+    constraint.use_min_x = xAxes
+    constraint.use_max_x = xAxes
+    constraint.use_min_y = yAxes
+    constraint.use_max_y = yAxes
+    constraint.use_min_z = zAxes
+    constraint.use_max_z = zAxes
+    
+def setConstraintLimitData(constraint, vector):
+    (x, y, z) = vector
     constraint.min_x = x
     constraint.max_x = x
     constraint.min_y = y
@@ -94,12 +132,7 @@ def lockObjectToCurrentLocalLocation(object):
     constraint.min_z = z
     constraint.max_z = z
     
-    constraint.use_min_x = True
-    constraint.use_max_x = True
-    constraint.use_min_y = True
-    constraint.use_max_y = True
-    constraint.use_min_z = True
-    constraint.use_max_z = True
+    
     
 # interface
 
