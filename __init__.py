@@ -179,6 +179,7 @@ class CameraToolsPanel(bpy.types.Panel):
 	bl_region_type = "TOOLS"
 	bl_category = "Animation"
 	bl_label = "Camera Tools"
+	bl_context = "objectmode"
 	
 	def draw(self, context):
 		layout = self.layout
@@ -193,6 +194,7 @@ class CameraSettingsPanel(bpy.types.Panel):
 	bl_region_type = "TOOLS"
 	bl_category = "Animation"
 	bl_label = "Camera Settings"
+	bl_context = "objectmode"
 	
 	def draw(self, context):
 		layout = self.layout
