@@ -183,6 +183,12 @@ def selectTargetControler():
 	if settingsObject:
 		deselectAll()
 		bpy.data.objects[settingsObject[targetControlerPropertyName]].select = True
+		
+def selectMainControler():
+	settingsObject = getCurrentSettingsObjectOrNothing()
+	if settingsObject:
+		deselectAll()
+		bpy.data.objects[settingsObject[mainControlerPropertyName]].select = True
 	
 	
 	
@@ -220,6 +226,7 @@ class CameraSettingsPanel(bpy.types.Panel):
 		settingsObject = getCurrentSettingsObjectOrNothing()
 		if settingsObject:  
 			col = layout.column(align = True)
+			col.operator("animation.select_main_controler")
 			col.operator("animation.select_target_controler")
 			
 			col = layout.column(align = True)
@@ -251,6 +258,14 @@ class SelectTargetControlerOperator(bpy.types.Operator):
 	def execute(self, context):
 		selectTargetControler()
 		return{"FINISHED"}
+		
+class SelectMainControlerOperator(bpy.types.Operator):
+	bl_idname = "animation.select_main_controler"
+	bl_label = "Select Main Controler"
+	
+	def execute(self, context):
+		selectMainControler()
+		return{"FINISHED"}
 
 
 
@@ -263,6 +278,7 @@ def register():
 	bpy.utils.register_class(AddRotatingCameraOperator)
 	bpy.utils.register_class(InsertTimeBasedRotationAnimation)
 	bpy.utils.register_class(SelectTargetControlerOperator)
+	bpy.utils.register_class(SelectMainControlerOperator)
 
 def unregister():
 	bpy.utils.unregister_class(CameraToolsPanel)
@@ -270,6 +286,7 @@ def unregister():
 	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
 	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
 	bpy.utils.unregister_class(SelectTargetControlerOperator)
+	bpy.utils.unregister_class(SelectMainControlerOperator)
 
 if __name__ == "__main__":
 	register()
