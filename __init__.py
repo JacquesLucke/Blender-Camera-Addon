@@ -6,7 +6,7 @@ def insertRotatingCamera():
     if bpy.context.scene.objects.active:
         position = bpy.context.scene.objects.active.location
     
-    bpy.ops.mesh.primitive_circle_add(location = [0, 0, -2])
+    bpy.ops.mesh.primitive_circle_add(location = [0, 0, 0])
     mainControler = bpy.context.object
     
     bpy.ops.object.empty_add(location = [0, 0, 0], type = "SPHERE")
@@ -30,13 +30,9 @@ def insertRotatingCamera():
     setParent(positionControler, mainControler)
     
     setCustomProperty(rotationControler, "rotationProgress", 0.0, -1000.0, 1000.0)
-    
     driver = newDriver(rotationControler, "rotation_euler", 2, "SCRIPTED")
     linkFloatPropertyToDriver(driver, "var", rotationControler, "rotationProgress")
     driver.expression = "var * 2 * pi"
-    
-    mainControler.location = position
-    mainControler.location.z -= 2
     
     lockCurrentLocalRotation(rotationControler, zAxes = False)
     lockCurrentLocalLocation(rotationControler)
@@ -45,6 +41,8 @@ def insertRotatingCamera():
     lockCurrentLocalLocation(camera)
     
     setTrackTo(camera, targetControler)  
+    
+    mainControler.location = position
 
     
 def setTrackTo(child, trackTo):
