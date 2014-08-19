@@ -1,57 +1,81 @@
 import bpy
 
-def getDirectoryToBlends():
-    return "F:\\Projekte\\Blender Camera Addon\\Blender Camera Addon\\blends\\"
-
-def add_rotating_camera():
-    blendName = "rotating camera.blend"
-    groupName = "Rotating Camera Rig Group"
+def insertRotatingCamera():
     
-    pathToBlend = getDirectoryToBlends() + blendName
-    groupsDirectory = pathToBlend + "\\Group\\"
-    fileName = "\\" + blendName + "\\Group\\"
+    position = bpy.context.scene.cursor_location
+    if bpy.context.scene.objects.active:
+        position = bpy.context.scene.objects.active.location
     
-    print(getDirectoryToBlends())
-    print(pathToBlend)
-    print(groupsDirectory)
-    print(fileName)
+    bpy.ops.mesh.primitive_circle_add(location = [0, 0, -2])
+    mainControler = bpy.context.object
     
-    bpy.ops.wm.link_append(
-            link = False, 
-            directory = groupsDirectory,
-            filename = groupName)
-            
-
-class RotationCameraPanel(bpy.types.Panel):
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "TOOLS"
-    bl_label = "Rotating Camera"
+    bpy.ops.object.empty_add(location = [0, 0, 0], type = "SPHERE")
+    targetControler = bpy.context.object
+    targetControler.empty_draw_size = 0.2
     
-    def draw(self, context):
-        layout = self.layout
-        
-        split = layout.split()
-        col = split.column(align = True)
-        
-        col.operator("animation.add_rotating_camera")
-        
-class AddRotatingCameraOperator(bpy.types.Operator):
-    bl_idname = "animation.add_rotating_camera"
-    bl_label = "Add Rotating Camera"
+    bpy.ops.mesh.primitive_circle_add(location = [0, 0, 1.5])
+    positionControler = bpy.context.object
+    positionControler.scale = [5, 5, 5]
     
-    def execute(self, context):
-        add_rotating_camera()
-        return{"FINISHED"}
+    bpy.ops.object.empty_add(location = [0, 0, 1.5], type = "PLAIN_AXES")
+    rotationControler = bpy.context.object
+    rotationControler.empty_draw_size = 0.2
+    
+    bpy.ops.object.camera_add(location = [0, -5, 1.5])
+    camera = bpy.context.object
+    
+    setTrackTo(camera, targetControler)    
+    setParent(rotationControler, positionControler)
+    setParent(camera, rotationControler)
+    setParent(targetControler, mainControler)
+    setParent(positionControler, mainControler)
+    
+    setCustomProperty(rotationControler, "rotationProgress", 0.0, -1000.0, 1000.0)
+    
+    driver = newDriver(rotationControler, "rotation_euler", 2, "SCRIPTED")
+    linkFloatPropertyToDriver(driver, "var", rotationControler, "rotationProgress")
+    driver.expression = "var * 2 * pi"
+    
+    mainControler.location = position
+    mainControler.location.z -= 2
 
-def register():
-    bpy.utils.register_class(RotationCameraPanel)
-    bpy.utils.register_class(AddRotatingCameraOperator)
+    #bpy.context.scene.objects.active = camera
+    #bpy.ops.view3d.object_as_camera()
 
-def unregister():
-    bpy.utils.unregister_class(RotationCameraPanel)
-    bpy.utils.unregister_class(AddRotatingCameraOperator)
+    
+def setTrackTo(child, trackTo):
+    deselectAll()
+    child.select = True
+    bpy.context.scene.objects.active = trackTo
+    bpy.ops.object.track_set(type = "TRACKTO")   
 
-if __name__ == "__main__":
-    register()
+def setParent(child, parent):
+    deselectAll()
+    child.select = True
+    bpy.context.scene.objects.active = parent
+    bpy.ops.object.parent_set(type = "OBJECT", keep_transform = True)
+    
+def setCustomProperty(object, propertyName, value, min, max):
+    object[propertyName] = value
+    object["_RNA_UI"] = { propertyName: {"min": min, "max": max} } 
+    
+def newDriver(object, dataPath, index, type):
+    fcurve = object.driver_add(dataPath, index)
+    driver = fcurve.driver
+    driver.type = type
+    return driver
+
+def linkFloatPropertyToDriver(driver, name, id, dataPath):
+    driverVariable = driver.variables.new()
+    driverVariable.name = name
+    driverVariable.type = "SINGLE_PROP"
+    driverVariable.targets[0].id = id
+    driverVariable.targets[0].data_path = '["' + dataPath + '"]'
+    
+def deselectAll():
+    bpy.ops.object.select_all(action = "DESELECT")
+
+
+insertRotatingCamera()
 
 
