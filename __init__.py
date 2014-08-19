@@ -24,7 +24,6 @@ def insertRotatingCamera():
     bpy.ops.object.camera_add(location = [0, -5, 1.5])
     camera = bpy.context.object
     
-    setTrackTo(camera, targetControler)    
     setParent(rotationControler, positionControler)
     setParent(camera, rotationControler)
     setParent(targetControler, mainControler)
@@ -42,9 +41,10 @@ def insertRotatingCamera():
     lockCurrentLocalRotation(rotationControler, zAxes = False)
     lockCurrentLocalLocation(rotationControler)
     lockCurrentLocalScale(rotationControler)
-
-    bpy.context.scene.objects.active = camera
-    bpy.ops.view3d.object_as_camera()
+    lockCurrentLocalRotation(targetControler)
+    lockCurrentLocalLocation(camera)
+    
+    setTrackTo(camera, targetControler)  
 
     
 def setTrackTo(child, trackTo):
