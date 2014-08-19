@@ -38,6 +38,8 @@ def insertRotatingCamera():
     
     mainControler.location = position
     mainControler.location.z -= 2
+    
+    lockObjectToCurrentLocalLocation(rotationControler)
 
     #bpy.context.scene.objects.active = camera
     #bpy.ops.view3d.object_as_camera()
@@ -46,13 +48,13 @@ def insertRotatingCamera():
 def setTrackTo(child, trackTo):
     deselectAll()
     child.select = True
-    bpy.context.scene.objects.active = trackTo
+    setActive(trackTo)
     bpy.ops.object.track_set(type = "TRACKTO")   
 
 def setParent(child, parent):
     deselectAll()
     child.select = True
-    bpy.context.scene.objects.active = parent
+    setActive(parent)
     bpy.ops.object.parent_set(type = "OBJECT", keep_transform = True)
     
 def setCustomProperty(object, propertyName, value, min, max):
@@ -74,8 +76,70 @@ def linkFloatPropertyToDriver(driver, name, id, dataPath):
     
 def deselectAll():
     bpy.ops.object.select_all(action = "DESELECT")
+    
+def setActive(object):
+    bpy.context.scene.objects.active = object
+    
+def lockObjectToCurrentLocalLocation(object):
+    setActive(object)
+    constraint = object.constraints.new(type='LIMIT_LOCATION')
+    constraint.owner_space = "LOCAL"
+    
+    (x, y, z) = object.location
+    
+    constraint.min_x = x
+    constraint.max_x = x
+    constraint.min_y = y
+    constraint.max_y = y
+    constraint.min_z = z
+    constraint.max_z = z
+    
+    constraint.use_min_x = True
+    constraint.use_max_x = True
+    constraint.use_min_y = True
+    constraint.use_max_y = True
+    constraint.use_min_z = True
+    constraint.use_max_z = True
+    
+# interface
+
+class CameraToolsPanel(bpy.types.Panel):
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "TOOLS"
+    bl_category = "Animation"
+    bl_label = "Camera Tools"
+    
+    def draw(self, context):
+        layout = self.layout
+        
+        split = layout.split()
+        col = split.column(align = True)
+        
+        col.operator("animation.add_rotating_camera")
+        
+class AddRotatingCameraOperator(bpy.types.Operator):
+    bl_idname = "animation.add_rotating_camera"
+    bl_label = "Add Rotating Camera"
+    
+    def execute(self, context):
+        insertRotatingCamera()
+        return{"FINISHED"}
 
 
-insertRotatingCamera()
+
+
+
+#registration
+
+def register():
+    bpy.utils.register_class(CameraToolsPanel)
+    bpy.utils.register_class(AddRotatingCameraOperator)
+
+def unregister():
+    bpy.utils.unregister_class(CameraToolsPanel)
+    bpy.utils.unregister_class(AddRotatingCameraOperator)
+
+if __name__ == "__main__":
+    register()
 
 
