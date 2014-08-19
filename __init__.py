@@ -1,5 +1,9 @@
 import bpy
 
+cameraRigPropertyName = "Camera Rig Type"
+settingsPropertyName = "Settings Object"
+rotatingCameraType = "ROTATING"   
+
 def insertRotatingCamera():
     
     position = bpy.context.scene.cursor_location
@@ -43,6 +47,20 @@ def insertRotatingCamera():
     setTrackTo(camera, targetControler)  
     
     mainControler.location = position
+    
+    
+    setCustomProperty(mainControler, cameraRigPropertyName, rotatingCameraType)
+    setCustomProperty(targetControler, cameraRigPropertyName, rotatingCameraType)
+    setCustomProperty(positionControler, cameraRigPropertyName, rotatingCameraType)
+    setCustomProperty(rotationControler, cameraRigPropertyName, rotatingCameraType)
+    setCustomProperty(camera, cameraRigPropertyName, rotatingCameraType)
+    
+    settingsObjectName = rotationControler.name
+    setCustomProperty(mainControler, settingsPropertyName, settingsObjectName)
+    setCustomProperty(targetControler, settingsPropertyName, settingsObjectName)
+    setCustomProperty(positionControler, settingsPropertyName, settingsObjectName)
+    setCustomProperty(rotationControler, settingsPropertyName, settingsObjectName)
+    setCustomProperty(camera, settingsPropertyName, settingsObjectName)
 
     
 def setTrackTo(child, trackTo):
@@ -57,7 +75,7 @@ def setParent(child, parent):
     setActive(parent)
     bpy.ops.object.parent_set(type = "OBJECT", keep_transform = True)
     
-def setCustomProperty(object, propertyName, value, min, max):
+def setCustomProperty(object, propertyName, value, min = -100000000.0, max = 100000000.0):
     object[propertyName] = value
     object["_RNA_UI"] = { propertyName: {"min": min, "max": max} } 
     
@@ -131,6 +149,11 @@ def setConstraintLimitData(constraint, vector):
     constraint.max_z = z
     
     
+def isPartOfRotatingCamera(object):
+    if object:
+        if settingsPropertyName in object:
+            return True
+    return False
     
 # interface
 
@@ -140,6 +163,7 @@ class CameraToolsPanel(bpy.types.Panel):
     bl_category = "Animation"
     bl_label = "Camera Tools"
     
+    
     def draw(self, context):
         layout = self.layout
         
@@ -147,7 +171,15 @@ class CameraToolsPanel(bpy.types.Panel):
         col = split.column(align = True)
         
         col.operator("animation.add_rotating_camera")
-        self.layout.prop(bpy.context.active_object, '["rotationProgress"]', slider = False)
+        
+        activeObject = bpy.context.active_object
+        print("sf")
+        if isPartOfRotatingCamera(activeObject):    
+            settingsObject = bpy.data.objects[activeObject[settingsPropertyName]]
+            print(settingsObject)
+            self.layout.prop(settingsObject, '["rotationProgress"]', slider = False)
+        
+        
         
 class AddRotatingCameraOperator(bpy.types.Operator):
     bl_idname = "animation.add_rotating_camera"
@@ -173,5 +205,6 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
 
