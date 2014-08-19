@@ -196,6 +196,10 @@ class CameraSettingsPanel(bpy.types.Panel):
 	bl_label = "Camera Settings"
 	bl_context = "objectmode"
 	
+	@classmethod
+	def poll(self, context):
+		return getCurrentSettingsObjectOrNothing()
+	
 	def draw(self, context):
 		layout = self.layout
 		
