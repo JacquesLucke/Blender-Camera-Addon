@@ -147,6 +147,7 @@ class CameraToolsPanel(bpy.types.Panel):
         col = split.column(align = True)
         
         col.operator("animation.add_rotating_camera")
+        self.layout.prop(bpy.context.active_object, '["rotationProgress"]', slider = False)
         
 class AddRotatingCameraOperator(bpy.types.Operator):
     bl_idname = "animation.add_rotating_camera"
