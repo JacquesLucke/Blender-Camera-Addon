@@ -34,6 +34,9 @@ def deselectAll():
 	
 def setActive(object):
 	bpy.context.scene.objects.active = object
+	
+def deleteSelectedObjects():
+	bpy.ops.object.delete(use_global=False)
 		
 		
 		

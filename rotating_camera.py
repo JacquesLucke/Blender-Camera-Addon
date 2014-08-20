@@ -102,30 +102,45 @@ def insertTimeBasedRotationAnimation():
 	if settingsObject:
 		driver = newDriver(settingsObject, '["rotationProgress"]')
 		driver.expression = "frame / 100"
+
 		
-def selectTargetControler():
+def selectRotationControler(deselect = True):
+	if deselect: deselectAll()
 	settingsObject = getCurrentSettingsObjectOrNothing()
 	if settingsObject:
-		deselectAll()
+		bpy.data.objects[settingsObject[settingsObjectPropertyName]].select = True		
+		
+def selectTargetControler(deselect = True):
+	if deselect: deselectAll()
+	settingsObject = getCurrentSettingsObjectOrNothing()
+	if settingsObject:
 		bpy.data.objects[settingsObject[targetControlerPropertyName]].select = True
 		
-def selectMainControler():
+def selectMainControler(deselect = True):
+	if deselect: deselectAll()
 	settingsObject = getCurrentSettingsObjectOrNothing()
 	if settingsObject:
-		deselectAll()
 		bpy.data.objects[settingsObject[mainControlerPropertyName]].select = True
 		
-def selectPositionControler():
+def selectPositionControler(deselect = True):
+	if deselect: deselectAll()
 	settingsObject = getCurrentSettingsObjectOrNothing()
 	if settingsObject:
-		deselectAll()
 		bpy.data.objects[settingsObject[positionControlerPropertyName]].select = True
 		
-def selectCamera():
+def selectCamera(deselect = True):
+	if deselect: deselectAll()
 	settingsObject = getCurrentSettingsObjectOrNothing()
 	if settingsObject:
-		deselectAll()
 		bpy.data.objects[settingsObject[cameraPropertyName]].select = True
+		
+def deleteRotatingCamera():
+	selectRotationControler(deselect = False)
+	selectMainControler(deselect = False)
+	selectPositionControler(deselect = False)
+	selectTargetControler(deselect = False)
+	selectCamera(deselect = False)
+	deleteSelectedObjects()
 		
 		
 		
@@ -161,6 +176,9 @@ class CameraSettingsPanel(bpy.types.Panel):
 			col = layout.column(align = True)
 			col.operator("animation.insert_time_rotation_animation")
 			col.prop(settingsObject, '["rotationProgress"]', text = "Rotations", slider = False)
+			
+			col = layout.column(align = True)
+			col.operator("animation.delete_rotating_camera", text = "Delete Setup")
 		
 		
 # operators
@@ -213,6 +231,13 @@ class SelectCameraOperator(bpy.types.Operator):
 		selectCamera()
 		return{"FINISHED"}
 		
+class SelectCameraOperator(bpy.types.Operator):
+	bl_idname = "animation.delete_rotating_camera"
+	bl_label = "Delete Rotating Camera"
+	
+	def execute(self, context):
+		deleteRotatingCamera()
+		return{"FINISHED"}
 		
 		
 		

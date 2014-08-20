@@ -1,10 +1,7 @@
-import sys, os 
+import sys, os, bpy
 sys.path.append(os.path.dirname(__file__)) 
+import utils, rotating_camera
 
-
-import bpy
-from utils import *
-import rotating_camera
 
 bl_info = {
     "name":        "Camera Tools",
@@ -30,10 +27,11 @@ class CameraToolsPanel(bpy.types.Panel):
 	def draw(self, context):
 		layout = self.layout
 		
-		split = layout.split()
-		col = split.column(align = True)
-		
+		col = layout.column(align = True)
 		col.operator("animation.add_rotating_camera")
+		
+		col = layout.column(align = True)
+		col.operator("view3d.object_as_camera", text = "Set Active Camera")
 			
 
 #registration
