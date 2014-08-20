@@ -1,5 +1,16 @@
 import bpy
 
+bl_info = {
+    "name":        "Camera Tools",
+    "description": "A tool to make good camera animations faster",
+    "author":      "Jacques Lucke",
+    "version":     (0, 1, 0),
+    "blender":     (2, 7, 1),
+    "location":    "View 3D > Tool Shelf",
+    "warning":     "Alpha",
+    "category":    "3D View"
+    }
+
 cameraRigPropertyName = "Camera Rig Type"
 
 settingsObjectPropertyName = "Settings Object"
@@ -312,27 +323,10 @@ class SelectCameraOperator(bpy.types.Operator):
 #registration
 
 def register():
-	bpy.utils.register_class(CameraToolsPanel)
-	bpy.utils.register_class(CameraSettingsPanel)
-	bpy.utils.register_class(AddRotatingCameraOperator)
-	bpy.utils.register_class(InsertTimeBasedRotationAnimation)
-	bpy.utils.register_class(SelectTargetControlerOperator)
-	bpy.utils.register_class(SelectMainControlerOperator)
-	bpy.utils.register_class(SelectPositionControlerOperator)
-	bpy.utils.register_class(SelectCameraOperator)
+	bpy.utils.register_module(__name__)
 
 def unregister():
-	bpy.utils.unregister_class(CameraToolsPanel)
-	bpy.utils.unregister_class(CameraSettingsPanel)
-	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
-	bpy.utils.unregister_class(InsertTimeBasedRotationAnimation)
-	bpy.utils.unregister_class(SelectTargetControlerOperator)
-	bpy.utils.unregister_class(SelectMainControlerOperator)
-	bpy.utils.unregister_class(SelectPositionControlerOperator)
-	bpy.utils.unregister_class(SelectCameraOperator)
+	bpy.utils.unregister_module(__name__)
 
 if __name__ == "__main__":
 	register()
-
-
-
