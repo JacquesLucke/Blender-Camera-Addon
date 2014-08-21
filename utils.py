@@ -37,7 +37,38 @@ def setActive(object):
 	
 def deleteSelectedObjects():
 	bpy.ops.object.delete(use_global=False)
+	
+def isObjectReferenceSet(object, name):
+	if name in object.constraints:
+		constraint = object.constraints[name]
+		if constraint.name == name:
+			if constraint.target:
+				return True
+	return False
+
+def getChildOfConstraintWithName(object, name):
+	if name not in object.constraints:
+		constraint = object.constraints.new(type = "CHILD_OF")
+		constraint.name = name
+	return object.constraints[name]
+
+def setObjectReference(object, name, target):
+	if isObjectReferenceSet(object, name):
+		object.constraints[name].target = target
+	else:
+		constraint = getChildOfConstraintWithName(object, name)
+		constraint.influence = 0
+		constraint.target = target
+		constraint.show_expanded = False
 		
+def getObjectReference(object, name):
+	if isObjectReferenceSet(object, name):
+		return object.constraints[name].target
+	return None
+
+def removeObjectReference(object, name):
+	if name in object.constraints:
+		object.constraints.remove(object.constraints[name])
 		
 		
 def lockCurrentLocalLocation(object, xAxes = True, yAxes = True, zAxes = True):
