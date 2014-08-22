@@ -11,75 +11,27 @@ cameraPropertyName = "Camera"
 
 rotatingCameraType = "ROTATING" 
 
-
+#Inserting the full camera setup 
+################################
 
 def insertRotatingCamera():
+	position = getPosition()
 	
-	position = bpy.context.scene.cursor_location
-	if bpy.context.scene.objects.active:
-		position = bpy.context.scene.objects.active.location
+	mainControler = newMainControler()
+	targetControler = newTargetControler()
+	positionControler = newPositionControler()
+	rotationControler = newRotationControler()
+	camera = newCamera()
 	
-	bpy.ops.mesh.primitive_circle_add(location = [0, 0, 0])
-	mainControler = bpy.context.object
-	mainControler.name = "Rotating Camera Controler"
-	
-	bpy.ops.object.empty_add(location = [0, 0, 0], type = "SPHERE")
-	targetControler = bpy.context.object
-	targetControler.empty_draw_size = 0.2
-	targetControler.name = "Target Controler"
-	
-	bpy.ops.mesh.primitive_circle_add(location = [0, 0, 1.5])
-	positionControler = bpy.context.object
-	positionControler.scale = [5, 5, 5]
-	positionControler.name = "Position Controler"
-	
-	bpy.ops.object.empty_add(location = [0, 0, 1.5], type = "PLAIN_AXES")
-	rotationControler = bpy.context.object
-	rotationControler.empty_draw_size = 0.2
-	rotationControler.name = "Rotation Controler"
-	
-	bpy.ops.object.camera_add(location = [0, -5, 1.5])
-	camera = bpy.context.object
-	camera.name = "Rotating Camera"
-	
-	setParent(rotationControler, positionControler)
-	setParent(camera, rotationControler)
-	setParent(targetControler, mainControler)
-	setParent(positionControler, mainControler)
-	
-	setCustomProperty(rotationControler, "rotationProgress", 0.0, -1000.0, 1000.0)
-	driver = newDriver(rotationControler, "rotation_euler", 2, "SCRIPTED")
-	linkFloatPropertyToDriver(driver, "var", rotationControler, "rotationProgress")
-	driver.expression = "var * 2 * pi"
-	
-	lockCurrentLocalRotation(rotationControler, zAxes = False)
-	lockCurrentLocalLocation(rotationControler)
-	lockCurrentLocalScale(rotationControler)
-	lockCurrentLocalRotation(targetControler)
-	lockCurrentLocalLocation(camera)
-	
+	setParents(mainControler, targetControler, positionControler, rotationControler, camera)
+	setRotationDriver(rotationControler)
+	lockObjects(rotationControler, targetControler, camera)
 	setTrackTo(camera, targetControler)  
-	
 	mainControler.location = position
 	
-	
-	setCustomProperty(mainControler, cameraRigPropertyName, rotatingCameraType)
-	setCustomProperty(targetControler, cameraRigPropertyName, rotatingCameraType)
-	setCustomProperty(positionControler, cameraRigPropertyName, rotatingCameraType)
-	setCustomProperty(rotationControler, cameraRigPropertyName, rotatingCameraType)
-	setCustomProperty(camera, cameraRigPropertyName, rotatingCameraType)
-	
-	settingsObjectName = rotationControler.name
-	setCustomProperty(mainControler, settingsObjectPropertyName, settingsObjectName)
-	setCustomProperty(targetControler, settingsObjectPropertyName, settingsObjectName)
-	setCustomProperty(positionControler, settingsObjectPropertyName, settingsObjectName)
-	setCustomProperty(rotationControler, settingsObjectPropertyName, settingsObjectName)
-	setCustomProperty(camera, settingsObjectPropertyName, settingsObjectName)
-	
-	setCustomProperty(rotationControler, mainControlerPropertyName, mainControler.name)
-	setCustomProperty(rotationControler, targetControlerPropertyName, targetControler.name)
-	setCustomProperty(rotationControler, positionControlerPropertyName, positionControler.name)
-	setCustomProperty(rotationControler, cameraPropertyName, camera.name)
+	markAllAsPartOfRotationCamera(mainControler, targetControler, positionControler, rotationControler, camera)
+	linkAllToSettingsObject(mainControler, targetControler, positionControler, rotationControler, camera)
+	linkFromSettingsObjectToAll(mainControler, targetControler, positionControler, rotationControler, camera)
 	
 	mainControler.show_x_ray = True
 	targetControler.show_x_ray = True
@@ -87,9 +39,95 @@ def insertRotatingCamera():
 	deselectAll()
 	mainControler.select = True
 
+def getPosition():
+	position = bpy.context.scene.cursor_location
+	if bpy.context.scene.objects.active:
+		position = bpy.context.scene.objects.active.location
+	return position
+
+def newMainControler():
+	bpy.ops.mesh.primitive_circle_add(location = [0, 0, 0])
+	mainControler = bpy.context.object
+	mainControler.name = "Rotating Camera Controler"
+	return mainControler
 	
+def newTargetControler():
+	bpy.ops.object.empty_add(location = [0, 0, 0], type = "SPHERE")
+	targetControler = bpy.context.object
+	targetControler.empty_draw_size = 0.2
+	targetControler.name = "Target Controler"
+	return targetControler
 	
+def newPositionControler():
+	bpy.ops.mesh.primitive_circle_add(location = [0, 0, 1.5])
+	positionControler = bpy.context.object
+	positionControler.scale = [5, 5, 5]
+	positionControler.name = "Position Controler"
+	return positionControler
 	
+def newRotationControler():
+	bpy.ops.object.empty_add(location = [0, 0, 1.5], type = "PLAIN_AXES")
+	rotationControler = bpy.context.object
+	rotationControler.empty_draw_size = 0.2
+	rotationControler.name = "Rotation Controler"
+	return rotationControler
+	
+def newCamera():
+	bpy.ops.object.camera_add(location = [0, -5, 1.5])
+	camera = bpy.context.object
+	camera.name = "Rotating Camera"
+	return camera
+	
+def setParents(mainControler, targetControler, positionControler, rotationControler, camera):
+	setParent(rotationControler, positionControler)
+	setParent(camera, rotationControler)
+	setParent(targetControler, mainControler)
+	setParent(positionControler, mainControler)
+
+def setRotationDriver(rotationControler):
+	setCustomProperty(rotationControler, "rotationProgress", 0.0, -1000.0, 1000.0)
+	driver = newDriver(rotationControler, "rotation_euler", 2, "SCRIPTED")
+	linkFloatPropertyToDriver(driver, "var", rotationControler, "rotationProgress")
+	driver.expression = "var * 2 * pi"
+	
+def lockObjects(rotationControler, targetControler, camera):
+	lockCurrentLocalRotation(rotationControler, zAxes = False)
+	lockCurrentLocalLocation(rotationControler)
+	lockCurrentLocalScale(rotationControler)
+	lockCurrentLocalRotation(targetControler)
+	lockCurrentLocalLocation(camera)
+	
+def markAllAsPartOfRotationCamera(mainControler, targetControler, positionControler, rotationControler, camera):
+	setCustomProperty(mainControler, cameraRigPropertyName, rotatingCameraType)
+	setCustomProperty(targetControler, cameraRigPropertyName, rotatingCameraType)
+	setCustomProperty(positionControler, cameraRigPropertyName, rotatingCameraType)
+	setCustomProperty(rotationControler, cameraRigPropertyName, rotatingCameraType)
+	setCustomProperty(camera, cameraRigPropertyName, rotatingCameraType)
+	
+def linkAllToSettingsObject(mainControler, targetControler, positionControler, rotationControler, camera):
+	settingsObjectName = rotationControler.name
+	setCustomProperty(mainControler, settingsObjectPropertyName, settingsObjectName)
+	setCustomProperty(targetControler, settingsObjectPropertyName, settingsObjectName)
+	setCustomProperty(positionControler, settingsObjectPropertyName, settingsObjectName)
+	setCustomProperty(rotationControler, settingsObjectPropertyName, settingsObjectName)
+	setCustomProperty(camera, settingsObjectPropertyName, settingsObjectName)
+	
+def linkFromSettingsObjectToAll(mainControler, targetControler, positionControler, rotationControler, camera):
+	setCustomProperty(rotationControler, mainControlerPropertyName, mainControler.name)
+	setCustomProperty(rotationControler, targetControlerPropertyName, targetControler.name)
+	setCustomProperty(rotationControler, positionControlerPropertyName, positionControler.name)
+	setCustomProperty(rotationControler, cameraPropertyName, camera.name)
+
+
+#some utilities 
+################################
+	
+def insertTimeBasedRotationAnimation():
+	settingsObject = getCurrentSettingsObjectOrNothing()
+	if settingsObject:
+		driver = newDriver(settingsObject, '["rotationProgress"]')
+		driver.expression = "frame / 100"	
+
 def getCurrentSettingsObjectOrNothing():
 	activeObject = bpy.context.active_object
 	if isPartOfRotatingCamera(activeObject):
@@ -100,14 +138,8 @@ def isPartOfRotatingCamera(object):
 		if settingsObjectPropertyName in object:
 			return True
 	return False
-	
-	
-def insertTimeBasedRotationAnimation():
-	settingsObject = getCurrentSettingsObjectOrNothing()
-	if settingsObject:
-		driver = newDriver(settingsObject, '["rotationProgress"]')
-		driver.expression = "frame / 100"
 
+# select parts of the setup 
 		
 def selectRotationControler(deselect = True):
 	if deselect: deselectAll()
