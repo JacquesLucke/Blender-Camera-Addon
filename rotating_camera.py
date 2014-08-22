@@ -41,8 +41,9 @@ def insertRotatingCamera():
 
 def getPosition():
 	position = bpy.context.scene.cursor_location
-	if bpy.context.scene.objects.active:
-		position = bpy.context.scene.objects.active.location
+	activeObject = getActive()
+	if activeObject:
+		position = activeObject.location
 	return position
 
 def newMainControler():
@@ -129,7 +130,7 @@ def insertTimeBasedRotationAnimation():
 		driver.expression = "frame / 100"	
 
 def getCurrentSettingsObjectOrNothing():
-	activeObject = bpy.context.active_object
+	activeObject = getActive()
 	if isPartOfRotatingCamera(activeObject):
 		return bpy.data.objects[activeObject[settingsObjectPropertyName]]
 	

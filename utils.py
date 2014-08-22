@@ -32,6 +32,9 @@ def linkFloatPropertyToDriver(driver, name, id, dataPath):
 def deselectAll():
 	bpy.ops.object.select_all(action = "DESELECT")
 	
+def getActive():
+	return bpy.context.scene.objects.active
+	
 def setActive(object):
 	bpy.context.scene.objects.active = object
 	
