@@ -1,12 +1,17 @@
 import bpy
 from utils import *
 
+cameraRigPropertyName = "Camera Rig Type"
+targetCameraType = "TARGET" 
+
 def insertTargetMovementCamera():
 	camera = newCamera()
-	movement = newEmpty(name = "Movement Empty", location = [1, 1, 1])
+	movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
 	
 	setParentWithoutInverse(camera, movement)
 	camera.location.z = 4
+	
+	markAllAsPartOfTargetCamera(camera, movement)
 
 def newCamera():
 	bpy.ops.object.camera_add(location = [0, 0, 0])
@@ -14,6 +19,10 @@ def newCamera():
 	camera.name = "Target Camera"
 	camera.rotation_euler = [0, 0, 0]
 	return camera
+	
+def markAllAsPartOfTargetCamera(camera, movement):
+	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
+	setCustomProperty(movement, cameraRigPropertyName, targetCameraType)
 
 
 # operators
