@@ -125,9 +125,13 @@ class TargetCameraPanel(bpy.types.Panel):
 	def draw(self, context):
 		layout = self.layout
 		
+		camera = getTargetCamera()
+		movement = getMovementEmpty()
+		
 		layout.operator("animation.select_target_movement_camera")
 		layout.operator("animation.setup_target_object")
 		layout.label("targets: " + str(getTargetAmount()))
+		layout.prop(movement, '["travel"]', text = "Travel", slider = False)
 		
 	
 # operators
