@@ -41,7 +41,7 @@ def linkFloatPropertyToDriver(driver, name, id, dataPath):
 	driverVariable.name = name
 	driverVariable.type = "SINGLE_PROP"
 	driverVariable.targets[0].id = id
-	driverVariable.targets[0].data_path = '["' + dataPath + '"]'
+	driverVariable.targets[0].data_path = dataPath
 	
 def deselectAll():
 	bpy.ops.object.select_all(action = "DESELECT")

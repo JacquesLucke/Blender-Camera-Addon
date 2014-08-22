@@ -88,7 +88,7 @@ def setParents(mainControler, targetControler, positionControler, rotationContro
 def setRotationDriver(rotationControler):
 	setCustomProperty(rotationControler, "rotationProgress", 0.0, -1000.0, 1000.0)
 	driver = newDriver(rotationControler, "rotation_euler", 2, "SCRIPTED")
-	linkFloatPropertyToDriver(driver, "var", rotationControler, "rotationProgress")
+	linkFloatPropertyToDriver(driver, "var", rotationControler, '["rotationProgress"]')
 	driver.expression = "var * 2 * pi"
 	
 def lockObjects(rotationControler, targetControler, camera):
