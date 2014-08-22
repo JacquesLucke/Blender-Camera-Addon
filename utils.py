@@ -136,3 +136,7 @@ def setConstraintLimitData(constraint, vector):
 	constraint.min_z = z
 	constraint.max_z = z
 	
+def deleteAllConstraints(object):
+	for constraint in object.constraints:
+		object.constraints.remove(constraint)
+	

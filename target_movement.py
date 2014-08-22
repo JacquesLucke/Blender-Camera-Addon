@@ -3,6 +3,7 @@ from utils import *
 
 cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
+deleteOnCleanup = "Delete on Cleanup"
 
 targetCameraSaver = None
 
@@ -56,17 +57,39 @@ def selectTargetCamera():
 		camera.select = True
 		setActive(camera)
 		
-def setupTargetObject():
+def newTarget():
 	object = getActive()
+	targets = getTargetList()
+	targets.append(object)
+	createFullAnimation(targets)
 	
+def deleteTarget(index):
+	targets = getTargetList()
+	del targets[index]
+	createFullAnimation(targets)
+		
+def createFullAnimation(targetList):
+	cleanupScene()
+
+	movement = getMovementEmpty()
+	deleteAllConstraints(movement)
+	
+	for target in targetList:
+		setupTargetObject(target)
+		
+	createTravelToConstraintDrivers()
+	createTravelAnimation()
+		
+def setupTargetObject(object):
+	deselectAll()
+	object.select = True
+	setActive(object)
 	bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
 	center = newEmpty(name = "center")
 	setParentWithoutInverse(center, object)
-	
+	setCustomProperty(center, deleteOnCleanup, "yes")
 	createConstraintSet(center)
 	
-	createTravelToConstraintDrivers()
-	createTravelAnimation()
 	
 def createConstraintSet(target):
 	movement = getMovementEmpty()
@@ -108,7 +131,9 @@ def getTargetList():
 	movement = getMovementEmpty()
 	targets = []
 	for i in range(getTargetAmount()):
-		targets.append(getNthTargetEmpty(i).parent)
+		empty = getNthTargetEmpty(i)
+		if empty.parent is not None:
+			targets.append(empty.parent)
 	return targets
 		
 def getNthTargetEmpty(n):
@@ -120,21 +145,14 @@ def getTargetAmount():
 	movement = getMovementEmpty()
 	return math.floor(len(movement.constraints) / 2)
 	
-def moveTargetUp(index):
-	movement = getMovementEmpty()
-	setActive(movement)
-	constraints = movement.constraints
-	locationConstraint = constraints[index*2]
-	rotationConstraint = constraints[index*2+1]
-
-	
-def getMovementConstraintsList():
-	movement = getMovementEmpty()
-	constraints = []
-	for constraint in movement.constraints:
-		constraints.append(constraint)
-	return constraints
-
+def cleanupScene():
+	deselectAll()
+	for object in bpy.context.scene.objects:
+		if object.get(deleteOnCleanup) == "yes":
+			object.select = True
+				
+	bpy.ops.object.delete()
+				
 # interface
 
 class TargetCameraPanel(bpy.types.Panel):
@@ -154,22 +172,21 @@ class TargetCameraPanel(bpy.types.Panel):
 		camera = getTargetCamera()
 		movement = getMovementEmpty()
 		
-		layout.operator("animation.select_target_movement_camera")
-		layout.operator("animation.setup_target_object")
-		layout.label("targets: " + str(getTargetAmount()))
 		layout.prop(movement, '["travel"]', text = "Travel", slider = False)
 		
 		box = layout.box()
 		targetList = getTargetList()
-		for i in range(getTargetAmount()):
+		for i in range(len(targetList)):
 			row = box.split(percentage=0.6, align = True)
 			row.label(targetList[i].name)
-			up = row.operator("animation.move_up", icon = 'TRIA_UP', text = "")
-			up.currentIndex = i
+			row.operator("animation.dummy", icon = 'TRIA_UP', text = "")
 			row.operator("animation.dummy", icon = 'TRIA_DOWN', text = "")
-			row.operator("animation.dummy", icon = 'X', text = "")
-		box.operator("animation.setup_target_object", icon = 'PLUS', text = "New Target From Active")
+			delete = row.operator("animation.delete_target", icon = 'X', text = "")
+			delete.currentIndex = i
+		box.operator("animation.new_target_object", icon = 'PLUS', text = "New Target From Active")
 			
+		layout.operator("animation.recalculate_animation")
+		layout.operator("animation.select_target_movement_camera")
 		
 		layout.operator("animation.dummy")
 		
@@ -193,20 +210,28 @@ class SelectTargetMovementCamera(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SetupTargetObject(bpy.types.Operator):
-	bl_idname = "animation.setup_target_object"
-	bl_label = "Setup Target Object"
+	bl_idname = "animation.new_target_object"
+	bl_label = "New Target From Active"
 	
 	def execute(self, context):
-		setupTargetObject()
+		newTarget()
 		return{"FINISHED"}
 		
-class MoveUpOperator(bpy.types.Operator):
-	bl_idname = "animation.move_up"
-	bl_label = "Move Up"
+class DeleteTargetOperator(bpy.types.Operator):
+	bl_idname = "animation.delete_target"
+	bl_label = "Delete Target"
 	currentIndex = bpy.props.IntProperty()
 	
 	def execute(self, context):
-		moveTargetUp(self.currentIndex)
+		deleteTarget(self.currentIndex)
+		return{"FINISHED"}
+		
+class RecalculateAnimationOperator(bpy.types.Operator):
+	bl_idname = "animation.recalculate_animation"
+	bl_label = "Recalculate Animation"
+	
+	def execute(self, context):
+		createFullAnimation(getTargetList())
 		return{"FINISHED"}
 		
 class dummy(bpy.types.Operator):
@@ -214,6 +239,7 @@ class dummy(bpy.types.Operator):
 	bl_label = "dummy"
 	
 	def execute(self, context):
+		cleanupScene()
 		return{"FINISHED"}
 
 
