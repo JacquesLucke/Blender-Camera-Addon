@@ -1,6 +1,7 @@
 import sys, os, bpy
 sys.path.append(os.path.dirname(__file__)) 
-import utils, rotating_camera, target_movement
+import rotating_camera, target_movement
+from utils import *
 
 
 bl_info = {
@@ -32,7 +33,17 @@ class CameraToolsPanel(bpy.types.Panel):
 		col.operator("animation.add_target_movement_camera")
 		
 		col = layout.column(align = True)
-		col.operator("view3d.object_as_camera", text = "Set Active Camera")
+		col.operator("animation.set_active_camera")
+		
+# operators
+
+class SetActiveCameraOperator(bpy.types.Operator):
+	bl_idname = "animation.set_active_camera"
+	bl_label = "Set Active Camera"
+	
+	def execute(self, context):
+		bpy.context.scene.camera = getActive()
+		return{"FINISHED"}
 			
 
 #registration
