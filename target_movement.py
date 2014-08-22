@@ -152,6 +152,7 @@ def cleanupScene():
 			object.select = True
 				
 	bpy.ops.object.delete()
+
 				
 # interface
 
@@ -187,8 +188,9 @@ class TargetCameraPanel(bpy.types.Panel):
 			
 		layout.operator("animation.recalculate_animation")
 		layout.operator("animation.select_target_movement_camera")
+		layout.operator("animation.text_to_name")
 		
-		layout.operator("animation.dummy")
+		#layout.operator("animation.dummy")
 		
 	
 # operators
@@ -234,12 +236,20 @@ class RecalculateAnimationOperator(bpy.types.Operator):
 		createFullAnimation(getTargetList())
 		return{"FINISHED"}
 		
+class TextToNameOperator(bpy.types.Operator):
+	bl_idname = "animation.text_to_name"
+	bl_label = "Text to Name"
+	
+	def execute(self, context):
+		textToName()
+		return{"FINISHED"}
+		
 class dummy(bpy.types.Operator):
 	bl_idname = "animation.dummy"
 	bl_label = "dummy"
 	
 	def execute(self, context):
-		cleanupScene()
+		textToName()
 		return{"FINISHED"}
 
 

@@ -139,4 +139,10 @@ def setConstraintLimitData(constraint, vector):
 def deleteAllConstraints(object):
 	for constraint in object.constraints:
 		object.constraints.remove(constraint)
+		
+def textToName():
+	for object in bpy.data.objects:
+		print(object.name)
+		if hasattr(object.data, "body"):
+			object.name = object.data.body
 	
