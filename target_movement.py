@@ -9,6 +9,8 @@ targetCameraSaver = None
 
 def insertTargetMovementCamera():
 	if not getTargetCamera():
+		oldSelection = getSelectedObjects()
+	
 		camera = newCamera()
 		movement = newMovementEmpty()
 		
@@ -19,6 +21,11 @@ def insertTargetMovementCamera():
 		
 		setActive(camera)
 		bpy.context.object.data.dof_object = movement
+		
+		setSelectedObjects(oldSelection)
+		newTarget()
+		
+		
 
 def newCamera():
 	bpy.ops.object.camera_add(location = [0, 0, 0])
@@ -214,6 +221,10 @@ class AddTargetMovementCamera(bpy.types.Operator):
 	bl_idname = "animation.add_target_movement_camera"
 	bl_label = "Add Target Camera"
 	
+	@classmethod
+	def poll(self, context):
+		return not getTargetCamera()
+		
 	def execute(self, context):
 		insertTargetMovementCamera()
 		return{"FINISHED"}

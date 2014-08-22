@@ -166,4 +166,9 @@ def slowAnimationOnEachKeyframe(object, dataPath):
 		
 def getSelectedObjects():
 	return bpy.context.selected_objects
+def setSelectedObjects(selection):
+	deselectAll()
+	for object in selection:
+		object.select = True
+		setActive(object)
 					
