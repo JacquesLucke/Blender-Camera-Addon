@@ -21,21 +21,26 @@ def insertRotatingCamera():
 	
 	bpy.ops.mesh.primitive_circle_add(location = [0, 0, 0])
 	mainControler = bpy.context.object
+	mainControler.name = "Rotating Camera Controler"
 	
 	bpy.ops.object.empty_add(location = [0, 0, 0], type = "SPHERE")
 	targetControler = bpy.context.object
 	targetControler.empty_draw_size = 0.2
+	targetControler.name = "Target Controler"
 	
 	bpy.ops.mesh.primitive_circle_add(location = [0, 0, 1.5])
 	positionControler = bpy.context.object
 	positionControler.scale = [5, 5, 5]
+	positionControler.name = "Position Controler"
 	
 	bpy.ops.object.empty_add(location = [0, 0, 1.5], type = "PLAIN_AXES")
 	rotationControler = bpy.context.object
 	rotationControler.empty_draw_size = 0.2
+	rotationControler.name = "Rotation Controler"
 	
 	bpy.ops.object.camera_add(location = [0, -5, 1.5])
 	camera = bpy.context.object
+	camera.name = "Rotating Camera"
 	
 	setParent(rotationControler, positionControler)
 	setParent(camera, rotationControler)
