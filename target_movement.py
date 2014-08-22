@@ -183,7 +183,9 @@ class TargetCameraPanel(bpy.types.Panel):
 		camera = getTargetCamera()
 		movement = getMovementEmpty()
 		
-		layout.prop(movement, '["travel"]', text = "Travel", slider = False)
+		row = layout.row(align = True)
+		row.operator("animation.recalculate_animation", text = "Recalculate")
+		row.prop(movement, '["travel"]', text = "Travel", slider = False)
 		
 		box = layout.box()
 		targetList = getTargetList()
@@ -198,9 +200,7 @@ class TargetCameraPanel(bpy.types.Panel):
 			delete.currentIndex = i
 		box.operator("animation.new_target_object", icon = 'PLUS', text = "New Target From Active")
 			
-		layout.operator("animation.recalculate_animation")
 		layout.operator("animation.select_target_movement_camera")
-		layout.operator("animation.text_to_name")
 		
 		#layout.operator("animation.dummy")
 		
@@ -246,14 +246,6 @@ class RecalculateAnimationOperator(bpy.types.Operator):
 	
 	def execute(self, context):
 		createFullAnimation(getTargetList())
-		return{"FINISHED"}
-		
-class TextToNameOperator(bpy.types.Operator):
-	bl_idname = "animation.text_to_name"
-	bl_label = "Text to Name"
-	
-	def execute(self, context):
-		textToName()
 		return{"FINISHED"}
 		
 class MoveTargetUp(bpy.types.Operator):
