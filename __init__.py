@@ -1,6 +1,6 @@
 import sys, os, bpy
 sys.path.append(os.path.dirname(__file__)) 
-import utils, rotating_camera
+import utils, rotating_camera, target_movement
 
 
 bl_info = {
@@ -39,10 +39,12 @@ class CameraToolsPanel(bpy.types.Panel):
 def register():
 	bpy.utils.register_module(__name__)
 	rotating_camera.register()
+	target_movement.register()
 
 def unregister():
 	bpy.utils.unregister_module(__name__)
 	rotating_camera.unregister()
+	target_movement.unregister()
 
 if __name__ == "__main__":
 	register()
