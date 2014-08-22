@@ -148,10 +148,13 @@ class TargetCameraPanel(bpy.types.Panel):
 		box = layout.box()
 		targetList = getTargetList()
 		for i in range(getTargetAmount()):
-			row = box.split(percentage=0.6)
+			row = box.split(percentage=0.6, align = True)
 			row.label(targetList[i].name)
 			row.operator("animation.dummy", icon = 'TRIA_UP', text = "")
 			row.operator("animation.dummy", icon = 'TRIA_DOWN', text = "")
+			row.operator("animation.dummy", icon = 'X', text = "")
+		box.operator("animation.setup_target_object", icon = 'PLUS', text = "New Target From Active")
+			
 		
 		layout.operator("animation.dummy")
 		
