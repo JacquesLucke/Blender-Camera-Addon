@@ -1,4 +1,4 @@
-import bpy
+import bpy, math
 from utils import *
 
 cameraRigPropertyName = "Camera Rig Type"
@@ -65,6 +65,9 @@ def setupTargetObject():
 	
 	createConstraintSet(center)
 	
+	createTravelToConstraintDrivers()
+	createTravelAnimation()
+	
 def createConstraintSet(target):
 	movement = getMovementEmpty()
 	locationConstraint = movement.constraints.new(type = "COPY_LOCATION")
@@ -79,6 +82,28 @@ def createConstraintSet(target):
 	driver = newDriver(movement, 'constraints["' + rotationConstraint.name + '"].influence')
 	linkFloatPropertyToDriver(driver, "var", movement, 'constraints["' + locationConstraint.name + '"].influence')
 	driver.expression = "var"
+	
+def createTravelToConstraintDrivers():
+	movement = getMovementEmpty()
+	constraints = movement.constraints
+	
+	for i in range(math.floor(getTargetAmount())):
+		constraint = constraints[i*2]
+		driver = newDriver(movement, 'constraints["' + constraint.name + '"].influence')
+		linkFloatPropertyToDriver(driver, "var", movement, '["travel"]')
+		driver.expression = "var - " + str(i)
+		
+def createTravelAnimation():
+	movement = getMovementEmpty()
+	
+	for i in range(math.floor(getTargetAmount())):
+		movement["travel"] = float(i + 1)
+		movement.keyframe_insert(data_path='["travel"]', frame = i * 50 + 1)
+		
+	for keyframe in movement.animation_data.action.fcurves[0].keyframe_points:
+		keyframe.handle_left.y = keyframe.co.y
+		keyframe.handle_right.y = keyframe.co.y
+		
 	
 def getTargetAmount():
 	movement = getMovementEmpty()
