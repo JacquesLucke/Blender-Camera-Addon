@@ -29,6 +29,7 @@ class CameraToolsPanel(bpy.types.Panel):
 		
 		col = layout.column(align = True)
 		col.operator("animation.add_rotating_camera")
+		col.operator("animation.add_target_movement_camera")
 		
 		col = layout.column(align = True)
 		col.operator("view3d.object_as_camera", text = "Set Active Camera")
