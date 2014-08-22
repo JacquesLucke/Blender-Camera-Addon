@@ -109,7 +109,6 @@ def getTargetList():
 	targets = []
 	for i in range(getTargetAmount()):
 		targets.append(getNthTargetEmpty(i).parent)
-	print(targets)
 	return targets
 		
 def getNthTargetEmpty(n):
@@ -120,6 +119,21 @@ def getNthTargetEmpty(n):
 def getTargetAmount():
 	movement = getMovementEmpty()
 	return math.floor(len(movement.constraints) / 2)
+	
+def moveTargetUp(index):
+	movement = getMovementEmpty()
+	setActive(movement)
+	constraints = movement.constraints
+	locationConstraint = constraints[index*2]
+	rotationConstraint = constraints[index*2+1]
+
+	
+def getMovementConstraintsList():
+	movement = getMovementEmpty()
+	constraints = []
+	for constraint in movement.constraints:
+		constraints.append(constraint)
+	return constraints
 
 # interface
 
@@ -150,7 +164,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		for i in range(getTargetAmount()):
 			row = box.split(percentage=0.6, align = True)
 			row.label(targetList[i].name)
-			row.operator("animation.dummy", icon = 'TRIA_UP', text = "")
+			up = row.operator("animation.move_up", icon = 'TRIA_UP', text = "")
+			up.currentIndex = i
 			row.operator("animation.dummy", icon = 'TRIA_DOWN', text = "")
 			row.operator("animation.dummy", icon = 'X', text = "")
 		box.operator("animation.setup_target_object", icon = 'PLUS', text = "New Target From Active")
@@ -185,12 +200,20 @@ class SetupTargetObject(bpy.types.Operator):
 		setupTargetObject()
 		return{"FINISHED"}
 		
+class MoveUpOperator(bpy.types.Operator):
+	bl_idname = "animation.move_up"
+	bl_label = "Move Up"
+	currentIndex = bpy.props.IntProperty()
+	
+	def execute(self, context):
+		moveTargetUp(self.currentIndex)
+		return{"FINISHED"}
+		
 class dummy(bpy.types.Operator):
 	bl_idname = "animation.dummy"
 	bl_label = "dummy"
 	
 	def execute(self, context):
-		print(getTargetList())
 		return{"FINISHED"}
 
 
