@@ -16,6 +16,9 @@ def insertTargetMovementCamera():
 		camera.location.z = 4
 		
 		setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
+		
+		setActive(camera)
+		bpy.context.object.data.dof_object = movement
 
 def newCamera():
 	bpy.ops.object.camera_add(location = [0, 0, 0])
@@ -58,10 +61,10 @@ def selectTargetCamera():
 		setActive(camera)
 		
 def newTarget():
-	object = getActive()
-	targets = getTargetList()
-	targets.append(object)
-	createFullAnimation(targets)
+	for object in getSelectedObjects():
+		targets = getTargetList()
+		targets.append(object)
+		createFullAnimation(targets)
 	
 def deleteTarget(index):
 	targets = getTargetList()
@@ -198,7 +201,7 @@ class TargetCameraPanel(bpy.types.Panel):
 			down.currentIndex = i
 			delete = row.operator("animation.delete_target", icon = 'X', text = "")
 			delete.currentIndex = i
-		box.operator("animation.new_target_object", icon = 'PLUS', text = "New Target From Active")
+		box.operator("animation.new_target_object", icon = 'PLUS')
 			
 		layout.operator("animation.select_target_movement_camera")
 		
@@ -225,7 +228,7 @@ class SelectTargetMovementCamera(bpy.types.Operator):
 		
 class SetupTargetObject(bpy.types.Operator):
 	bl_idname = "animation.new_target_object"
-	bl_label = "New Target From Active"
+	bl_label = "New Targets From Selection"
 	
 	def execute(self, context):
 		newTarget()

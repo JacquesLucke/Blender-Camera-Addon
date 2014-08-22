@@ -163,4 +163,7 @@ def slowAnimationOnEachKeyframe(object, dataPath):
 					keyframe.handle_right.y = keyframe.co.y
 	except:
 		print("can't change keyframes")
+		
+def getSelectedObjects():
+	return bpy.context.selected_objects
 					
