@@ -123,17 +123,16 @@ def createTravelAnimation():
 		movement["travel"] = float(i + 1)
 		movement.keyframe_insert(data_path='["travel"]', frame = i * 50 + 1)
 		
-	for keyframe in movement.animation_data.action.fcurves[0].keyframe_points:
-		keyframe.handle_left.y = keyframe.co.y
-		keyframe.handle_right.y = keyframe.co.y
+	slowAnimationOnEachKeyframe(movement, '["travel"]')
 		
 def getTargetList():
 	movement = getMovementEmpty()
 	targets = []
 	for i in range(getTargetAmount()):
 		empty = getNthTargetEmpty(i)
-		if empty.parent is not None:
-			targets.append(empty.parent)
+		if hasattr(empty, "parent"):
+			if empty.parent is not None:
+				targets.append(empty.parent)
 	return targets
 		
 def getNthTargetEmpty(n):
@@ -146,6 +145,7 @@ def getTargetAmount():
 	return math.floor(len(movement.constraints) / 2)
 	
 def cleanupScene():
+	clearAnimation(getMovementEmpty(), '["travel"]')
 	deselectAll()
 	for object in bpy.context.scene.objects:
 		if object.get(deleteOnCleanup) == "yes":

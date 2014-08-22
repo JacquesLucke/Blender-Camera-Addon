@@ -146,3 +146,22 @@ def textToName():
 		if hasattr(object.data, "body"):
 			object.name = object.data.body
 	
+def clearAnimation(object, dataPath):
+	try:
+		for fcurve in object.animation_data.action.fcurves:
+			if fcurve.data_path == dataPath:
+				for keyframe in fcurve.keyframe_points:
+					object.keyframe_delete(dataPath, frame = keyframe.co.x)
+	except:
+		print("can't delete animation")
+		
+def slowAnimationOnEachKeyframe(object, dataPath):
+	try:
+		for fcurve in object.animation_data.action.fcurves:
+			if fcurve.data_path == dataPath:
+				for keyframe in fcurve.keyframe_points:
+					keyframe.handle_left.y = keyframe.co.y
+					keyframe.handle_right.y = keyframe.co.y
+	except:
+		print("can't change keyframes")
+					
