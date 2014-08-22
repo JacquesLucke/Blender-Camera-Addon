@@ -79,6 +79,10 @@ def createConstraintSet(target):
 	driver = newDriver(movement, 'constraints["' + rotationConstraint.name + '"].influence')
 	linkFloatPropertyToDriver(driver, "var", movement, 'constraints["' + locationConstraint.name + '"].influence')
 	driver.expression = "var"
+	
+def getTargetAmount():
+	movement = getMovementEmpty()
+	return len(movement.constraints) / 2
 
 # interface
 
@@ -98,6 +102,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		
 		layout.operator("animation.select_target_movement_camera")
 		layout.operator("animation.setup_target_object")
+		layout.label("targets: " + str(getTargetAmount()))
 		
 	
 # operators
