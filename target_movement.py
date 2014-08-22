@@ -145,6 +145,14 @@ class TargetCameraPanel(bpy.types.Panel):
 		layout.label("targets: " + str(getTargetAmount()))
 		layout.prop(movement, '["travel"]', text = "Travel", slider = False)
 		
+		box = layout.box()
+		targetList = getTargetList()
+		for i in range(getTargetAmount()):
+			row = box.split(percentage=0.6)
+			row.label(targetList[i].name)
+			row.operator("animation.dummy", icon = 'TRIA_UP', text = "")
+			row.operator("animation.dummy", icon = 'TRIA_DOWN', text = "")
+		
 		layout.operator("animation.dummy")
 		
 	
