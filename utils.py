@@ -1,5 +1,13 @@
 import bpy
 
+def newEmpty(name = "Empty", location = [0, 0, 0], hide = False):
+	bpy.ops.object.empty_add(location = location, type = "PLAIN_AXES")
+	empty = bpy.context.object
+	empty.name = name
+	if hide:
+		bpy.ops.object.hide_view_set(unselected = False)
+	return empty
+
 def setTrackTo(child, trackTo):
 	deselectAll()
 	child.select = True
@@ -11,6 +19,12 @@ def setParent(child, parent):
 	child.select = True
 	setActive(parent)
 	bpy.ops.object.parent_set(type = "OBJECT", keep_transform = True)
+	
+def setParentWithoutInverse(child, parent):
+	deselectAll()
+	child.select = True
+	setActive(parent)
+	bpy.ops.object.parent_no_inverse_set()
 	
 def setCustomProperty(object, propertyName, value, min = -100000000.0, max = 100000000.0):
 	object[propertyName] = value
