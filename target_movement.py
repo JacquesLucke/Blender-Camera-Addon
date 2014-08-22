@@ -67,6 +67,16 @@ def deleteTarget(index):
 	targets = getTargetList()
 	del targets[index]
 	createFullAnimation(targets)
+	
+def moveTargetUp(index):
+	if index > 0:
+		targets = getTargetList()
+		targets.insert(index-1, targets.pop(index))
+		createFullAnimation(targets)
+def moveTargetDown(index):
+	targets = getTargetList()
+	targets.insert(index+1, targets.pop(index))
+	createFullAnimation(targets)
 		
 def createFullAnimation(targetList):
 	cleanupScene()
@@ -180,8 +190,10 @@ class TargetCameraPanel(bpy.types.Panel):
 		for i in range(len(targetList)):
 			row = box.split(percentage=0.6, align = True)
 			row.label(targetList[i].name)
-			row.operator("animation.dummy", icon = 'TRIA_UP', text = "")
-			row.operator("animation.dummy", icon = 'TRIA_DOWN', text = "")
+			up = row.operator("animation.move_target_up", icon = 'TRIA_UP', text = "")
+			up.currentIndex = i
+			down = row.operator("animation.move_target_down", icon = 'TRIA_DOWN', text = "")
+			down.currentIndex = i
 			delete = row.operator("animation.delete_target", icon = 'X', text = "")
 			delete.currentIndex = i
 		box.operator("animation.new_target_object", icon = 'PLUS', text = "New Target From Active")
@@ -244,12 +256,31 @@ class TextToNameOperator(bpy.types.Operator):
 		textToName()
 		return{"FINISHED"}
 		
+class MoveTargetUp(bpy.types.Operator):
+	bl_idname = "animation.move_target_up"
+	bl_label = "Move Target Up"
+	currentIndex = bpy.props.IntProperty()
+	
+	def execute(self, context):
+		moveTargetUp(self.currentIndex)
+		return{"FINISHED"}
+		
+class MoveTargetDown(bpy.types.Operator):
+	bl_idname = "animation.move_target_down"
+	bl_label = "Move Target Down"
+	currentIndex = bpy.props.IntProperty()
+	
+	def execute(self, context):
+		moveTargetDown(self.currentIndex)
+		return{"FINISHED"}
+		
 class dummy(bpy.types.Operator):
 	bl_idname = "animation.dummy"
 	bl_label = "dummy"
+	currentIndex = bpy.props.IntProperty()
 	
 	def execute(self, context):
-		textToName()
+		moveTargetUp(self.currentIndex)
 		return{"FINISHED"}
 
 

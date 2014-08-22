@@ -142,7 +142,6 @@ def deleteAllConstraints(object):
 		
 def textToName():
 	for object in bpy.data.objects:
-		print(object.name)
 		if hasattr(object.data, "body"):
 			object.name = object.data.body
 	
