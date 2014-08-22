@@ -96,7 +96,7 @@ def createTravelToConstraintDrivers():
 def createTravelAnimation():
 	movement = getMovementEmpty()
 	
-	for i in range(math.floor(getTargetAmount())):
+	for i in range(getTargetAmount()):
 		movement["travel"] = float(i + 1)
 		movement.keyframe_insert(data_path='["travel"]', frame = i * 50 + 1)
 		
@@ -104,10 +104,22 @@ def createTravelAnimation():
 		keyframe.handle_left.y = keyframe.co.y
 		keyframe.handle_right.y = keyframe.co.y
 		
+def getTargetList():
+	movement = getMovementEmpty()
+	targets = []
+	for i in range(getTargetAmount()):
+		targets.append(getNthTargetEmpty(i).parent)
+	print(targets)
+	return targets
+		
+def getNthTargetEmpty(n):
+	movement = getMovementEmpty()
+	return movement.constraints[n*2].target
+		
 	
 def getTargetAmount():
 	movement = getMovementEmpty()
-	return len(movement.constraints) / 2
+	return math.floor(len(movement.constraints) / 2)
 
 # interface
 
@@ -132,6 +144,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		layout.operator("animation.setup_target_object")
 		layout.label("targets: " + str(getTargetAmount()))
 		layout.prop(movement, '["travel"]', text = "Travel", slider = False)
+		
+		layout.operator("animation.dummy")
 		
 	
 # operators
@@ -158,6 +172,14 @@ class SetupTargetObject(bpy.types.Operator):
 	
 	def execute(self, context):
 		setupTargetObject()
+		return{"FINISHED"}
+		
+class dummy(bpy.types.Operator):
+	bl_idname = "animation.dummy"
+	bl_label = "dummy"
+	
+	def execute(self, context):
+		print(getTargetList())
 		return{"FINISHED"}
 
 
