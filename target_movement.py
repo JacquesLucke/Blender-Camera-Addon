@@ -40,6 +40,13 @@ def isTargetCamera(camera):
 		if camera.get(cameraRigPropertyName) == targetCameraType:
 			return True
 	return False
+	
+def selectTargetCamera():
+	camera = getTargetCamera()
+	if camera:
+		deselectAll()
+		camera.select = True
+		setActive(camera)
 
 # interface
 
@@ -56,6 +63,8 @@ class TargetCameraPanel(bpy.types.Panel):
 	
 	def draw(self, context):
 		layout = self.layout
+		
+		layout.operator("animation.select_target_movement_camera")
 	
 # operators
 		
@@ -65,6 +74,14 @@ class AddTargetMovementCamera(bpy.types.Operator):
 	
 	def execute(self, context):
 		insertTargetMovementCamera()
+		return{"FINISHED"}
+		
+class SelectTargetMovementCamera(bpy.types.Operator):
+	bl_idname = "animation.select_target_movement_camera"
+	bl_label = "Select Target Camera"
+	
+	def execute(self, context):
+		selectTargetCamera()
 		return{"FINISHED"}
 
 
