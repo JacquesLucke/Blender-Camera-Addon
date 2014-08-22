@@ -9,7 +9,7 @@ targetCameraSaver = None
 def insertTargetMovementCamera():
 	if not getTargetCamera():
 		camera = newCamera()
-		movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
+		movement = newMovementEmpty()
 		
 		setParentWithoutInverse(camera, movement)
 		camera.location.z = 4
@@ -22,6 +22,11 @@ def newCamera():
 	camera.name = "Target Camera"
 	camera.rotation_euler = [0, 0, 0]
 	return camera
+	
+def newMovementEmpty():
+	movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
+	setCustomProperty(movement, "travel", 0.0, min = 0.0)
+	return movement
 
 def getTargetCamera():
 	global targetCameraSaver
