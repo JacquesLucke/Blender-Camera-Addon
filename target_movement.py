@@ -41,12 +41,39 @@ def isTargetCamera(camera):
 			return True
 	return False
 	
+def getMovementEmpty():
+	return getTargetCamera().parent
+	
 def selectTargetCamera():
 	camera = getTargetCamera()
 	if camera:
 		deselectAll()
 		camera.select = True
 		setActive(camera)
+		
+def setupTargetObject():
+	object = getActive()
+	
+	bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
+	center = newEmpty(name = "center")
+	setParentWithoutInverse(center, object)
+	
+	createConstraintSet(center)
+	
+def createConstraintSet(target):
+	movement = getMovementEmpty()
+	locationConstraint = movement.constraints.new(type = "COPY_LOCATION")
+	rotationConstraint = movement.constraints.new(type = "COPY_ROTATION")
+	locationConstraint.target = target
+	rotationConstraint.target = target
+	locationConstraint.influence = 0
+	rotationConstraint.influence = 0
+	locationConstraint.show_expanded = False
+	rotationConstraint.show_expanded = False
+	
+	driver = newDriver(movement, 'constraints["' + rotationConstraint.name + '"].influence')
+	linkFloatPropertyToDriver(driver, "var", movement, 'constraints["' + locationConstraint.name + '"].influence')
+	driver.expression = "var"
 
 # interface
 
@@ -65,6 +92,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		layout = self.layout
 		
 		layout.operator("animation.select_target_movement_camera")
+		layout.operator("animation.setup_target_object")
+		
 	
 # operators
 		
@@ -82,6 +111,14 @@ class SelectTargetMovementCamera(bpy.types.Operator):
 	
 	def execute(self, context):
 		selectTargetCamera()
+		return{"FINISHED"}
+		
+class SetupTargetObject(bpy.types.Operator):
+	bl_idname = "animation.setup_target_object"
+	bl_label = "Setup Target Object"
+	
+	def execute(self, context):
+		setupTargetObject()
 		return{"FINISHED"}
 
 
