@@ -269,7 +269,7 @@ class SelectCameraOperator(bpy.types.Operator):
 		selectCamera()
 		return{"FINISHED"}
 		
-class SelectCameraOperator(bpy.types.Operator):
+class DeleteCameraSetupOperator(bpy.types.Operator):
 	bl_idname = "animation.delete_rotating_camera"
 	bl_label = "Delete Rotating Camera"
 	
