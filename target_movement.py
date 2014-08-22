@@ -25,6 +25,7 @@ def insertTargetMovementCamera():
 		setSelectedObjects(oldSelection)
 		newTarget()
 		
+		movement.hide = True
 		
 
 def newCamera():
@@ -109,6 +110,8 @@ def setupTargetObject(object):
 	setParentWithoutInverse(center, object)
 	setCustomProperty(center, deleteOnCleanup, "yes")
 	createConstraintSet(center)
+	
+	center.hide = True
 	
 	
 def createConstraintSet(target):
