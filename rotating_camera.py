@@ -136,7 +136,7 @@ def getCurrentSettingsObjectOrNothing():
 	
 def isPartOfRotatingCamera(object):
 	if object:
-		if settingsObjectPropertyName in object:
+		if object.get(cameraRigPropertyName) == rotatingCameraType:
 			return True
 	return False
 
