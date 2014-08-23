@@ -5,7 +5,8 @@ cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
 deleteOnCleanup = "Delete on Cleanup"
 
-targetCameraSaver = None
+
+targetCameraName = "TARGET CAMERA"
 
 def insertTargetMovementCamera():
 	if not getTargetCamera():
@@ -31,7 +32,7 @@ def insertTargetMovementCamera():
 def newCamera():
 	bpy.ops.object.camera_add(location = [0, 0, 0])
 	camera = bpy.context.object
-	camera.name = "Target Camera"
+	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
 	return camera
 	
@@ -41,20 +42,11 @@ def newMovementEmpty():
 	return movement
 
 def getTargetCamera():
-	global targetCameraSaver
-	if targetCameraSaver is not None:
-		if not targetCameraSaver.get(cameraRigPropertyName) == targetCameraType:
-			targetCameraSaver = None
-	if targetCameraSaver is None:
-		for object in bpy.data.objects:
-			if isTargetCamera(object):
-				targetCameraSaver = object
-	return targetCameraSaver
-				
+	return bpy.data.objects.get(targetCameraName)
 			
-def isTargetCamera(camera):
-	if camera:
-		if camera.get(cameraRigPropertyName) == targetCameraType:
+def isTargetCamera(object):
+	if object:
+		if object.get(cameraRigPropertyName) == targetCameraType:
 			return True
 	return False
 	
