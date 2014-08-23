@@ -11,7 +11,8 @@ cameraPropertyName = "Camera"
 
 rotatingCameraType = "ROTATING" 
 
-#Inserting the full camera setup 
+
+# Inserting the full camera setup 
 ################################
 
 def insertRotatingCamera():
@@ -120,7 +121,7 @@ def linkFromSettingsObjectToAll(mainControler, targetControler, positionControle
 	setCustomProperty(rotationControler, cameraPropertyName, camera.name)
 
 
-#some utilities 
+# some utilities 
 ################################
 	
 def insertTimeBasedRotationAnimation():
@@ -278,7 +279,7 @@ class DeleteCameraSetupOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 		
-		
+# register		
 		
 def register():
 	bpy.utils.register_module(__name__)

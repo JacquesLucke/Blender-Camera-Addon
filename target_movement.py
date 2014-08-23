@@ -5,8 +5,8 @@ cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
 deleteOnCleanup = "Delete on Cleanup"
 
-
 targetCameraName = "TARGET CAMERA"
+
 
 # insert basic camera setup
 #################################
@@ -40,6 +40,7 @@ def newMovementEmpty():
 	setCustomProperty(movement, "travel", 0.0, min = 0.0)
 	return movement
 	
+	
 # create animation
 ###########################
 	
@@ -54,6 +55,16 @@ def createFullAnimation(targetList):
 		
 	createTravelToConstraintDrivers()
 	createTravelAnimation()
+	
+def cleanupScene():
+	clearAnimation(getMovementEmpty(), '["travel"]')
+	deselectAll()
+	for object in bpy.context.scene.objects:
+		if object.get(deleteOnCleanup) == "yes":
+			object.select = True
+			object.hide = False
+				
+	bpy.ops.object.delete()
 		
 def setupTargetObject(object):
 	deselectAll()
@@ -66,7 +77,6 @@ def setupTargetObject(object):
 	createConstraintSet(center)
 	
 	center.hide = True
-	
 	
 def createConstraintSet(target):
 	movement = getMovementEmpty()
@@ -101,16 +111,7 @@ def createTravelAnimation():
 		movement.keyframe_insert(data_path='["travel"]', frame = i * 50 + 1)
 		
 	slowAnimationOnEachKeyframe(movement, '["travel"]')
-	
-def cleanupScene():
-	clearAnimation(getMovementEmpty(), '["travel"]')
-	deselectAll()
-	for object in bpy.context.scene.objects:
-		if object.get(deleteOnCleanup) == "yes":
-			object.select = True
-			object.hide = False
-				
-	bpy.ops.object.delete()
+
 	
 # target operations
 #############################
@@ -155,6 +156,9 @@ def selectTargetCamera():
 		camera.select = True
 		setActive(camera)
 		
+def getTargetAmount():
+	return len(getTargetList())
+	
 def getTargetList():
 	movement = getMovementEmpty()
 	targets = []
@@ -166,11 +170,11 @@ def getTargetList():
 					targets.append(targetEmpty.parent)
 	return targets
 
-def getTargetAmount():
-	return len(getTargetList())
+		
 
-				
+		
 # interface
+#############################
 
 class TargetCameraPanel(bpy.types.Panel):
 	bl_space_type = "VIEW_3D"
@@ -212,6 +216,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		
 	
 # operators
+#############################
 		
 class AddTargetMovementCamera(bpy.types.Operator):
 	bl_idname = "camera_tools.add_target_movement_camera"
@@ -285,6 +290,9 @@ class dummy(bpy.types.Operator):
 		moveTargetUp(self.currentIndex)
 		return{"FINISHED"}
 
+		
+# register
+#############################
 
 def register():
 	bpy.utils.register_module(__name__)
