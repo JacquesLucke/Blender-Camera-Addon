@@ -165,6 +165,7 @@ def cleanupScene():
 	for object in bpy.context.scene.objects:
 		if object.get(deleteOnCleanup) == "yes":
 			object.select = True
+			object.hide = False
 				
 	bpy.ops.object.delete()
 
