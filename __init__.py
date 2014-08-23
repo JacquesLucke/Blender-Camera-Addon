@@ -36,6 +36,7 @@ class CameraToolsPanel(bpy.types.Panel):
 		col.operator("camera_tools.set_active_camera")
 		col.operator("camera_tools.text_to_name")
 		
+		
 # operators
 
 class SetActiveCameraOperator(bpy.types.Operator):

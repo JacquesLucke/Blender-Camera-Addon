@@ -8,79 +8,41 @@ deleteOnCleanup = "Delete on Cleanup"
 
 targetCameraName = "TARGET CAMERA"
 
-def insertTargetMovementCamera():
-	if not getTargetCamera():
-		oldSelection = getSelectedObjects()
-	
-		camera = newCamera()
-		movement = newMovementEmpty()
-		
-		setParentWithoutInverse(camera, movement)
-		camera.location.z = 4
-		
-		setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
-		
-		setActive(camera)
-		bpy.context.object.data.dof_object = movement
-		
-		setSelectedObjects(oldSelection)
-		newTarget()
-		
-		movement.hide = True
-		
+# insert basic camera setup
+#################################
 
+def insertTargetMovementCamera():
+	oldSelection = getSelectedObjects()
+
+	camera = newCamera()
+	movement = newMovementEmpty()
+	
+	setParentWithoutInverse(camera, movement)
+	camera.location.z = 4
+	setActive(camera)
+	bpy.context.object.data.dof_object = movement
+	
+	setSelectedObjects(oldSelection)
+	newTargets()
+	
+	movement.hide = True
+	
 def newCamera():
 	bpy.ops.object.camera_add(location = [0, 0, 0])
 	camera = bpy.context.object
 	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
+	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
 	return camera
 	
 def newMovementEmpty():
 	movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
 	setCustomProperty(movement, "travel", 0.0, min = 0.0)
 	return movement
-
-def getTargetCamera():
-	return bpy.data.objects.get(targetCameraName)
-			
-def isTargetCamera(object):
-	if object:
-		if object.get(cameraRigPropertyName) == targetCameraType:
-			return True
-	return False
 	
-def getMovementEmpty():
-	return getTargetCamera().parent
+# create animation
+###########################
 	
-def selectTargetCamera():
-	camera = getTargetCamera()
-	if camera:
-		deselectAll()
-		camera.select = True
-		setActive(camera)
-		
-def newTarget():
-	for object in getSelectedObjects():
-		targets = getTargetList()
-		targets.append(object)
-		createFullAnimation(targets)
-	
-def deleteTarget(index):
-	targets = getTargetList()
-	del targets[index]
-	createFullAnimation(targets)
-	
-def moveTargetUp(index):
-	if index > 0:
-		targets = getTargetList()
-		targets.insert(index-1, targets.pop(index))
-		createFullAnimation(targets)
-def moveTargetDown(index):
-	targets = getTargetList()
-	targets.insert(index+1, targets.pop(index))
-	createFullAnimation(targets)
-		
 def createFullAnimation(targetList):
 	cleanupScene()
 
@@ -125,7 +87,7 @@ def createTravelToConstraintDrivers():
 	movement = getMovementEmpty()
 	constraints = movement.constraints
 	
-	for i in range(math.floor(getTargetAmount())):
+	for i in range(getTargetAmount()):
 		constraint = constraints[i*2]
 		driver = newDriver(movement, 'constraints["' + constraint.name + '"].influence')
 		linkFloatPropertyToDriver(driver, "var", movement, '["travel"]')
@@ -139,25 +101,6 @@ def createTravelAnimation():
 		movement.keyframe_insert(data_path='["travel"]', frame = i * 50 + 1)
 		
 	slowAnimationOnEachKeyframe(movement, '["travel"]')
-		
-def getTargetList():
-	movement = getMovementEmpty()
-	targets = []
-	for i in range(getTargetAmount()):
-		empty = getNthTargetEmpty(i)
-		if hasattr(empty, "parent"):
-			if empty.parent is not None:
-				targets.append(empty.parent)
-	return targets
-		
-def getNthTargetEmpty(n):
-	movement = getMovementEmpty()
-	return movement.constraints[n*2].target
-		
-	
-def getTargetAmount():
-	movement = getMovementEmpty()
-	return math.floor(len(movement.constraints) / 2)
 	
 def cleanupScene():
 	clearAnimation(getMovementEmpty(), '["travel"]')
@@ -168,6 +111,63 @@ def cleanupScene():
 			object.hide = False
 				
 	bpy.ops.object.delete()
+	
+# target operations
+#############################
+
+def newTargets():
+	targets = getTargetList()
+	for object in getSelectedObjects():
+		targets.append(object)
+	createFullAnimation(targets)
+	
+def deleteTarget(index):
+	targets = getTargetList()
+	del targets[index]
+	createFullAnimation(targets)
+	
+def moveTargetUp(index):
+	if index > 0:
+		targets = getTargetList()
+		targets.insert(index-1, targets.pop(index))
+		createFullAnimation(targets)
+def moveTargetDown(index):
+	targets = getTargetList()
+	targets.insert(index+1, targets.pop(index))
+	createFullAnimation(targets)
+	
+	
+# utilities
+#############################
+
+def getTargetCamera():
+	return bpy.data.objects.get(targetCameraName)
+def getMovementEmpty():
+	return getTargetCamera().parent
+			
+def isTargetCamera(object):
+	return object.name == targetCameraName
+	
+def selectTargetCamera():
+	camera = getTargetCamera()
+	if camera:
+		deselectAll()
+		camera.select = True
+		setActive(camera)
+		
+def getTargetList():
+	movement = getMovementEmpty()
+	targets = []
+	for constraint in movement.constraints:
+		targetEmpty = constraint.target
+		if hasattr(targetEmpty, "parent"):
+			if targetEmpty.parent is not None:
+				if targetEmpty.parent not in targets:
+					targets.append(targetEmpty.parent)
+	return targets
+
+def getTargetAmount():
+	return len(getTargetList())
 
 				
 # interface
@@ -238,7 +238,7 @@ class SetupTargetObject(bpy.types.Operator):
 	bl_label = "New Targets From Selection"
 	
 	def execute(self, context):
-		newTarget()
+		newTargets()
 		return{"FINISHED"}
 		
 class DeleteTargetOperator(bpy.types.Operator):
