@@ -190,7 +190,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		movement = getMovementEmpty()
 		
 		row = layout.row(align = True)
-		row.operator("animation.recalculate_animation", text = "Recalculate")
+		row.operator("camera_tools.recalculate_animation", text = "Recalculate")
 		row.prop(movement, '["travel"]', text = "Travel", slider = False)
 		
 		box = layout.box()
@@ -198,23 +198,23 @@ class TargetCameraPanel(bpy.types.Panel):
 		for i in range(len(targetList)):
 			row = box.split(percentage=0.6, align = True)
 			row.label(targetList[i].name)
-			up = row.operator("animation.move_target_up", icon = 'TRIA_UP', text = "")
+			up = row.operator("camera_tools.move_target_up", icon = 'TRIA_UP', text = "")
 			up.currentIndex = i
-			down = row.operator("animation.move_target_down", icon = 'TRIA_DOWN', text = "")
+			down = row.operator("camera_tools.move_target_down", icon = 'TRIA_DOWN', text = "")
 			down.currentIndex = i
-			delete = row.operator("animation.delete_target", icon = 'X', text = "")
+			delete = row.operator("camera_tools.delete_target", icon = 'X', text = "")
 			delete.currentIndex = i
-		box.operator("animation.new_target_object", icon = 'PLUS')
+		box.operator("camera_tools.new_target_object", icon = 'PLUS')
 			
-		layout.operator("animation.select_target_movement_camera")
+		layout.operator("camera_tools.select_target_movement_camera")
 		
-		#layout.operator("animation.dummy")
+		#layout.operator("camera_tools.dummy")
 		
 	
 # operators
 		
 class AddTargetMovementCamera(bpy.types.Operator):
-	bl_idname = "animation.add_target_movement_camera"
+	bl_idname = "camera_tools.add_target_movement_camera"
 	bl_label = "Add Target Camera"
 	
 	@classmethod
@@ -226,7 +226,7 @@ class AddTargetMovementCamera(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SelectTargetMovementCamera(bpy.types.Operator):
-	bl_idname = "animation.select_target_movement_camera"
+	bl_idname = "camera_tools.select_target_movement_camera"
 	bl_label = "Select Target Camera"
 	
 	def execute(self, context):
@@ -234,7 +234,7 @@ class SelectTargetMovementCamera(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SetupTargetObject(bpy.types.Operator):
-	bl_idname = "animation.new_target_object"
+	bl_idname = "camera_tools.new_target_object"
 	bl_label = "New Targets From Selection"
 	
 	def execute(self, context):
@@ -242,7 +242,7 @@ class SetupTargetObject(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class DeleteTargetOperator(bpy.types.Operator):
-	bl_idname = "animation.delete_target"
+	bl_idname = "camera_tools.delete_target"
 	bl_label = "Delete Target"
 	currentIndex = bpy.props.IntProperty()
 	
@@ -251,7 +251,7 @@ class DeleteTargetOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class RecalculateAnimationOperator(bpy.types.Operator):
-	bl_idname = "animation.recalculate_animation"
+	bl_idname = "camera_tools.recalculate_animation"
 	bl_label = "Recalculate Animation"
 	
 	def execute(self, context):
@@ -259,7 +259,7 @@ class RecalculateAnimationOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class MoveTargetUp(bpy.types.Operator):
-	bl_idname = "animation.move_target_up"
+	bl_idname = "camera_tools.move_target_up"
 	bl_label = "Move Target Up"
 	currentIndex = bpy.props.IntProperty()
 	
@@ -268,7 +268,7 @@ class MoveTargetUp(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class MoveTargetDown(bpy.types.Operator):
-	bl_idname = "animation.move_target_down"
+	bl_idname = "camera_tools.move_target_down"
 	bl_label = "Move Target Down"
 	currentIndex = bpy.props.IntProperty()
 	
@@ -277,7 +277,7 @@ class MoveTargetDown(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class dummy(bpy.types.Operator):
-	bl_idname = "animation.dummy"
+	bl_idname = "camera_tools.dummy"
 	bl_label = "dummy"
 	currentIndex = bpy.props.IntProperty()
 	

@@ -29,17 +29,17 @@ class CameraToolsPanel(bpy.types.Panel):
 		layout = self.layout
 		
 		col = layout.column(align = True)
-		col.operator("animation.add_rotating_camera")
-		col.operator("animation.add_target_movement_camera")
+		col.operator("camera_tools.add_rotating_camera")
+		col.operator("camera_tools.add_target_movement_camera")
 		
 		col = layout.column(align = True)
-		col.operator("animation.set_active_camera")
-		col.operator("animation.text_to_name")
+		col.operator("camera_tools.set_active_camera")
+		col.operator("camera_tools.text_to_name")
 		
 # operators
 
 class SetActiveCameraOperator(bpy.types.Operator):
-	bl_idname = "animation.set_active_camera"
+	bl_idname = "camera_tools.set_active_camera"
 	bl_label = "Set Active Camera"
 	
 	def execute(self, context):
@@ -47,7 +47,7 @@ class SetActiveCameraOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class TextToNameOperator(bpy.types.Operator):
-	bl_idname = "animation.text_to_name"
+	bl_idname = "camera_tools.text_to_name"
 	bl_label = "Text to Name"
 	
 	def execute(self, context):

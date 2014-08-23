@@ -205,24 +205,24 @@ class CameraSettingsPanel(bpy.types.Panel):
 			col = layout.column(align = True)
 			col.label("Select")
 			row = col.row(align = True)
-			row.operator("animation.select_main_controler", text = "Main")
-			row.operator("animation.select_target_controler", text = "Target")
+			row.operator("camera_tools.select_main_controler", text = "Main")
+			row.operator("camera_tools.select_target_controler", text = "Target")
 			row = col.row(align = True)
-			row.operator("animation.select_position_controler", text = "Circle")
-			row.operator("animation.select_camera", text = "Camera")
+			row.operator("camera_tools.select_position_controler", text = "Circle")
+			row.operator("camera_tools.select_camera", text = "Camera")
 			
 			col = layout.column(align = True)
-			col.operator("animation.insert_time_rotation_animation")
+			col.operator("camera_tools.insert_time_rotation_animation")
 			col.prop(settingsObject, '["rotationProgress"]', text = "Rotations", slider = False)
 			
 			col = layout.column(align = True)
-			col.operator("animation.delete_rotating_camera", text = "Delete Setup")
+			col.operator("camera_tools.delete_rotating_camera", text = "Delete Setup")
 		
 		
 # operators
 		
 class AddRotatingCameraOperator(bpy.types.Operator):
-	bl_idname = "animation.add_rotating_camera"
+	bl_idname = "camera_tools.add_rotating_camera"
 	bl_label = "Add Rotating Camera"
 	
 	def execute(self, context):
@@ -230,7 +230,7 @@ class AddRotatingCameraOperator(bpy.types.Operator):
 		return{"FINISHED"}
 
 class InsertTimeBasedRotationAnimation(bpy.types.Operator):
-	bl_idname = "animation.insert_time_rotation_animation"
+	bl_idname = "camera_tools.insert_time_rotation_animation"
 	bl_label = "Auto Animation"
 	
 	def execute(self, context):
@@ -238,7 +238,7 @@ class InsertTimeBasedRotationAnimation(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SelectTargetControlerOperator(bpy.types.Operator):
-	bl_idname = "animation.select_target_controler"
+	bl_idname = "camera_tools.select_target_controler"
 	bl_label = "Select Target"
 	
 	def execute(self, context):
@@ -246,7 +246,7 @@ class SelectTargetControlerOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SelectMainControlerOperator(bpy.types.Operator):
-	bl_idname = "animation.select_main_controler"
+	bl_idname = "camera_tools.select_main_controler"
 	bl_label = "Select Main"
 	
 	def execute(self, context):
@@ -254,7 +254,7 @@ class SelectMainControlerOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SelectPositionControlerOperator(bpy.types.Operator):
-	bl_idname = "animation.select_position_controler"
+	bl_idname = "camera_tools.select_position_controler"
 	bl_label = "Select Circle"
 	
 	def execute(self, context):
@@ -262,7 +262,7 @@ class SelectPositionControlerOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SelectCameraOperator(bpy.types.Operator):
-	bl_idname = "animation.select_camera"
+	bl_idname = "camera_tools.select_camera"
 	bl_label = "Select Camera"
 	
 	def execute(self, context):
@@ -270,7 +270,7 @@ class SelectCameraOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class DeleteCameraSetupOperator(bpy.types.Operator):
-	bl_idname = "animation.delete_rotating_camera"
+	bl_idname = "camera_tools.delete_rotating_camera"
 	bl_label = "Delete Rotating Camera"
 	
 	def execute(self, context):
