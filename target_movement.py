@@ -5,6 +5,7 @@ cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
 deleteOnCleanup = "Delete on Cleanup"
 autoAnimationType = "Auto Animation Type"
+keyframeDistancePropertyName = "Keyframe Distance"
 
 targetCameraName = "TARGET CAMERA"
 
@@ -37,6 +38,7 @@ def newCamera():
 	camera.rotation_euler = [0, 0, 0]
 	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
 	setCustomProperty(camera, autoAnimationType, "full")
+	setCustomProperty(camera, keyframeDistancePropertyName, 40, min = 1)
 	return camera
 	
 def newMovementEmpty():
@@ -120,7 +122,7 @@ def createTravelAnimation():
 	
 	for i in range(getTargetAmount()):
 		movement["travel"] = float(i + 1)
-		movement.keyframe_insert(data_path='["travel"]', frame = i * 50 + 1)
+		movement.keyframe_insert(data_path='["travel"]', frame = i * getKeyframeDistance() + 1)
 		
 	slowAnimationOnEachKeyframe(movement, '["travel"]')
 
@@ -214,6 +216,9 @@ def useFullAutoAnimation():
 	targetCamera = getTargetCamera()
 	if targetCamera.get(autoAnimationType) == "full": return True
 	else: return False
+	
+def getKeyframeDistance():
+	return getTargetCamera().get(keyframeDistancePropertyName)
 		
 
 		
@@ -240,9 +245,11 @@ class TargetCameraPanel(bpy.types.Panel):
 		fullAutoAnimation = useFullAutoAnimation()
 		
 		col = layout.column(align = True)
-		col.operator("camera_tools.recalculate_animation", text = "Recalculate")
+		recalculate = col.operator("camera_tools.recalculate_animation", text = "Recalculate")
 			
-		if not fullAutoAnimation:
+		if fullAutoAnimation:
+			col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False)
+		else:
 			col.operator("camera_tools.smooth_keyframes")
 			
 		row = col.row(align = True)

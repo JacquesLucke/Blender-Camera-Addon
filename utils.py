@@ -26,7 +26,7 @@ def setParentWithoutInverse(child, parent):
 	setActive(parent)
 	bpy.ops.object.parent_no_inverse_set()
 	
-def setCustomProperty(object, propertyName, value, min = -100000000.0, max = 100000000.0):
+def setCustomProperty(object, propertyName, value, min = -1000000.0, max = 1000000.0):
 	object[propertyName] = value
 	object["_RNA_UI"] = { propertyName: {"min": min, "max": max} } 
 	
