@@ -6,6 +6,7 @@ targetCameraType = "TARGET"
 deleteOnCleanup = "Delete on Cleanup"
 autoAnimationType = "Auto Animation Type"
 keyframeDistancePropertyName = "Keyframe Distance"
+cameraDistanceFactorPropertyName = "Camera Distance Factor"
 
 targetCameraName = "TARGET CAMERA"
 
@@ -158,8 +159,13 @@ def newTargets():
 		
 	selectedObjects.reverse()
 	for object in selectedObjects:
+		setupTargetData(object)
 		targets.append(object)
 	createFullAnimation(targets)
+	
+def setupTargetData(target):
+	if cameraDistanceFactorPropertyName not in target:
+		setCustomProperty(target, cameraDistanceFactorPropertyName, 1.0, min = 0)
 	
 def deleteTarget(index):
 	targets = getTargetList()
