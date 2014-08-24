@@ -215,13 +215,24 @@ def getTargetList():
 	targets = []
 	lastTarget = None
 	for constraint in movement.constraints:
-		targetEmpty = constraint.target
-		if hasattr(targetEmpty, "parent"):
-			if targetEmpty.parent is not None:
-				if targetEmpty.parent != lastTarget:
-					lastTarget = targetEmpty.parent
-					targets.append(targetEmpty.parent)
+		target = getTargetFromConstraint(constraint)
+		if target is not None and target != lastTarget:
+			lastTarget = target
+			targets.append(target)
 	return targets
+	
+def getTargetFromConstraint(constraint):
+	centerEmpty = getCenterEmptyFromConstraint(constraint)
+	return getTargetFromCenterEmpty(centerEmpty)
+	
+def getCenterEmptyFromConstraint(constraint):
+	if hasattr(constraint, "target"):
+		return constraint.target
+	return None
+	
+def getTargetFromCenterEmpty(centerEmpty):
+	if hasattr(centerEmpty, "parent"):
+		return centerEmpty.parent
 
 def useFullAutoAnimation():
 	targetCamera = getTargetCamera()
