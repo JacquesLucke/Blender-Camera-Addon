@@ -11,6 +11,8 @@ targetCameraName = "TARGET CAMERA"
 
 useListSeparator = False
 
+shouldRecalculate = False
+
 
 # insert basic camera setup
 #################################
@@ -67,6 +69,8 @@ def createFullAnimation(targetList):
 	
 	if useFullAutoAnimation(): createTravelAnimation()
 	else: movement["travel"] = 1.0
+	
+	shouldRecalculate = False
 	
 def cleanupScene():
 	deselectAll()
@@ -275,6 +279,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		box.operator("camera_tools.new_target_object", icon = 'PLUS')
 			
 		layout.operator("camera_tools.select_target_movement_camera")
+		
+		if shouldRecalculate: layout.label("You should recalculate the animation", icon = 'ERROR')
 		
 		#layout.operator("camera_tools.dummy")
 
