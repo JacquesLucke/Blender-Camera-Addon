@@ -165,7 +165,7 @@ def newTargets():
 	
 def setupTargetData(target):
 	if cameraDistanceFactorPropertyName not in target:
-		setCustomProperty(target, cameraDistanceFactorPropertyName, 1.0, min = 0)
+		setCustomProperty(target, cameraDistanceFactorPropertyName, 1, min = 0)
 	
 def deleteTarget(index):
 	targets = getTargetList()
