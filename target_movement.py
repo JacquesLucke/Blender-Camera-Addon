@@ -141,6 +141,9 @@ def moveTargetDown(index):
 # utilities
 #############################
 
+def targetCameraExists():
+	if getTargetCamera() is None: return False
+	else: return True
 def getTargetCamera():
 	return bpy.data.objects.get(targetCameraName)
 def getMovementEmpty():
@@ -185,7 +188,7 @@ class TargetCameraPanel(bpy.types.Panel):
 	
 	@classmethod
 	def poll(self, context):
-		return getTargetCamera()
+		return targetCameraExists()
 	
 	def draw(self, context):
 		layout = self.layout
@@ -224,7 +227,7 @@ class AddTargetMovementCamera(bpy.types.Operator):
 	
 	@classmethod
 	def poll(self, context):
-		return not getTargetCamera()
+		return not targetCameraExists()
 		
 	def execute(self, context):
 		insertTargetMovementCamera()
