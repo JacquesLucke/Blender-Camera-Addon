@@ -153,7 +153,9 @@ def newTargets():
 	targets = getTargetList()
 	selectedObjects = []
 	for object in getSelectedObjects():
-		selectedObjects.append(object)
+		if not (object == getTargetCamera() or object == getMovementEmpty()):
+			selectedObjects.append(object)
+		
 	selectedObjects.reverse()
 	for object in selectedObjects:
 		targets.append(object)
