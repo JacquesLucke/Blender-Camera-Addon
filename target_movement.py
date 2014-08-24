@@ -196,6 +196,10 @@ def selectTargetCamera():
 		camera.select = True
 		setActive(camera)
 		
+def selectMovementEmpty():
+	deselectAll()
+	setActive(getMovementEmpty())
+		
 def selectTarget(index):
 	deselectAll()
 	target = getTargetList()[index]
@@ -279,7 +283,10 @@ class TargetCameraPanel(bpy.types.Panel):
 			if useListSeparator: col.separator()
 		box.operator("camera_tools.new_target_object", icon = 'PLUS')
 			
-		layout.operator("camera_tools.select_target_movement_camera")
+		row = layout.row(align = True)
+		row.label("Select")
+		row.operator("camera_tools.select_target_camera", text = "Camera")
+		row.operator("camera_tools.select_movement_empty", text = "Empty")
 		
 		if shouldRecalculate: layout.label("You should recalculate the animation", icon = 'ERROR')
 		
@@ -303,12 +310,20 @@ class AddTargetMovementCamera(bpy.types.Operator):
 		insertTargetMovementCamera()
 		return{"FINISHED"}
 		
-class SelectTargetMovementCamera(bpy.types.Operator):
-	bl_idname = "camera_tools.select_target_movement_camera"
+class SelectTargetCamera(bpy.types.Operator):
+	bl_idname = "camera_tools.select_target_camera"
 	bl_label = "Select Target Camera"
 	
 	def execute(self, context):
 		selectTargetCamera()
+		return{"FINISHED"}
+		
+class SelectMovementEmpty(bpy.types.Operator):
+	bl_idname = "camera_tools.select_movement_empty"
+	bl_label = "Select Movement Empty"
+	
+	def execute(self, context):
+		selectMovementEmpty()
 		return{"FINISHED"}
 		
 class SetupTargetObject(bpy.types.Operator):
