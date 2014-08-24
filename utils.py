@@ -151,6 +151,8 @@ def clearAnimation(object, dataPath):
 			if fcurve.data_path == dataPath:
 				for keyframe in fcurve.keyframe_points:
 					object.keyframe_delete(dataPath, frame = keyframe.co.x)
+				for keyframe in fcurve.keyframe_points:
+					object.keyframe_delete(dataPath, frame = keyframe.co.x)
 	except:
 		print("can't delete animation")
 		
