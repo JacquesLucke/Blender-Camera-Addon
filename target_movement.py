@@ -8,6 +8,8 @@ autoAnimationType = "Auto Animation Type"
 
 targetCameraName = "TARGET CAMERA"
 
+useListSeparator = False
+
 
 # insert basic camera setup
 #################################
@@ -187,6 +189,11 @@ def selectTargetCamera():
 		camera.select = True
 		setActive(camera)
 		
+def selectTarget(index):
+	deselectAll()
+	target = getTargetList()[index]
+	setActive(target)
+		
 def getTargetAmount():
 	return len(getTargetList())
 	
@@ -244,16 +251,20 @@ class TargetCameraPanel(bpy.types.Panel):
 		row.prop(movement, '["travel"]', text = "Travel", slider = False)
 		
 		box = layout.box()
+		col = box.column(align = True)
 		targetList = getTargetList()
 		for i in range(len(targetList)):
-			row = box.split(percentage=0.6, align = True)
-			row.label(targetList[i].name)
+			row = col.split(percentage=0.6, align = True)
+			row.scale_y = 1.35
+			name = row.operator("camera_tools.select_target", targetList[i].name)
+			name.currentIndex = i
 			up = row.operator("camera_tools.move_target_up", icon = 'TRIA_UP', text = "")
 			up.currentIndex = i
 			down = row.operator("camera_tools.move_target_down", icon = 'TRIA_DOWN', text = "")
 			down.currentIndex = i
 			delete = row.operator("camera_tools.delete_target", icon = 'X', text = "")
 			delete.currentIndex = i
+			if useListSeparator: col.separator()
 		box.operator("camera_tools.new_target_object", icon = 'PLUS')
 			
 		layout.operator("camera_tools.select_target_movement_camera")
@@ -352,6 +363,15 @@ class SmoothKeyframes(bpy.types.Operator):
 	def execute(self, context):
 		smoothKeyframes()
 		return{"FINISHED"}		
+		
+class SelectTarget(bpy.types.Operator):
+	bl_idname = "camera_tools.select_target"
+	bl_label = "Select Target"
+	currentIndex = bpy.props.IntProperty()
+	
+	def execute(self, context):
+		selectTarget(self.currentIndex)
+		return{"FINISHED"}	
 
 class dummy(bpy.types.Operator):
 	bl_idname = "camera_tools.dummy"

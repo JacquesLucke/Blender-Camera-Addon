@@ -50,6 +50,7 @@ def getActive():
 	return bpy.context.scene.objects.active
 	
 def setActive(object):
+	object.select = True
 	bpy.context.scene.objects.active = object
 	
 def deleteSelectedObjects():
