@@ -151,7 +151,11 @@ def smoothKeyframes():
 
 def newTargets():
 	targets = getTargetList()
+	selectedObjects = []
 	for object in getSelectedObjects():
+		selectedObjects.append(object)
+	selectedObjects.reverse()
+	for object in selectedObjects:
 		targets.append(object)
 	createFullAnimation(targets)
 	
@@ -249,7 +253,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		recalculate = col.operator("camera_tools.recalculate_animation", text = "Recalculate")
 			
 		if fullAutoAnimation:
-			col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False)
+			col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False, text = "Frames per Text")
 		else:
 			col.operator("camera_tools.smooth_keyframes")
 			
