@@ -31,8 +31,6 @@ def insertTargetMovementCamera():
 	setSelectedObjects(oldSelection)
 	newTargets()
 	
-	movement.hide = True
-	
 def newCamera():
 	bpy.ops.object.camera_add(location = [0, 0, 0])
 	camera = bpy.context.object
@@ -45,6 +43,7 @@ def newCamera():
 	
 def newMovementEmpty():
 	movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
+	movement.empty_draw_size = 0.2
 	setCustomProperty(movement, "travel", 1.0, min = 1.0)
 	return movement
 	
@@ -143,8 +142,6 @@ def useAutoTravelAnimation():
 def removeAutoTravelAnimation():
 	camera = getTargetCamera()
 	camera[autoAnimationType] = "no travel"
-	removeAnimation()
-	recalculateAnimation()
 	
 def smoothKeyframes():
 	slowAnimationOnEachKeyframe(getMovementEmpty(), '["travel"]')
