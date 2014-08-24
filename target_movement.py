@@ -4,7 +4,7 @@ from utils import *
 cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
 deleteOnCleanup = "Delete on Cleanup"
-autoAnimationPropertyName = "Auto Animation"
+autoAnimationType = "Auto Animation Type"
 
 targetCameraName = "TARGET CAMERA"
 
@@ -34,7 +34,7 @@ def newCamera():
 	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
 	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
-	setCustomProperty(camera, autoAnimationPropertyName, "yes")
+	setCustomProperty(camera, autoAnimationType, "full")
 	return camera
 	
 def newMovementEmpty():
@@ -45,9 +45,13 @@ def newMovementEmpty():
 	
 # create animation
 ###########################
+
+def recalculateAnimation():
+	createFullAnimation(getTargetList())
 	
 def createFullAnimation(targetList):
 	cleanupScene()
+	if useFullAutoAnimation():  removeAnimation()
 
 	movement = getMovementEmpty()
 	deleteAllConstraints(movement)
@@ -57,18 +61,20 @@ def createFullAnimation(targetList):
 		
 	createTravelToConstraintDrivers()
 	
-	if useAutoAnimation(): createTravelAnimation()
+	if useFullAutoAnimation(): createTravelAnimation()
 	else: movement["travel"] = 1.0
 	
 def cleanupScene():
-	clearAnimation(getMovementEmpty(), '["travel"]')
 	deselectAll()
 	for object in bpy.context.scene.objects:
 		if object.get(deleteOnCleanup) == "yes":
 			object.select = True
 			object.hide = False
 				
-	bpy.ops.object.delete()
+	bpy.ops.object.delete()	
+	
+def removeAnimation():
+	clearAnimation(getMovementEmpty(), '["travel"]')
 		
 def setupTargetObject(object):
 	deselectAll()
@@ -116,6 +122,19 @@ def createTravelAnimation():
 		
 	slowAnimationOnEachKeyframe(movement, '["travel"]')
 
+
+	
+# animation operations
+#############################
+
+def removeAutoTravelAnimation():
+	camera = getTargetCamera()
+	camera[autoAnimationType] = "no travel"
+	removeAnimation()
+	recalculateAnimation()
+	
+def smoothKeyframes():
+	slowAnimationOnEachKeyframe(getMovementEmpty(), '["travel"]')
 	
 # target operations
 #############################
@@ -169,17 +188,19 @@ def getTargetAmount():
 def getTargetList():
 	movement = getMovementEmpty()
 	targets = []
+	lastTarget = None
 	for constraint in movement.constraints:
 		targetEmpty = constraint.target
 		if hasattr(targetEmpty, "parent"):
 			if targetEmpty.parent is not None:
-				if targetEmpty.parent not in targets:
+				if targetEmpty.parent != lastTarget:
+					lastTarget = targetEmpty.parent
 					targets.append(targetEmpty.parent)
 	return targets
 
-def useAutoAnimation():
+def useFullAutoAnimation():
 	targetCamera = getTargetCamera()
-	if targetCamera.get(autoAnimationPropertyName) == "yes": return True
+	if targetCamera.get(autoAnimationType) == "full": return True
 	else: return False
 		
 
@@ -204,6 +225,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		camera = getTargetCamera()
 		movement = getMovementEmpty()
 		
+		layout.operator("camera_tools.remove_auto_travel_animation", text = "Remove Auto Animation")
+		layout.operator("camera_tools.smooth_keyframes")
 		row = layout.row(align = True)
 		row.operator("camera_tools.recalculate_animation", text = "Recalculate")
 		row.prop(movement, '["travel"]', text = "Travel", slider = False)
@@ -224,6 +247,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		layout.operator("camera_tools.select_target_movement_camera")
 		
 		#layout.operator("camera_tools.dummy")
+
+		
 		
 	
 # operators
@@ -292,6 +317,22 @@ class MoveTargetDown(bpy.types.Operator):
 		moveTargetDown(self.currentIndex)
 		return{"FINISHED"}
 		
+class RemoveAutoTravelAnimation(bpy.types.Operator):
+	bl_idname = "camera_tools.remove_auto_travel_animation"
+	bl_label = "Remove Auto Travel animation"
+	
+	def execute(self, context):
+		removeAutoTravelAnimation()
+		return{"FINISHED"}
+		
+class SmoothKeyframes(bpy.types.Operator):
+	bl_idname = "camera_tools.smooth_keyframes"
+	bl_label = "Smooth Keyframes"
+	
+	def execute(self, context):
+		smoothKeyframes()
+		return{"FINISHED"}		
+
 class dummy(bpy.types.Operator):
 	bl_idname = "camera_tools.dummy"
 	bl_label = "dummy"
