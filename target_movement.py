@@ -4,6 +4,7 @@ from utils import *
 cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
 deleteOnCleanup = "Delete on Cleanup"
+autoAnimationPropertyName = "Auto Animation"
 
 targetCameraName = "TARGET CAMERA"
 
@@ -33,11 +34,12 @@ def newCamera():
 	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
 	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
+	setCustomProperty(camera, autoAnimationPropertyName, "yes")
 	return camera
 	
 def newMovementEmpty():
 	movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
-	setCustomProperty(movement, "travel", 0.0, min = 0.0)
+	setCustomProperty(movement, "travel", 1.0, min = 1.0)
 	return movement
 	
 	
@@ -54,7 +56,9 @@ def createFullAnimation(targetList):
 		setupTargetObject(target)
 		
 	createTravelToConstraintDrivers()
-	createTravelAnimation()
+	
+	if useAutoAnimation(): createTravelAnimation()
+	else: movement["travel"] = 1.0
 	
 def cleanupScene():
 	clearAnimation(getMovementEmpty(), '["travel"]')
@@ -173,6 +177,10 @@ def getTargetList():
 					targets.append(targetEmpty.parent)
 	return targets
 
+def useAutoAnimation():
+	targetCamera = getTargetCamera()
+	if targetCamera.get(autoAnimationPropertyName) == "yes": return True
+	else: return False
 		
 
 		
