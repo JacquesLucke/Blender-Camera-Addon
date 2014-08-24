@@ -127,6 +127,11 @@ def createTravelAnimation():
 # animation operations
 #############################
 
+def useAutoTravelAnimation():
+	camera = getTargetCamera()
+	camera[autoAnimationType] = "full"
+	recalculateAnimation()
+
 def removeAutoTravelAnimation():
 	camera = getTargetCamera()
 	camera[autoAnimationType] = "no travel"
@@ -225,10 +230,17 @@ class TargetCameraPanel(bpy.types.Panel):
 		camera = getTargetCamera()
 		movement = getMovementEmpty()
 		
-		layout.operator("camera_tools.remove_auto_travel_animation", text = "Remove Auto Animation")
-		layout.operator("camera_tools.smooth_keyframes")
-		row = layout.row(align = True)
-		row.operator("camera_tools.recalculate_animation", text = "Recalculate")
+		fullAutoAnimation = useFullAutoAnimation()
+		
+		col = layout.column(align = True)
+		col.operator("camera_tools.recalculate_animation", text = "Recalculate")
+			
+		if not fullAutoAnimation:
+			col.operator("camera_tools.smooth_keyframes")
+			
+		row = col.row(align = True)
+		if fullAutoAnimation: row.operator("camera_tools.remove_auto_travel_animation", text = "", icon = 'X')
+		else: row.operator("camera_tools.use_auto_travel_animation", text = "", icon = 'ACTION')
 		row.prop(movement, '["travel"]', text = "Travel", slider = False)
 		
 		box = layout.box()
@@ -315,6 +327,14 @@ class MoveTargetDown(bpy.types.Operator):
 	
 	def execute(self, context):
 		moveTargetDown(self.currentIndex)
+		return{"FINISHED"}
+		
+class UseAutoTravelAnimation(bpy.types.Operator):
+	bl_idname = "camera_tools.use_auto_travel_animation"
+	bl_label = "Create Auto Travel animation"
+	
+	def execute(self, context):
+		useAutoTravelAnimation()
 		return{"FINISHED"}
 		
 class RemoveAutoTravelAnimation(bpy.types.Operator):
