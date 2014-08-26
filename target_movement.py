@@ -6,7 +6,6 @@ targetCameraType = "TARGET"
 deleteOnCleanup = "Delete on Cleanup"
 autoAnimationType = "Auto Animation Type"
 keyframeDistancePropertyName = "Keyframe Distance"
-cameraDistanceFactorPropertyName = "Camera Distance Factor"
 
 targetCameraName = "TARGET CAMERA"
 
@@ -159,13 +158,21 @@ def newTargets():
 		
 	selectedObjects.reverse()
 	for object in selectedObjects:
-		setupTargetData(object)
-		targets.append(object)
+		targets.append(newRealTarget(object))
 	createFullAnimation(targets)
 	
-def setupTargetData(target):
-	if cameraDistanceFactorPropertyName not in target:
-		setCustomProperty(target, cameraDistanceFactorPropertyName, 1, min = 0)
+def newRealTarget(target):
+	deselectAll()
+	setActive(target)
+	bpy.ops.object.origin_set(type = 'ORIGIN_GEOMETRY')
+
+	empty = newEmpty(name = "REAL TARGET", location = [0, 0, 0])
+	empty.empty_draw_size = 0.4
+	setParentWithoutInverse(empty, target)
+	
+	setCustomProperty(empty, "loading time", 30, min = 1)
+	
+	return empty
 	
 def deleteTarget(index):
 	targets = getTargetList()
@@ -291,7 +298,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		for i in range(len(targetList)):
 			row = col.split(percentage=0.6, align = True)
 			row.scale_y = 1.35
-			name = row.operator("camera_tools.select_target", targetList[i].name)
+			name = row.operator("camera_tools.select_target", targetList[i].parent.name)
 			name.currentIndex = i
 			up = row.operator("camera_tools.move_target_up", icon = 'TRIA_UP', text = "")
 			up.currentIndex = i
