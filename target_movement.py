@@ -97,25 +97,17 @@ def setupTargetObject(object):
 	
 def createConstraintSet(target):
 	movement = getMovementEmpty()
-	locationConstraint = movement.constraints.new(type = "COPY_LOCATION")
-	rotationConstraint = movement.constraints.new(type = "COPY_ROTATION")
-	locationConstraint.target = target
-	rotationConstraint.target = target
-	locationConstraint.influence = 0
-	rotationConstraint.influence = 0
-	locationConstraint.show_expanded = False
-	rotationConstraint.show_expanded = False
-	
-	driver = newDriver(movement, 'constraints["' + rotationConstraint.name + '"].influence')
-	linkFloatPropertyToDriver(driver, "var", movement, 'constraints["' + locationConstraint.name + '"].influence')
-	driver.expression = "var"
+	constraint = movement.constraints.new(type = "COPY_TRANSFORMS")
+	constraint.target = target
+	constraint.influence = 0
+	constraint.show_expanded = False
 	
 def createTravelToConstraintDrivers():
 	movement = getMovementEmpty()
 	constraints = movement.constraints
 	
 	for i in range(getTargetAmount()):
-		constraint = constraints[i*2]
+		constraint = constraints[i]
 		driver = newDriver(movement, 'constraints["' + constraint.name + '"].influence')
 		linkFloatPropertyToDriver(driver, "var", movement, '["travel"]')
 		driver.expression = "var - " + str(i)
