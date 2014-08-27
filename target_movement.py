@@ -224,8 +224,10 @@ def getTargetList():
 	for constraint in movement.constraints:
 		target = getTargetFromConstraint(constraint)
 		if target is not None and target != lastTarget:
-			lastTarget = target
-			targets.append(target)
+			if hasattr(target.parent, "name"):
+				lastTarget = target
+				targets.append(target)
+			else: shouldRecalculate = True
 	return targets
 	
 def getTargetFromConstraint(constraint):
@@ -255,7 +257,7 @@ def getSelectedTargets(targetList):
 	for object in objects:
 		targetsOfObject = getTargetsFromObject(object, targetList)
 		for target in targetsOfObject:
-			if object not in targets:
+			if object not in targets and hasattr(object.parent, "name"):
 				targets.append(target)
 	return targets
 	
