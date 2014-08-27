@@ -246,7 +246,23 @@ def useFullAutoAnimation():
 	
 def getKeyframeDistance():
 	return getTargetCamera().get(keyframeDistancePropertyName)
-		
+	
+def getSelectedTargets(targetList):
+	objects = getSelectedObjects()
+	targets = []
+	for object in objects:
+		targetsOfObject = getTargetsFromObject(object, targetList)
+		for target in targetsOfObject:
+			if object not in targets:
+				targets.append(target)
+	return targets
+	
+def getTargetsFromObject(object, targetList):
+	targets = []
+	if object.name[:11] == "REAL TARGET": targets.append(object)
+	for target in targetList:
+		if target.parent.name == object.name: targets.append(target)
+	return targets
 
 		
 # interface
@@ -305,6 +321,12 @@ class TargetCameraPanel(bpy.types.Panel):
 		row.label("Select")
 		row.operator("camera_tools.select_target_camera", text = "Camera")
 		row.operator("camera_tools.select_movement_empty", text = "Empty")
+		
+		selectedTargets = getSelectedTargets(targetList)
+		for target in selectedTargets:
+			box = layout.box()
+			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
+			box.prop(target, '["loading time"]', slider = False)
 		
 		if shouldRecalculate: layout.label("You should recalculate the animation", icon = 'ERROR')
 		
