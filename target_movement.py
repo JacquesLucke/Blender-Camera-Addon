@@ -154,6 +154,8 @@ def newTargets():
 	createFullAnimation(targets)
 	
 def newRealTarget(target):
+	if isRealTarget(target): return target
+	
 	deselectAll()
 	setActive(target)
 	bpy.ops.object.origin_set(type = 'ORIGIN_GEOMETRY')
@@ -259,10 +261,14 @@ def getSelectedTargets(targetList):
 	
 def getTargetsFromObject(object, targetList):
 	targets = []
-	if object.name[:11] == "REAL TARGET": targets.append(object)
+	if isRealTarget(object): targets.append(object)
 	for target in targetList:
 		if target.parent.name == object.name: targets.append(target)
 	return targets
+	
+def isRealTarget(object):
+	if object.name[:11] == "REAL TARGET": return True
+	return False
 
 		
 # interface
