@@ -3,7 +3,6 @@ from utils import *
 
 cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
-deleteOnCleanup = "Delete on Cleanup"
 autoAnimationType = "Auto Animation Type"
 keyframeDistancePropertyName = "Keyframe Distance"
 
@@ -57,7 +56,7 @@ def recalculateAnimation():
 	
 def createFullAnimation(targetList):
 	global calculatedTargetAmount
-	cleanupScene()
+	cleanupScene(targetList)
 	if useFullAutoAnimation():  removeAnimation()
 
 	movement = getMovementEmpty()
@@ -73,13 +72,12 @@ def createFullAnimation(targetList):
 	
 	calculatedTargetAmount = getTargetAmount()
 	
-def cleanupScene():
+def cleanupScene(targetList):
 	deselectAll()
 	for object in bpy.context.scene.objects:
-		if object.get(deleteOnCleanup) == "yes":
+		if isTargetName(object.name) and object not in targetList:
 			object.select = True
 			object.hide = False
-				
 	bpy.ops.object.delete()	
 	
 def removeAnimation():
@@ -217,11 +215,14 @@ def getTargetList():
 	
 def isValidTarget(target):
 	if hasattr(target, "name"):
-		if target.name[:11] == "REAL TARGET":
+		if isTargetName(target.name):
 			if hasattr(target, "parent"):
 				if hasattr(target.parent, "name"):
 					return True
 	return False
+	
+def isTargetName(name):
+	return name[:11] == "REAL TARGET"
 
 def useFullAutoAnimation():
 	targetCamera = getTargetCamera()
