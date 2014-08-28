@@ -34,6 +34,7 @@ class CameraToolsPanel(bpy.types.Panel):
 		
 		col = layout.column(align = True)
 		col.operator("camera_tools.set_active_camera")
+		col.operator("camera_tools.seperate_text")
 		col.operator("camera_tools.text_to_name")
 		
 		
@@ -53,6 +54,18 @@ class TextToNameOperator(bpy.types.Operator):
 	
 	def execute(self, context):
 		textToName()
+		return{"FINISHED"}
+		
+class SeperateTextOperator(bpy.types.Operator):
+	bl_idname = "camera_tools.seperate_text"
+	bl_label = "Seperate Text"
+	
+	def execute(self, context):
+		active = getActive()
+		if isTextObject(active):
+			seperateTextObject(active)
+			delete(active)
+		
 		return{"FINISHED"}
 			
 

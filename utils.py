@@ -7,6 +7,13 @@ def newEmpty(name = "Empty", location = [0, 0, 0], hide = False):
 	if hide:
 		bpy.ops.object.hide_view_set(unselected = False)
 	return empty
+	
+def newText(name = "Text", location = [0, 0, 0], text = "text"):
+	bpy.ops.object.text_add(location = location)
+	textObject = bpy.context.object
+	textObject.name = name
+	textObject.data.body = text
+	return textObject
 
 def setTrackTo(child, trackTo):
 	deselectAll()
@@ -149,6 +156,11 @@ def textToName():
 	for object in bpy.data.objects:
 		if hasattr(object.data, "body"):
 			object.name = object.data.body
+			
+def seperateTextObject(textObject, seperator = "\n"):
+	textList = textObject.data.body.split(seperator)
+	for i in range(len(textList)):
+		newText(name = textList[i], location = [0, -i, 0], text = textList[i])
 	
 def clearAnimation(object, dataPath):
 	try:
@@ -178,4 +190,15 @@ def setSelectedObjects(selection):
 	for object in selection:
 		object.select = True
 		setActive(object)
+		
+def isTextObject(object):
+	if hasattr(object, "data"):
+		if hasattr(object.data, "body"):
+			return True
+	return False
+	
+def delete(object):
+	deselectAll()
+	setActive(object)
+	bpy.ops.object.delete()
 					
