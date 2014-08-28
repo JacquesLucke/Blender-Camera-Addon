@@ -202,4 +202,19 @@ def delete(object):
 	object.hide = False
 	setActive(object)
 	bpy.ops.object.delete()
+	
+def getCurrentFrame():
+	return bpy.context.screen.scene.frame_current
+	
+def insertWiggle(object, dataPath, strength, scale):
+	object.keyframe_insert(data_path = dataPath, frame = getCurrentFrame())
+	fcurves = []
+	for fcurve in object.animation_data.action.fcurves:
+		if fcurve.data_path == "location":
+			fcurves.append(fcurve)
+	for i in range(len(fcurves)):
+		modifier = fcurves[i].modifiers.new(type = 'NOISE')
+		modifier.phase = i * 10
+		modifier.strength = strength
+		modifier.scale = scale
 					

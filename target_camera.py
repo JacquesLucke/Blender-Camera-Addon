@@ -4,6 +4,7 @@ from utils import *
 targetCameraName = "TARGET CAMERA"
 movementEmptyName = "MOVEMENT"
 dataEmptyName = "TARGET CAMERA CONTAINER"
+strongWiggleEmptyName = "STRONG WIGGLE"
 wiggleEmptyName = "WIGGLE"
 partOfTargetCamera = "part of target camera"
 
@@ -21,16 +22,23 @@ def insertTargetCamera():
 
 	camera = newCamera()
 	movement = newMovementEmpty()
+	strongWiggle = newStrongWiggleEmpty()
 	wiggle = newWiggleEmpty()
 	dataEmpty = newDataEmpty()
 	
 	movement.parent = dataEmpty
+	strongWiggle.parent = movement
 	wiggle.parent = movement
 	camera.parent = wiggle;
 	
+	strongWiggle.location.z = 4
 	wiggle.location.z = 4
+	
 	setActive(camera)
 	bpy.context.object.data.dof_object = movement
+	
+	insertWiggle(strongWiggle, "location", 5, 1)
+	insertWiggleConstraint(wiggle, strongWiggle, dataEmpty)
 	
 	setSelectedObjects(oldSelection)
 	newTargets()
@@ -54,22 +62,36 @@ def newMovementEmpty():
 	makePartOfTargetCamera(movement)
 	return movement
 
+def newStrongWiggleEmpty():
+	strongWiggle = newEmpty(name = strongWiggleEmptyName, location = [0, 0, 0])
+	strongWiggle.empty_draw_size = 0.2
+	makePartOfTargetCamera(strongWiggle)
+	strongWiggle.hide = True
+	return strongWiggle
+	
 def newWiggleEmpty():
 	wiggle = newEmpty(name = wiggleEmptyName, location = [0, 0, 0])
 	wiggle.empty_draw_size = 0.2
 	makePartOfTargetCamera(wiggle)
 	wiggle.hide = True
 	return wiggle
-	
+
 def newDataEmpty():
 	dataEmpty = newEmpty(name = dataEmptyName, location = [0, 0, 0])
 	setCustomProperty(dataEmpty, "travel", 1.0, min = 1.0)
 	setCustomProperty(dataEmpty, "stops", [])
+	setCustomProperty(dataEmpty, "wiggle strength", 0.2, min = 0.0, max = 1.0)
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
 	makePartOfTargetCamera(dataEmpty)
 	return dataEmpty
-	
+
+def insertWiggleConstraint(wiggle, strongWiggle, dataEmpty):
+	constraint = wiggle.constraints.new(type = "COPY_TRANSFORMS")
+	constraint.target = strongWiggle
+	driver = newDriver(wiggle, 'constraints["' + constraint.name + '"].influence')
+	linkFloatPropertyToDriver(driver, "var", dataEmpty, '["wiggle strength"]')	
+	driver.expression = "var**2"
 	
 # create animation
 ###########################
@@ -359,6 +381,8 @@ class TargetCameraPanel(bpy.types.Panel):
 			box = layout.box()
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
 			box.prop(target, '["loading time"]', slider = False)
+			
+		layout.prop(dataEmpty, '["wiggle strength"]')
 		
 		if calculatedTargetAmount != getTargetAmount():
 			layout.label("You should recalculate the animation", icon = 'ERROR')
