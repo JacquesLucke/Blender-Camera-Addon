@@ -11,7 +11,8 @@ targetCameraName = "TARGET CAMERA"
 
 useListSeparator = False
 
-shouldRecalculate = False
+
+calculatedTargetAmount = 0
 
 
 # insert basic camera setup
@@ -55,6 +56,7 @@ def recalculateAnimation():
 	createFullAnimation(getTargetList())
 	
 def createFullAnimation(targetList):
+	global calculatedTargetAmount
 	cleanupScene()
 	if useFullAutoAnimation():  removeAnimation()
 
@@ -69,7 +71,7 @@ def createFullAnimation(targetList):
 	if useFullAutoAnimation(): createTravelAnimation()
 	else: movement["travel"] = 1.0
 	
-	shouldRecalculate = False
+	calculatedTargetAmount = getTargetAmount()
 	
 def cleanupScene():
 	deselectAll()
@@ -142,7 +144,7 @@ def newTargets():
 	createFullAnimation(targets)
 	
 def newRealTarget(target):
-	if isRealTarget(target): return target
+	if isValidTarget(target): return target
 	
 	deselectAll()
 	setActive(target)
@@ -206,26 +208,20 @@ def getTargetAmount():
 	return len(getTargetList())
 	
 def getTargetList():
-	movement = getMovementEmpty()
 	targets = []
-	lastTarget = None
-	for constraint in movement.constraints:
-		target = getTargetFromConstraint(constraint)
-		if target is not None and target != lastTarget:
-			if hasattr(target.parent, "name"):
-				lastTarget = target
-				targets.append(target)
-			else: shouldRecalculate = True
+	uncleanedTargets = getUncleanedTargetList()
+	for target in uncleanedTargets:
+		if isValidTarget(target) and target not in targets:
+			targets.append(target)
 	return targets
 	
-def getTargetFromConstraint(constraint):
-	if hasattr(constraint, "target"):
-		return constraint.target
-	return None
-	
-def getTargetFromCenterEmpty(centerEmpty):
-	if hasattr(centerEmpty, "parent"):
-		return centerEmpty.parent
+def isValidTarget(target):
+	if hasattr(target, "name"):
+		if target.name[:11] == "REAL TARGET":
+			if hasattr(target, "parent"):
+				if hasattr(target.parent, "name"):
+					return True
+	return False
 
 def useFullAutoAnimation():
 	targetCamera = getTargetCamera()
@@ -247,14 +243,19 @@ def getSelectedTargets(targetList):
 	
 def getTargetsFromObject(object, targetList):
 	targets = []
-	if isRealTarget(object): targets.append(object)
+	if isValidTarget(object): targets.append(object)
 	for target in targetList:
 		if target.parent.name == object.name: targets.append(target)
 	return targets
+
+def getUncleanedTargetList():
+	movement = getMovementEmpty()
+	uncleanedTargets = []
+	for constraint in movement.constraints:
+		if hasattr(constraint, "target"):
+			uncleanedTargets.append(constraint.target)
+	return uncleanedTargets
 	
-def isRealTarget(object):
-	if object.name[:11] == "REAL TARGET": return True
-	return False
 
 		
 # interface
@@ -320,8 +321,8 @@ class TargetCameraPanel(bpy.types.Panel):
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
 			box.prop(target, '["loading time"]', slider = False)
 		
-		if shouldRecalculate: layout.label("You should recalculate the animation", icon = 'ERROR')
-		
+		if calculatedTargetAmount != getTargetAmount():
+			layout.label("You should recalculate the animation", icon = 'ERROR')
 		#layout.operator("camera_tools.dummy")
 
 		
