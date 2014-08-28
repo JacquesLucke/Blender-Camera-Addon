@@ -74,7 +74,7 @@ def createFullAnimation(targetList):
 		createConstraintSet(target)
 		
 	createTravelToConstraintDrivers()
-	createTravelAnimation()
+	createTravelAnimation(targetList)
 	calculatedTargetAmount = getTargetAmount()
 	
 def cleanupScene(targetList):
@@ -106,12 +106,13 @@ def createTravelToConstraintDrivers():
 		linkFloatPropertyToDriver(driver, "var", dataEmpty, '["travel"]')
 		driver.expression = "var - " + str(i)
 		
-def createTravelAnimation():
+def createTravelAnimation(targetList):
 	dataEmpty = getDataEmpty()
 	stops = []
 	
+	frame = 0
 	for i in range(getTargetAmount()):
-		frame = i * getKeyframeDistance() + 1
+		frame += getLoadingTime(targetList[i])
 		dataEmpty["travel"] = float(i + 1)
 		dataEmpty.keyframe_insert(data_path='["travel"]', frame = frame)
 		stops.append(frame)
@@ -273,6 +274,9 @@ def getTravelValue():
 	
 def setStops(dataEmpty, stops):
 	dataEmpty['stops'] = stops
+	
+def getLoadingTime(target):
+	return target["loading time"]
 	
 
 		
