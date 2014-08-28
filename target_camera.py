@@ -3,14 +3,12 @@ from utils import *
 
 cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
-autoAnimationType = "Auto Animation Type"
 keyframeDistancePropertyName = "Keyframe Distance"
 
 targetCameraName = "TARGET CAMERA"
 dataEmptyName = "TARGET CAMERA CONTAINER"
 
 useListSeparator = False
-
 
 calculatedTargetAmount = 0
 
@@ -40,7 +38,6 @@ def newCamera():
 	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
 	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
-	setCustomProperty(camera, autoAnimationType, "full")
 	setCustomProperty(camera, keyframeDistancePropertyName, 40, min = 1)
 	return camera
 	
@@ -66,7 +63,7 @@ def recalculateAnimation():
 def createFullAnimation(targetList):
 	global calculatedTargetAmount
 	cleanupScene(targetList)
-	if useFullAutoAnimation():  removeAnimation()
+	removeAnimation()
 
 	movement = getMovementEmpty()
 	dataEmpty = getDataEmpty()
@@ -76,10 +73,7 @@ def createFullAnimation(targetList):
 		createConstraintSet(target)
 		
 	createTravelToConstraintDrivers()
-	
-	if useFullAutoAnimation(): createTravelAnimation()
-	else: dataEmpty["travel"] = 1.0
-	
+	createTravelAnimation()
 	calculatedTargetAmount = getTargetAmount()
 	
 def cleanupScene(targetList):
@@ -120,22 +114,6 @@ def createTravelAnimation():
 		
 	slowAnimationOnEachKeyframe(dataEmpty, '["travel"]')
 
-
-	
-# animation operations
-#############################
-
-def useAutoTravelAnimation():
-	camera = getTargetCamera()
-	camera[autoAnimationType] = "full"
-	recalculateAnimation()
-
-def removeAutoTravelAnimation():
-	camera = getTargetCamera()
-	camera[autoAnimationType] = "no travel"
-	
-def smoothKeyframes():
-	slowAnimationOnEachKeyframe(getDataEmpty(), '["travel"]')
 	
 # target operations
 #############################
@@ -236,11 +214,6 @@ def isValidTarget(target):
 	
 def isTargetName(name):
 	return name[:11] == "REAL TARGET"
-
-def useFullAutoAnimation():
-	targetCamera = getTargetCamera()
-	if targetCamera.get(autoAnimationType) == "full": return True
-	else: return False
 	
 def getKeyframeDistance():
 	return getTargetCamera().get(keyframeDistancePropertyName)
@@ -293,19 +266,12 @@ class TargetCameraPanel(bpy.types.Panel):
 		movement = getMovementEmpty()
 		dataEmpty = getDataEmpty()
 		
-		fullAutoAnimation = useFullAutoAnimation()
-		
 		col = layout.column(align = True)
 		recalculate = col.operator("camera_tools.recalculate_animation", text = "Recalculate")
 			
-		if fullAutoAnimation:
-			col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False, text = "Frames per Text")
-		else:
-			col.operator("camera_tools.smooth_keyframes")
+		col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False, text = "Frames per Text")
 			
 		row = col.row(align = True)
-		if fullAutoAnimation: row.operator("camera_tools.remove_auto_travel_animation", text = "", icon = 'X')
-		else: row.operator("camera_tools.use_auto_travel_animation", text = "", icon = 'ACTION')
 		row.prop(dataEmpty, '["travel"]', text = "Travel", slider = False)
 		
 		box = layout.box()
