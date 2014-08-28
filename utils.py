@@ -88,6 +88,10 @@ def removeObjectReference(object, name):
 	if name in object.constraints:
 		object.constraints.remove(object.constraints[name])
 		
+def lockCurrentTransforms(object):
+	lockCurrentLocalLocation(object)
+	lockCurrentLocalRotation(object)
+	lockCurrentLocalScale(object)
 		
 def lockCurrentLocalLocation(object, xAxes = True, yAxes = True, zAxes = True):
 	setActive(object)

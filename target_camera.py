@@ -7,7 +7,7 @@ autoAnimationType = "Auto Animation Type"
 keyframeDistancePropertyName = "Keyframe Distance"
 
 targetCameraName = "TARGET CAMERA"
-dataEmptyName = "DATA OF TARGET CAMERA"
+dataEmptyName = "TARGET CAMERA CONTAINER"
 
 useListSeparator = False
 
@@ -25,6 +25,7 @@ def insertTargetCamera():
 	movement = newMovementEmpty()
 	dataEmpty = newDataEmpty()
 	
+	movement.parent = dataEmpty
 	setParentWithoutInverse(camera, movement)
 	camera.location.z = 4
 	setActive(camera)
@@ -52,6 +53,7 @@ def newDataEmpty():
 	dataEmpty = newEmpty(name = dataEmptyName, location = [0, 0, 0])
 	setCustomProperty(dataEmpty, "travel", 1.0, min = 1.0)
 	dataEmpty.hide = True
+	lockCurrentTransforms(dataEmpty)
 	return dataEmpty
 	
 	
