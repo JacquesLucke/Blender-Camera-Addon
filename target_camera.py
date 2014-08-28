@@ -62,7 +62,7 @@ def createFullAnimation(targetList):
 	deleteAllConstraints(movement)
 	
 	for target in targetList:
-		setupTargetObject(target)
+		createConstraintSet(target)
 		
 	createTravelToConstraintDrivers()
 	
@@ -82,18 +82,6 @@ def cleanupScene():
 	
 def removeAnimation():
 	clearAnimation(getMovementEmpty(), '["travel"]')
-		
-def setupTargetObject(object):
-	deselectAll()
-	object.select = True
-	setActive(object)
-	bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY')
-	center = newEmpty(name = "center")
-	setParentWithoutInverse(center, object)
-	setCustomProperty(center, deleteOnCleanup, "yes")
-	createConstraintSet(center)
-	
-	center.hide = True
 	
 def createConstraintSet(target):
 	movement = getMovementEmpty()
@@ -231,10 +219,6 @@ def getTargetList():
 	return targets
 	
 def getTargetFromConstraint(constraint):
-	centerEmpty = getCenterEmptyFromConstraint(constraint)
-	return getTargetFromCenterEmpty(centerEmpty)
-	
-def getCenterEmptyFromConstraint(constraint):
 	if hasattr(constraint, "target"):
 		return constraint.target
 	return None
