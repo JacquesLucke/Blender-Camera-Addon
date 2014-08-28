@@ -249,7 +249,7 @@ def getSelectedTargets(targetList):
 	for object in objects:
 		targetsOfObject = getTargetsFromObject(object, targetList)
 		for target in targetsOfObject:
-			if object not in targets and hasattr(object.parent, "name"):
+			if target not in targets:
 				targets.append(target)
 	return targets
 	
@@ -296,6 +296,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		camera = getTargetCamera()
 		movement = getMovementEmpty()
 		dataEmpty = getDataEmpty()
+		targetList = getTargetList()
 		
 		col = layout.column(align = True)
 		col.operator("camera_tools.recalculate_animation", text = "Recalculate")
@@ -308,7 +309,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		
 		box = layout.box()
 		col = box.column(align = True)
-		targetList = getTargetList()
+		
 		for i in range(len(targetList)):
 			row = col.split(percentage=0.6, align = True)
 			row.scale_y = 1.35
