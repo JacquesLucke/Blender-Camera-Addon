@@ -3,7 +3,6 @@ from utils import *
 
 cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
-keyframeDistancePropertyName = "Keyframe Distance"
 
 targetCameraName = "TARGET CAMERA"
 dataEmptyName = "TARGET CAMERA CONTAINER"
@@ -38,7 +37,6 @@ def newCamera():
 	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
 	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
-	setCustomProperty(camera, keyframeDistancePropertyName, 40, min = 1)
 	return camera
 	
 def newMovementEmpty():
@@ -302,9 +300,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		dataEmpty = getDataEmpty()
 		targetList = getTargetList()
 		
-		col = layout.column(align = True)
-		col.operator("camera_tools.recalculate_animation", text = "Recalculate")
-		col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False, text = "Frames per Text")
+		layout.operator("camera_tools.recalculate_animation", text = "Recalculate")
 			
 		row = layout.row(align = True)
 		row.operator("camera_tools.go_to_previous_target", icon = 'TRIA_LEFT', text = "")
