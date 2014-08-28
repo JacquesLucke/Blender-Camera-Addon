@@ -49,6 +49,7 @@ def newMovementEmpty():
 def newDataEmpty():
 	dataEmpty = newEmpty(name = dataEmptyName, location = [0, 0, 0])
 	setCustomProperty(dataEmpty, "travel", 1.0, min = 1.0)
+	setCustomProperty(dataEmpty, "stops", [])
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
 	return dataEmpty
@@ -107,12 +108,16 @@ def createTravelToConstraintDrivers():
 		
 def createTravelAnimation():
 	dataEmpty = getDataEmpty()
+	stops = []
 	
 	for i in range(getTargetAmount()):
+		frame = i * getKeyframeDistance() + 1
 		dataEmpty["travel"] = float(i + 1)
-		dataEmpty.keyframe_insert(data_path='["travel"]', frame = i * getKeyframeDistance() + 1)
+		dataEmpty.keyframe_insert(data_path='["travel"]', frame = frame)
+		stops.append(frame)
 		
 	slowAnimationOnEachKeyframe(dataEmpty, '["travel"]')
+	setStops(dataEmpty, stops)
 
 	
 # target operations
@@ -245,6 +250,9 @@ def getUncleanedTargetList():
 	
 def getTravelValue(dataEmpty):
 	return round(dataEmpty.get("travel"), 3)
+	
+def setStops(dataEmpty, stops):
+	dataEmpty['stops'] = stops
 	
 
 		
