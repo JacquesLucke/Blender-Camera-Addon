@@ -248,8 +248,8 @@ def getUncleanedTargetList():
 			uncleanedTargets.append(constraint.target)
 	return uncleanedTargets
 	
-def getTravelValue(dataEmpty):
-	return round(dataEmpty.get("travel"), 3)
+def getTravelValue():
+	return round(getDataEmpty().get("travel"), 3)
 	
 def setStops(dataEmpty, stops):
 	dataEmpty['stops'] = stops
@@ -278,12 +278,13 @@ class TargetCameraPanel(bpy.types.Panel):
 		dataEmpty = getDataEmpty()
 		
 		col = layout.column(align = True)
-		recalculate = col.operator("camera_tools.recalculate_animation", text = "Recalculate")
-			
+		col.operator("camera_tools.recalculate_animation", text = "Recalculate")
 		col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False, text = "Frames per Text")
 			
-		row = col.row(align = True)
-		row.label("Travel: " + str(getTravelValue(dataEmpty)))
+		row = layout.row(align = True)
+		row.operator("camera_tools.dummy", icon = 'TRIA_LEFT', text = "")
+		row.label("Travel: " + str(getTravelValue()))
+		row.operator("camera_tools.dummy", icon = 'TRIA_RIGHT', text = "")
 		
 		box = layout.box()
 		col = box.column(align = True)
@@ -392,30 +393,6 @@ class MoveTargetDown(bpy.types.Operator):
 	
 	def execute(self, context):
 		moveTargetDown(self.currentIndex)
-		return{"FINISHED"}
-		
-class UseAutoTravelAnimation(bpy.types.Operator):
-	bl_idname = "camera_tools.use_auto_travel_animation"
-	bl_label = "Create Auto Travel animation"
-	
-	def execute(self, context):
-		useAutoTravelAnimation()
-		return{"FINISHED"}
-		
-class RemoveAutoTravelAnimation(bpy.types.Operator):
-	bl_idname = "camera_tools.remove_auto_travel_animation"
-	bl_label = "Remove Auto Travel animation"
-	
-	def execute(self, context):
-		removeAutoTravelAnimation()
-		return{"FINISHED"}
-		
-class SmoothKeyframes(bpy.types.Operator):
-	bl_idname = "camera_tools.smooth_keyframes"
-	bl_label = "Smooth Keyframes"
-	
-	def execute(self, context):
-		smoothKeyframes()
 		return{"FINISHED"}		
 		
 class SelectTarget(bpy.types.Operator):
