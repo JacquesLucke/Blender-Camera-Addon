@@ -243,6 +243,9 @@ def getUncleanedTargetList():
 			uncleanedTargets.append(constraint.target)
 	return uncleanedTargets
 	
+def getTravelValue(dataEmpty):
+	return round(dataEmpty.get("travel"), 3)
+	
 
 		
 # interface
@@ -272,7 +275,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False, text = "Frames per Text")
 			
 		row = col.row(align = True)
-		row.prop(dataEmpty, '["travel"]', text = "Travel", slider = False)
+		row.label("Travel: " + str(getTravelValue(dataEmpty)))
 		
 		box = layout.box()
 		col = box.column(align = True)
