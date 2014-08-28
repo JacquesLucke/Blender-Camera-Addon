@@ -6,6 +6,7 @@ targetCameraType = "TARGET"
 
 targetCameraName = "TARGET CAMERA"
 dataEmptyName = "TARGET CAMERA CONTAINER"
+partOfTargetCamera = "part of target camera"
 
 useListSeparator = False
 
@@ -16,6 +17,7 @@ calculatedTargetAmount = 0
 #################################
 
 def insertTargetCamera():
+	removeOldTargetCameraObjects()
 	oldSelection = getSelectedObjects()
 
 	camera = newCamera()
@@ -31,17 +33,26 @@ def insertTargetCamera():
 	setSelectedObjects(oldSelection)
 	newTargets()
 	
+def removeOldTargetCameraObjects():
+	for object in bpy.data.objects:
+		print(object)
+		if isPartOfTargetCamera(object):
+			print("delete")
+			delete(object)
+	
 def newCamera():
 	bpy.ops.object.camera_add(location = [0, 0, 0])
 	camera = bpy.context.object
 	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
 	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
+	makePartOfTargetCamera(camera)
 	return camera
 	
 def newMovementEmpty():
 	movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
 	movement.empty_draw_size = 0.2
+	makePartOfTargetCamera(movement)
 	return movement
 	
 def newDataEmpty():
@@ -50,6 +61,7 @@ def newDataEmpty():
 	setCustomProperty(dataEmpty, "stops", [])
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
+	makePartOfTargetCamera(dataEmpty)
 	return dataEmpty
 	
 	
@@ -276,6 +288,13 @@ def setStops(dataEmpty, stops):
 def getLoadingTime(target):
 	return target["loading time"]
 	
+def makePartOfTargetCamera(object):
+	object[partOfTargetCamera] = "1"
+	
+def isPartOfTargetCamera(object):
+	if object.get(partOfTargetCamera) is None:
+		return False
+	return True
 
 		
 # interface

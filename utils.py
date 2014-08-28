@@ -199,6 +199,7 @@ def isTextObject(object):
 	
 def delete(object):
 	deselectAll()
+	object.hide = False
 	setActive(object)
 	bpy.ops.object.delete()
 					
