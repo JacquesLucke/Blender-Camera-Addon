@@ -165,6 +165,26 @@ def moveTargetDown(index):
 	targets.insert(index+1, targets.pop(index))
 	createFullAnimation(targets)
 	
+def goToNextTarget():
+	travel = getTravelValue()
+	newTravel = math.floor(travel) + 1
+	bpy.context.screen.scene.frame_current = getFrameOfTravelValue(newTravel)
+	
+def goToPreviousTarget():
+	travel = getTravelValue()
+	newTravel = math.ceil(travel) - 1
+	bpy.context.screen.scene.frame_current = getFrameOfTravelValue(newTravel)
+	
+def getFrameOfTravelValue(travel):
+	travel = max(1, travel)
+	stops = getDataEmpty()['stops']
+	if len(stops) > 0:
+		if travel >= len(stops):
+			return stops[-1]
+		else:
+			return stops[int(travel - 1)]
+	else: return 1
+	
 	
 # utilities
 #############################
@@ -282,9 +302,9 @@ class TargetCameraPanel(bpy.types.Panel):
 		col.prop(camera, '["' + keyframeDistancePropertyName + '"]', slider = False, text = "Frames per Text")
 			
 		row = layout.row(align = True)
-		row.operator("camera_tools.dummy", icon = 'TRIA_LEFT', text = "")
+		row.operator("camera_tools.go_to_previous_target", icon = 'TRIA_LEFT', text = "")
 		row.label("Travel: " + str(getTravelValue()))
-		row.operator("camera_tools.dummy", icon = 'TRIA_RIGHT', text = "")
+		row.operator("camera_tools.go_to_next_target", icon = 'TRIA_RIGHT', text = "")
 		
 		box = layout.box()
 		col = box.column(align = True)
@@ -402,7 +422,23 @@ class SelectTarget(bpy.types.Operator):
 	
 	def execute(self, context):
 		selectTarget(self.currentIndex)
-		return{"FINISHED"}	
+		return{"FINISHED"}
+
+class GoToNextTarget(bpy.types.Operator):		
+	bl_idname = "camera_tools.go_to_next_target"
+	bl_label = "Go To Next Target"
+	
+	def execute(self, context):
+		goToNextTarget()
+		return{"FINISHED"}
+		
+class GoToPreviousTarget(bpy.types.Operator):		
+	bl_idname = "camera_tools.go_to_previous_target"
+	bl_label = "Go To Previous Target"
+	
+	def execute(self, context):
+		goToPreviousTarget()
+		return{"FINISHED"}
 
 class dummy(bpy.types.Operator):
 	bl_idname = "camera_tools.dummy"
