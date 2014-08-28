@@ -1,12 +1,10 @@
 import bpy, math
 from utils import *
 
-cameraRigPropertyName = "Camera Rig Type"
-targetCameraType = "TARGET" 
-
 targetCameraName = "TARGET CAMERA"
 movementEmptyName = "MOVEMENT"
 dataEmptyName = "TARGET CAMERA CONTAINER"
+wiggleEmptyName = "WIGGLE"
 partOfTargetCamera = "part of target camera"
 
 useListSeparator = False
@@ -23,11 +21,14 @@ def insertTargetCamera():
 
 	camera = newCamera()
 	movement = newMovementEmpty()
+	wiggle = newWiggleEmpty()
 	dataEmpty = newDataEmpty()
 	
 	movement.parent = dataEmpty
-	setParentWithoutInverse(camera, movement)
-	camera.location.z = 4
+	wiggle.parent = movement
+	camera.parent = wiggle;
+	
+	wiggle.location.z = 4
 	setActive(camera)
 	bpy.context.object.data.dof_object = movement
 	
@@ -36,9 +37,7 @@ def insertTargetCamera():
 	
 def removeOldTargetCameraObjects():
 	for object in bpy.data.objects:
-		print(object)
 		if isPartOfTargetCamera(object):
-			print("delete")
 			delete(object)
 	
 def newCamera():
@@ -46,7 +45,6 @@ def newCamera():
 	camera = bpy.context.object
 	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
-	setCustomProperty(camera, cameraRigPropertyName, targetCameraType)
 	makePartOfTargetCamera(camera)
 	return camera
 	
@@ -55,6 +53,13 @@ def newMovementEmpty():
 	movement.empty_draw_size = 0.2
 	makePartOfTargetCamera(movement)
 	return movement
+
+def newWiggleEmpty():
+	wiggle = newEmpty(name = wiggleEmptyName, location = [0, 0, 0])
+	wiggle.empty_draw_size = 0.2
+	makePartOfTargetCamera(wiggle)
+	wiggle.hide = True
+	return wiggle
 	
 def newDataEmpty():
 	dataEmpty = newEmpty(name = dataEmptyName, location = [0, 0, 0])
