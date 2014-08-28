@@ -46,7 +46,6 @@ def newCamera():
 def newMovementEmpty():
 	movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
 	movement.empty_draw_size = 0.2
-	setCustomProperty(movement, "travel", 1.0, min = 1.0)
 	return movement
 	
 def newDataEmpty():
@@ -68,6 +67,7 @@ def createFullAnimation(targetList):
 	if useFullAutoAnimation():  removeAnimation()
 
 	movement = getMovementEmpty()
+	dataEmpty = getDataEmpty()
 	deleteAllConstraints(movement)
 	
 	for target in targetList:
@@ -76,7 +76,7 @@ def createFullAnimation(targetList):
 	createTravelToConstraintDrivers()
 	
 	if useFullAutoAnimation(): createTravelAnimation()
-	else: movement["travel"] = 1.0
+	else: dataEmpty["travel"] = 1.0
 	
 	calculatedTargetAmount = getTargetAmount()
 	
@@ -89,7 +89,7 @@ def cleanupScene(targetList):
 	bpy.ops.object.delete()	
 	
 def removeAnimation():
-	clearAnimation(getMovementEmpty(), '["travel"]')
+	clearAnimation(getDataEmpty(), '["travel"]')
 	
 def createConstraintSet(target):
 	movement = getMovementEmpty()
@@ -100,22 +100,23 @@ def createConstraintSet(target):
 	
 def createTravelToConstraintDrivers():
 	movement = getMovementEmpty()
+	dataEmpty = getDataEmpty()
 	constraints = movement.constraints
 	
 	for i in range(getTargetAmount()):
 		constraint = constraints[i]
 		driver = newDriver(movement, 'constraints["' + constraint.name + '"].influence')
-		linkFloatPropertyToDriver(driver, "var", movement, '["travel"]')
+		linkFloatPropertyToDriver(driver, "var", dataEmpty, '["travel"]')
 		driver.expression = "var - " + str(i)
 		
 def createTravelAnimation():
-	movement = getMovementEmpty()
+	dataEmpty = getDataEmpty()
 	
 	for i in range(getTargetAmount()):
-		movement["travel"] = float(i + 1)
-		movement.keyframe_insert(data_path='["travel"]', frame = i * getKeyframeDistance() + 1)
+		dataEmpty["travel"] = float(i + 1)
+		dataEmpty.keyframe_insert(data_path='["travel"]', frame = i * getKeyframeDistance() + 1)
 		
-	slowAnimationOnEachKeyframe(movement, '["travel"]')
+	slowAnimationOnEachKeyframe(dataEmpty, '["travel"]')
 
 
 	
@@ -132,7 +133,7 @@ def removeAutoTravelAnimation():
 	camera[autoAnimationType] = "no travel"
 	
 def smoothKeyframes():
-	slowAnimationOnEachKeyframe(getMovementEmpty(), '["travel"]')
+	slowAnimationOnEachKeyframe(getDataEmpty(), '["travel"]')
 	
 # target operations
 #############################
@@ -288,6 +289,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		
 		camera = getTargetCamera()
 		movement = getMovementEmpty()
+		dataEmpty = getDataEmpty()
 		
 		fullAutoAnimation = useFullAutoAnimation()
 		
@@ -302,7 +304,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		row = col.row(align = True)
 		if fullAutoAnimation: row.operator("camera_tools.remove_auto_travel_animation", text = "", icon = 'X')
 		else: row.operator("camera_tools.use_auto_travel_animation", text = "", icon = 'ACTION')
-		row.prop(movement, '["travel"]', text = "Travel", slider = False)
+		row.prop(dataEmpty, '["travel"]', text = "Travel", slider = False)
 		
 		box = layout.box()
 		col = box.column(align = True)
