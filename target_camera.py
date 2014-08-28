@@ -17,7 +17,7 @@ shouldRecalculate = False
 # insert basic camera setup
 #################################
 
-def insertTargetMovementCamera():
+def insertTargetCamera():
 	oldSelection = getSelectedObjects()
 
 	camera = newCamera()
@@ -346,8 +346,8 @@ class TargetCameraPanel(bpy.types.Panel):
 # operators
 #############################
 		
-class AddTargetMovementCamera(bpy.types.Operator):
-	bl_idname = "camera_tools.add_target_movement_camera"
+class AddTargetCamera(bpy.types.Operator):
+	bl_idname = "camera_tools.insert_target_camera"
 	bl_label = "Add Target Camera"
 	
 	@classmethod
@@ -355,7 +355,7 @@ class AddTargetMovementCamera(bpy.types.Operator):
 		return not targetCameraExists()
 		
 	def execute(self, context):
-		insertTargetMovementCamera()
+		insertTargetCamera()
 		return{"FINISHED"}
 		
 class SelectTargetCamera(bpy.types.Operator):
