@@ -5,6 +5,7 @@ cameraRigPropertyName = "Camera Rig Type"
 targetCameraType = "TARGET" 
 
 targetCameraName = "TARGET CAMERA"
+movementEmptyName = "MOVEMENT"
 dataEmptyName = "TARGET CAMERA CONTAINER"
 partOfTargetCamera = "part of target camera"
 
@@ -50,7 +51,7 @@ def newCamera():
 	return camera
 	
 def newMovementEmpty():
-	movement = newEmpty(name = "Movement Empty", location = [0, 0, 0])
+	movement = newEmpty(name = movementEmptyName, location = [0, 0, 0])
 	movement.empty_draw_size = 0.2
 	makePartOfTargetCamera(movement)
 	return movement
@@ -206,7 +207,7 @@ def targetCameraExists():
 def getTargetCamera():
 	return bpy.data.objects.get(targetCameraName)
 def getMovementEmpty():
-	return getTargetCamera().parent
+	return bpy.data.objects.get(movementEmptyName)
 def getDataEmpty():
 	return bpy.data.objects.get(dataEmptyName)
 			
