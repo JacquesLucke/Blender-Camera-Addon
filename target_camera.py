@@ -7,6 +7,7 @@ autoAnimationType = "Auto Animation Type"
 keyframeDistancePropertyName = "Keyframe Distance"
 
 targetCameraName = "TARGET CAMERA"
+dataEmptyName = "DATA OF TARGET CAMERA"
 
 useListSeparator = False
 
@@ -22,6 +23,7 @@ def insertTargetCamera():
 
 	camera = newCamera()
 	movement = newMovementEmpty()
+	dataEmpty = newDataEmpty()
 	
 	setParentWithoutInverse(camera, movement)
 	camera.location.z = 4
@@ -46,6 +48,12 @@ def newMovementEmpty():
 	movement.empty_draw_size = 0.2
 	setCustomProperty(movement, "travel", 1.0, min = 1.0)
 	return movement
+	
+def newDataEmpty():
+	dataEmpty = newEmpty(name = dataEmptyName, location = [0, 0, 0])
+	setCustomProperty(dataEmpty, "travel", 1.0, min = 1.0)
+	dataEmpty.hide = True
+	return dataEmpty
 	
 	
 # create animation
@@ -182,6 +190,8 @@ def getTargetCamera():
 	return bpy.data.objects.get(targetCameraName)
 def getMovementEmpty():
 	return getTargetCamera().parent
+def getDataEmpty():
+	return bpy.data.objects.get(dataEmptyName)
 			
 def isTargetCamera(object):
 	return object.name == targetCameraName
