@@ -91,7 +91,7 @@ def newDataEmpty():
 	dataEmpty = newEmpty(name = dataEmptyName, location = [0, 0, 0])
 	setCustomProperty(dataEmpty, "travel", 1.0, min = 1.0)
 	setCustomProperty(dataEmpty, "stops", [])
-	setCustomProperty(dataEmpty, "wiggle strength", 0.2, min = 0.0, max = 1.0)
+	setCustomProperty(dataEmpty, "wiggle strength", 0.0, min = 0.0, max = 1.0)
 	setCustomProperty(dataEmpty, "wiggle scale", 3.0, min = 0.0)
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
