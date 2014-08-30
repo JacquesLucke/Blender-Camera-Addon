@@ -210,6 +210,19 @@ def deleteKeyframesInFCurve(object, fcurve):
 		object.keyframe_delete(fcurve.data_path, frame = keyframe.co.x)
 	for keyframe in fcurve.keyframe_points:
 		object.keyframe_delete(fcurve.data_path, frame = keyframe.co.x)
+
+def changeHandleTypeOfAllKeyframes(object, dataPath, type):
+	fcurves = getFCurvesWithDataPath(object, dataPath)
+	for fcurve in fcurves:
+		for keyframe in fcurve.keyframe_points:
+			setKeyframeHandleType(keyframe, type)
+			
+def setKeyframeHandleType(keyframe, type):
+	keyframe.handle_left_type = type
+	keyframe.handle_right_type = type
+	
+def getKeyframePoints(object, dataPath, index = 0):
+	return getFCurvesWithDataPath(object, dataPath)[index].keyframe_points
 		
 def getSelectedObjects():
 	return bpy.context.selected_objects
@@ -245,4 +258,7 @@ def insertWiggle(object, dataPath, strength, scale):
 		modifier.phase = i * 10
 		modifier.strength = strength
 		modifier.scale = scale
+		
+def clamp(value, minValue, maxValue):
+	return max(min(value, maxValue), minValue)
 					

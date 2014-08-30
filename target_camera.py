@@ -206,9 +206,49 @@ def createTravelAnimation(targetList):
 		frame += getStayTime(targetList[i])
 		dataEmpty["travel"] = float(i + 1)
 		dataEmpty.keyframe_insert(data_path='["travel"]', frame = frame)
-		
-	slowAnimationOnEachKeyframe(dataEmpty, '["travel"]')
 	setStops(dataEmpty, stops)
+		
+	positionKeyframeHandles(targetList)
+			
+def positionKeyframeHandles(targetList):
+	dataEmpty = getDataEmpty()
+	changeHandleTypeOfAllKeyframes(dataEmpty, '["travel"]', "FREE")
+	keyframes = getKeyframePoints(dataEmpty, '["travel"]')
+	if len(keyframes) >= 2:
+		for i in range(len(keyframes)):
+			keyframe = keyframes[i]
+			sourceX = keyframe.co.x
+			sourceY = keyframe.co.y
+			if i > 0:
+				beforeX = keyframes[i-1].co.x
+				beforeY = keyframes[i-1].co.y
+			else:
+				beforeX = sourceX
+				beforeY = sourceY
+			if i < len(keyframes) - 1: 
+				afterX = keyframes[i+1].co.x
+				afterY = keyframes[i+1].co.y
+			else:
+				afterX = sourceX
+				afterY = sourceY
+				
+			(easyIn, strengthIn, easyOut, strengthOut) = getInterpolationParameters(targetList[int(sourceY) - 1])
+			keyframe.handle_left.x = (beforeX - sourceX) * easyIn * strengthIn + sourceX
+			keyframe.handle_left.y = (beforeY - sourceY) * (1 - easyIn) * strengthIn + sourceY				
+			keyframe.handle_right.x = (afterX - sourceX) * easyOut * strengthOut + sourceX
+			keyframe.handle_right.y = (afterY - sourceY) * (1 - easyOut) * strengthOut + sourceY
+			
+		
+def getInterpolationParameters(target):
+	easyIn = clamp(target["easy in"], 0, 1)
+	strengthIn = clamp(target["strength in"], 0, 1)
+	easyOut = clamp(target["easy out"], 0, 1)
+	strengthOut = clamp(target["strength out"], 0, 1)
+	target["easy in"] = easyIn
+	target["strength in"] = strengthIn
+	target["easy out"] = easyOut
+	target["strength out"] = strengthOut
+	return (easyIn, strengthIn, easyOut, strengthOut)
 
 	
 # target operations
@@ -239,6 +279,10 @@ def newRealTarget(target):
 	
 	setCustomProperty(empty, "loading time", 20, min = 1)
 	setCustomProperty(empty, "stay time", 20, min = 0)
+	setCustomProperty(empty, "easy in", 1.0, min = 0.0, max = 1.0)
+	setCustomProperty(empty, "strength in", 0.5, min = 0.0, max = 1.0)
+	setCustomProperty(empty, "easy out", 1.0, min = 0.0, max = 1.0)
+	setCustomProperty(empty, "strength out", 0.5, min = 0.0, max = 1.0)
 	
 	return empty
 	
@@ -442,6 +486,16 @@ class TargetCameraPanel(bpy.types.Panel):
 			col = box.column(align = True)
 			col.prop(target, '["loading time"]', slider = False, text = "Loading Time")
 			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
+			
+			col = box.column(align = True)
+			col.label("Interpolation In")
+			col.prop(target, '["easy in"]', slider = False, text = "Slow")
+			col.prop(target, '["strength in"]', slider = False, text = "Influence")
+			
+			col = box.column(align = True)
+			col.label("Interpolation Out")
+			col.prop(target, '["easy out"]', slider = False, text = "Slow")
+			col.prop(target, '["strength out"]', slider = False, text = "Influence")
 			
 		col = layout.column(align = True)
 		col.label("Camera Wiggle")
