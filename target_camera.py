@@ -432,11 +432,6 @@ class TargetCameraPanel(bpy.types.Panel):
 			delete.currentIndex = i
 			if useListSeparator: col.separator()
 		box.operator("camera_tools.new_target_object", icon = 'PLUS')
-			
-		row = layout.row(align = True)
-		row.label("Select")
-		row.operator("camera_tools.select_target_camera", text = "Camera")
-		row.operator("camera_tools.select_movement_empty", text = "Empty")
 		
 		selectedTargets = getSelectedTargets(targetList)
 		for target in selectedTargets:
@@ -475,22 +470,6 @@ class AddTargetCamera(bpy.types.Operator):
 		
 	def execute(self, context):
 		insertTargetCamera()
-		return{"FINISHED"}
-		
-class SelectTargetCamera(bpy.types.Operator):
-	bl_idname = "camera_tools.select_target_camera"
-	bl_label = "Select Target Camera"
-	
-	def execute(self, context):
-		selectTargetCamera()
-		return{"FINISHED"}
-		
-class SelectMovementEmpty(bpy.types.Operator):
-	bl_idname = "camera_tools.select_movement_empty"
-	bl_label = "Select Movement Empty"
-	
-	def execute(self, context):
-		selectMovementEmpty()
 		return{"FINISHED"}
 		
 class SetupTargetObject(bpy.types.Operator):
