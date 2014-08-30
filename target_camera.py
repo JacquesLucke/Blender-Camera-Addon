@@ -84,6 +84,7 @@ def newMovementEmpty():
 	movement = newEmpty(name = movementEmptyName, location = [0, 0, 0])
 	movement.empty_draw_size = 0.2
 	makePartOfTargetCamera(movement)
+	movement.hide = True
 	return movement
 	
 def newDistanceEmpty():
@@ -112,7 +113,7 @@ def newDataEmpty():
 	setCustomProperty(dataEmpty, "travel", 1.0, min = 1.0)
 	setCustomProperty(dataEmpty, "stops", [])
 	setCustomProperty(dataEmpty, "wiggle strength", 0.0, min = 0.0, max = 1.0)
-	setCustomProperty(dataEmpty, "wiggle scale", 3.0, min = 0.0)
+	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 0.0)
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
 	makePartOfTargetCamera(dataEmpty)
@@ -443,8 +444,8 @@ class TargetCameraPanel(bpy.types.Panel):
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
 			
 			col = box.column(align = True)
-			col.prop(target, '["loading time"]', slider = False)
-			col.prop(target, '["stay time"]', slider = False)
+			col.prop(target, '["loading time"]', slider = False, text = "Loading Time")
+			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
 			
 		col = layout.column(align = True)
 		col.label("Wiggle")
