@@ -501,10 +501,10 @@ class TargetCameraPanel(bpy.types.Panel):
 			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
 			
 			col = box.column(align = True)
-			copyToAll = col.operator("camera_tools.copy_interpolation_properties_to_all", text = "Copy to All")
-			copyToAll.currentIndex = targetList.index(target)
 			col.prop(target, '["easy in"]', slider = False, text = "Slow In")
 			col.prop(target, '["easy out"]', slider = False, text = "Slow Out")
+			copyToAll = col.operator("camera_tools.copy_interpolation_properties_to_all", text = "Copy to All")
+			copyToAll.currentIndex = targetList.index(target)			
 			
 		col = layout.column(align = True)
 		col.label("Camera Wiggle")
