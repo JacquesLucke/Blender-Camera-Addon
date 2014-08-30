@@ -21,8 +21,8 @@ shouldRecalculate = False
 #################################
 
 def insertTargetCamera():
-	removeOldTargetCameraObjects()
 	oldSelection = getSelectedObjects()
+	removeOldTargetCameraObjects()
 
 	camera = newCamera()
 	movement = newMovementEmpty()
