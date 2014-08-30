@@ -201,6 +201,10 @@ def createTravelAnimation(targetList):
 		dataEmpty.keyframe_insert(data_path='["travel"]', frame = frame)
 		stops.append(frame)
 		
+		frame += getStayTime(targetList[i])
+		dataEmpty["travel"] = float(i + 1)
+		dataEmpty.keyframe_insert(data_path='["travel"]', frame = frame)
+		
 	slowAnimationOnEachKeyframe(dataEmpty, '["travel"]')
 	setStops(dataEmpty, stops)
 
@@ -232,6 +236,7 @@ def newRealTarget(target):
 	setParentWithoutInverse(empty, target)
 	
 	setCustomProperty(empty, "loading time", 30, min = 1)
+	setCustomProperty(empty, "stay time", 20, min = 0)
 	
 	return empty
 	
@@ -364,6 +369,9 @@ def setStops(dataEmpty, stops):
 def getLoadingTime(target):
 	return target["loading time"]
 	
+def getStayTime(target):
+	return target["stay time"]
+	
 def getWiggleScale(dataEmpty):
 	return dataEmpty["wiggle scale"]
 	
@@ -433,7 +441,10 @@ class TargetCameraPanel(bpy.types.Panel):
 		for target in selectedTargets:
 			box = layout.box()
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
-			box.prop(target, '["loading time"]', slider = False)
+			
+			col = box.column(align = True)
+			col.prop(target, '["loading time"]', slider = False)
+			col.prop(target, '["stay time"]', slider = False)
 			
 		col = layout.column(align = True)
 		col.label("Wiggle")
