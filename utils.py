@@ -226,7 +226,7 @@ def setKeyframeHandleType(keyframe, type):
 	
 def getKeyframePoints(object, dataPath, index = 0):
 	fcurves = getFCurvesWithDataPath(object, dataPath)
-	if len(fcurves) > index: fcurves[index].keyframe_points
+	if len(fcurves) > index: return fcurves[index].keyframe_points
 	return []
 		
 def getSelectedObjects():
