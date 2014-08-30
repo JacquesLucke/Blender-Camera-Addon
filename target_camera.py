@@ -324,6 +324,16 @@ def getFrameOfTravelValue(travel):
 			return stops[int(travel - 1)]
 	else: return 1
 	
+def copyInterpolationProperties(index):
+	targets = getTargetList()
+	sourceTarget = targets[index]
+	easyIn = sourceTarget["easy in"]
+	easyOut = sourceTarget["easy out"]
+	
+	for target in targets:
+		target["easy in"] = easyIn
+		target["easy out"] = easyOut
+	
 	
 # utilities
 #############################
@@ -491,6 +501,8 @@ class TargetCameraPanel(bpy.types.Panel):
 			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
 			
 			col = box.column(align = True)
+			copyToAll = col.operator("camera_tools.copy_interpolation_properties_to_all", text = "Copy to All")
+			copyToAll.currentIndex = targetList.index(target)
 			col.prop(target, '["easy in"]', slider = False, text = "Slow In")
 			col.prop(target, '["easy out"]', slider = False, text = "Slow Out")
 			
@@ -596,6 +608,16 @@ class GoToPreviousTarget(bpy.types.Operator):
 	
 	def execute(self, context):
 		goToPreviousTarget()
+		return{"FINISHED"}
+		
+class CopyInterpolationPropertiesToAll(bpy.types.Operator):
+	bl_idname = "camera_tools.copy_interpolation_properties_to_all"
+	bl_label = "Copy Interpolation Properties"
+	bl_description = "All targets will have these interpolation values."
+	currentIndex = bpy.props.IntProperty()
+	
+	def execute(self, context):
+		copyInterpolationProperties(self.currentIndex)
 		return{"FINISHED"}
 
 		
