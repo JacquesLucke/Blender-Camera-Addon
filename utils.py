@@ -20,8 +20,8 @@ Created by Jacques Lucke
 
 import bpy
 
-def newEmpty(name = "Empty", location = [0, 0, 0], hide = False):
-	bpy.ops.object.empty_add(location = location, type = "PLAIN_AXES")
+def newEmpty(name = "Empty", location = [0, 0, 0], hide = False, type = "PLAIN_AXES"):
+	bpy.ops.object.empty_add(location = location, type = type)
 	empty = bpy.context.object
 	empty.name = name
 	if hide:

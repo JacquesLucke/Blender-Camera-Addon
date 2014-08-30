@@ -444,9 +444,9 @@ class TargetCameraPanel(bpy.types.Panel):
 			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
 			
 		col = layout.column(align = True)
-		col.label("Wiggle")
+		col.label("Camera Wiggle")
 		col.prop(dataEmpty, '["wiggle strength"]', text = "Strength")
-		col.prop(dataEmpty, '["wiggle scale"]', text = "Scale")
+		col.prop(dataEmpty, '["wiggle scale"]', text = "Time Scale")
 		
 		if calculatedTargetAmount != getTargetAmount(): shouldRecalculate = True
 		if oldWiggleScale != getWiggleScale(dataEmpty): shouldRecalculate = True
