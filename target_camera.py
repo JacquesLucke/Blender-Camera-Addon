@@ -241,10 +241,10 @@ def getInterpolationParameters(target):
 	strengthIn = clamp(target["strength in"], 0, 1)
 	easyOut = clamp(target["easy out"], 0, 1)
 	strengthOut = clamp(target["strength out"], 0, 1)
-	target["easy in"] = easyIn
-	target["strength in"] = strengthIn
-	target["easy out"] = easyOut
-	target["strength out"] = strengthOut
+	target["easy in"] = float(easyIn)
+	target["strength in"] = float(strengthIn)
+	target["easy out"] = float(easyOut)
+	target["strength out"] = float(strengthOut)
 	return (easyIn, strengthIn, easyOut, strengthOut)
 
 	
