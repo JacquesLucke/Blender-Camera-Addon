@@ -154,12 +154,9 @@ def createFullAnimation(targetList):
 	shouldRecalculate = False
 	
 def cleanupScene(targetList):
-	deselectAll()
 	for object in bpy.context.scene.objects:
 		if isTargetName(object.name) and object not in targetList:
-			object.select = True
-			object.hide = False
-	bpy.ops.object.delete()	
+			delete(object)	
 	
 def removeAnimation():
 	clearAnimation(getDataEmpty(), '["travel"]')

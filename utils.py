@@ -195,7 +195,10 @@ def slowAnimationOnEachKeyframe(object, dataPath):
 			keyframe.handle_right.y = keyframe.co.y
 		
 def hasAnimationData(object):
-	return object.animation_data is not None
+	if object.animation_data is not None:
+		if object.animation_data.action is not None:
+			return True
+	return False
 
 def getFCurvesWithDataPath(object, dataPath):
 	fcurves = []
@@ -222,7 +225,9 @@ def setKeyframeHandleType(keyframe, type):
 	keyframe.handle_right_type = type
 	
 def getKeyframePoints(object, dataPath, index = 0):
-	return getFCurvesWithDataPath(object, dataPath)[index].keyframe_points
+	fcurves = getFCurvesWithDataPath(object, dataPath)
+	if len(fcurves) > index: fcurves[index].keyframe_points
+	return []
 		
 def getSelectedObjects():
 	return bpy.context.selected_objects
@@ -239,10 +244,7 @@ def isTextObject(object):
 	return False
 	
 def delete(object):
-	deselectAll()
-	object.hide = False
-	setActive(object)
-	bpy.ops.object.delete()
+	bpy.context.scene.objects.unlink(object)
 	
 def getCurrentFrame():
 	return bpy.context.screen.scene.frame_current
