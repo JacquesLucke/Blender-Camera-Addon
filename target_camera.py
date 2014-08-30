@@ -237,16 +237,24 @@ def positionKeyframeHandles(targetList):
 			
 		
 def getInterpolationParameters(target):
-	easyIn = clamp(target["easy in"], 0, 1)
-	strengthIn = clamp(target["strength in"], 0, 1)
-	easyOut = clamp(target["easy out"], 0, 1)
-	strengthOut = clamp(target["strength out"], 0, 1)
-	target["easy in"] = float(easyIn)
-	target["strength in"] = float(strengthIn)
-	target["easy out"] = float(easyOut)
-	target["strength out"] = float(strengthOut)
-	return (easyIn, strengthIn, easyOut, strengthOut)
-
+	target["easy in"] = clamp(target["easy in"], 0.0, 1.0)
+	target["easy out"] = clamp(target["easy out"], 0.0, 1.0)
+	(easyIn, influenceIn) = getInterpolationParametersFromSingleValue(target["easy in"])
+	(easyOut, influenceOut) = getInterpolationParametersFromSingleValue(target["easy out"])
+	return (easyIn, influenceIn, easyOut, influenceOut)
+	
+def getInterpolationParametersFromSingleValue(easyValue):
+	easyValue = clamp(easyValue, 0, 1)
+	if easyValue < 0.2:
+		easy = 0
+		influence = 0.5 + (0.2 - easyValue) * 2.5
+	elif easyValue > 0.8:
+		easy = 1
+		influence = 0.5 + (easyValue - 0.8) * 2.5
+	else:
+		easy = (easyValue - 0.2) * 5 / 3
+		influence = 0.5
+	return (easy, influence)
 	
 # target operations
 #############################
@@ -274,12 +282,10 @@ def newRealTarget(target):
 	empty.empty_draw_size = 0.4
 	setParentWithoutInverse(empty, target)
 	
-	setCustomProperty(empty, "loading time", 20, min = 1)
+	setCustomProperty(empty, "loading time", 25, min = 1)
 	setCustomProperty(empty, "stay time", 20, min = 0)
-	setCustomProperty(empty, "easy in", 1.0, min = 0.0, max = 1.0)
-	setCustomProperty(empty, "strength in", 0.5, min = 0.0, max = 1.0)
-	setCustomProperty(empty, "easy out", 1.0, min = 0.0, max = 1.0)
-	setCustomProperty(empty, "strength out", 0.5, min = 0.0, max = 1.0)
+	setCustomProperty(empty, "easy in", 0.8, min = 0.0, max = 1.0)
+	setCustomProperty(empty, "easy out", 0.8, min = 0.0, max = 1.0)
 	
 	return empty
 	
@@ -485,14 +491,8 @@ class TargetCameraPanel(bpy.types.Panel):
 			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
 			
 			col = box.column(align = True)
-			col.label("Interpolation In")
-			col.prop(target, '["easy in"]', slider = False, text = "Slow")
-			col.prop(target, '["strength in"]', slider = False, text = "Influence")
-			
-			col = box.column(align = True)
-			col.label("Interpolation Out")
-			col.prop(target, '["easy out"]', slider = False, text = "Slow")
-			col.prop(target, '["strength out"]', slider = False, text = "Influence")
+			col.prop(target, '["easy in"]', slider = False, text = "Slow In")
+			col.prop(target, '["easy out"]', slider = False, text = "Slow Out")
 			
 		col = layout.column(align = True)
 		col.label("Camera Wiggle")
