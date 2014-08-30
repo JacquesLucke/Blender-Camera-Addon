@@ -7,6 +7,7 @@ dataEmptyName = "TARGET CAMERA CONTAINER"
 strongWiggleEmptyName = "STRONG WIGGLE"
 wiggleEmptyName = "WIGGLE"
 distanceEmptyName = "DISTANCE"
+realTargetPrefix = "REAL TARGET"
 partOfTargetCamera = "part of target camera"
 
 useListSeparator = False
@@ -189,7 +190,7 @@ def newRealTarget(target):
 	setActive(target)
 	bpy.ops.object.origin_set(type = 'ORIGIN_GEOMETRY')
 
-	empty = newEmpty(name = "REAL TARGET", location = [0, 0, 0])
+	empty = newEmpty(name = realTargetPrefix, location = [0, 0, 0])
 	empty.empty_draw_size = 0.4
 	setParentWithoutInverse(empty, target)
 	
@@ -285,7 +286,7 @@ def isValidTarget(target):
 	return False
 	
 def isTargetName(name):
-	return name[:11] == "REAL TARGET"
+	return name[:len(realTargetPrefix)] == realTargetPrefix
 	
 def getKeyframeDistance():
 	return getTargetCamera().get(keyframeDistancePropertyName)
