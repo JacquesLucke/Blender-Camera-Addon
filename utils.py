@@ -163,25 +163,33 @@ def seperateTextObject(textObject, seperator = "\n"):
 		newText(name = textList[i], location = [0, -i, 0], text = textList[i])
 	
 def clearAnimation(object, dataPath):
-	try:
-		for fcurve in object.animation_data.action.fcurves:
-			if fcurve.data_path == dataPath:
-				for keyframe in fcurve.keyframe_points:
-					object.keyframe_delete(dataPath, frame = keyframe.co.x)
-				for keyframe in fcurve.keyframe_points:
-					object.keyframe_delete(dataPath, frame = keyframe.co.x)
-	except:
-		print("can't delete animation")
+	fcurves = getFCurvesWithDataPath(object, dataPath)
+	for fcurve in fcurves:
+		deleteKeyframesInFCurve(object, fcurve)
 		
 def slowAnimationOnEachKeyframe(object, dataPath):
-	try:
+	fcurves = getFCurvesWithDataPath(object, dataPath)
+	for fcurve in fcurves:
+		for keyframe in fcurve.keyframe_points:
+			keyframe.handle_left.y = keyframe.co.y
+			keyframe.handle_right.y = keyframe.co.y
+		
+def hasAnimationData(object):
+	return object.animation_data is not None
+
+def getFCurvesWithDataPath(object, dataPath):
+	fcurves = []
+	if hasAnimationData(object):
 		for fcurve in object.animation_data.action.fcurves:
 			if fcurve.data_path == dataPath:
-				for keyframe in fcurve.keyframe_points:
-					keyframe.handle_left.y = keyframe.co.y
-					keyframe.handle_right.y = keyframe.co.y
-	except:
-		print("can't change keyframes")
+				fcurves.append(fcurve)
+	return fcurves
+	
+def deleteKeyframesInFCurve(object, fcurve):
+	for keyframe in fcurve.keyframe_points:
+		object.keyframe_delete(fcurve.data_path, frame = keyframe.co.x)
+	for keyframe in fcurve.keyframe_points:
+		object.keyframe_delete(fcurve.data_path, frame = keyframe.co.x)
 		
 def getSelectedObjects():
 	return bpy.context.selected_objects
