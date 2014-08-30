@@ -63,6 +63,7 @@ class CameraToolsPanel(bpy.types.Panel):
 class SetActiveCameraOperator(bpy.types.Operator):
 	bl_idname = "camera_tools.set_active_camera"
 	bl_label = "Set Active Camera"
+	bl_description = "Set selected camera as camera which will render."
 	
 	def execute(self, context):
 		bpy.context.scene.camera = getActive()
@@ -71,6 +72,7 @@ class SetActiveCameraOperator(bpy.types.Operator):
 class TextToNameOperator(bpy.types.Operator):
 	bl_idname = "camera_tools.text_to_name"
 	bl_label = "Text to Name"
+	bl_description = "Rename all text objects to their content."
 	
 	def execute(self, context):
 		textToName()
@@ -79,6 +81,7 @@ class TextToNameOperator(bpy.types.Operator):
 class SeperateTextOperator(bpy.types.Operator):
 	bl_idname = "camera_tools.seperate_text"
 	bl_label = "Seperate Text"
+	bl_description = "Create new text object for every line in active text object."
 	
 	def execute(self, context):
 		active = getActive()

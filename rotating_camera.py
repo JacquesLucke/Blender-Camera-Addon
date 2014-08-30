@@ -245,6 +245,7 @@ class CameraSettingsPanel(bpy.types.Panel):
 class AddRotatingCameraOperator(bpy.types.Operator):
 	bl_idname = "camera_tools.add_rotating_camera"
 	bl_label = "Add Rotating Camera"
+	bl_description = "Create rotating camera around the active object."
 	
 	def execute(self, context):
 		insertRotatingCamera()

@@ -78,6 +78,7 @@ def newCamera():
 	camera.name = targetCameraName
 	camera.rotation_euler = [0, 0, 0]
 	makePartOfTargetCamera(camera)
+	bpy.context.scene.camera = camera
 	return camera
 	
 def newMovementEmpty():
@@ -236,7 +237,7 @@ def newRealTarget(target):
 	empty.empty_draw_size = 0.4
 	setParentWithoutInverse(empty, target)
 	
-	setCustomProperty(empty, "loading time", 30, min = 1)
+	setCustomProperty(empty, "loading time", 20, min = 1)
 	setCustomProperty(empty, "stay time", 20, min = 0)
 	
 	return empty
@@ -452,7 +453,6 @@ class TargetCameraPanel(bpy.types.Panel):
 		
 		if shouldRecalculate:
 			layout.label("You should recalculate the animation", icon = 'ERROR')
-		#layout.operator("camera_tools.dummy")
 
 		
 		
@@ -463,6 +463,7 @@ class TargetCameraPanel(bpy.types.Panel):
 class AddTargetCamera(bpy.types.Operator):
 	bl_idname = "camera_tools.insert_target_camera"
 	bl_label = "Add Target Camera"
+	bl_description = "Create new active camera and create targets from selection."
 	
 	@classmethod
 	def poll(self, context):
@@ -475,6 +476,7 @@ class AddTargetCamera(bpy.types.Operator):
 class SetupTargetObject(bpy.types.Operator):
 	bl_idname = "camera_tools.new_target_object"
 	bl_label = "New Targets From Selection"
+	bl_description = "Use selected objects as targets."
 	
 	def execute(self, context):
 		newTargets()
@@ -483,6 +485,7 @@ class SetupTargetObject(bpy.types.Operator):
 class DeleteTargetOperator(bpy.types.Operator):
 	bl_idname = "camera_tools.delete_target"
 	bl_label = "Delete Target"
+	bl_description = "Delete the target from the list."
 	currentIndex = bpy.props.IntProperty()
 	
 	def execute(self, context):
@@ -492,6 +495,7 @@ class DeleteTargetOperator(bpy.types.Operator):
 class RecalculateAnimationOperator(bpy.types.Operator):
 	bl_idname = "camera_tools.recalculate_animation"
 	bl_label = "Recalculate Animation"
+	bl_description = "Regenerates most of the constraints, drivers and keyframes."
 	
 	def execute(self, context):
 		createFullAnimation(getTargetList())
@@ -518,6 +522,7 @@ class MoveTargetDown(bpy.types.Operator):
 class SelectTarget(bpy.types.Operator):
 	bl_idname = "camera_tools.select_target"
 	bl_label = "Select Target"
+	bl_description = "Select that target."
 	currentIndex = bpy.props.IntProperty()
 	
 	def execute(self, context):
@@ -527,6 +532,7 @@ class SelectTarget(bpy.types.Operator):
 class GoToNextTarget(bpy.types.Operator):		
 	bl_idname = "camera_tools.go_to_next_target"
 	bl_label = "Go To Next Target"
+	bl_description = "Change frame to show next target."
 	
 	def execute(self, context):
 		goToNextTarget()
@@ -535,18 +541,10 @@ class GoToNextTarget(bpy.types.Operator):
 class GoToPreviousTarget(bpy.types.Operator):		
 	bl_idname = "camera_tools.go_to_previous_target"
 	bl_label = "Go To Previous Target"
+	bl_description = "Change frame to show previous target."
 	
 	def execute(self, context):
 		goToPreviousTarget()
-		return{"FINISHED"}
-
-class dummy(bpy.types.Operator):
-	bl_idname = "camera_tools.dummy"
-	bl_label = "dummy"
-	currentIndex = bpy.props.IntProperty()
-	
-	def execute(self, context):
-		moveTargetUp(self.currentIndex)
 		return{"FINISHED"}
 
 		
