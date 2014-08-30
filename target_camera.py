@@ -6,6 +6,7 @@ movementEmptyName = "MOVEMENT"
 dataEmptyName = "TARGET CAMERA CONTAINER"
 strongWiggleEmptyName = "STRONG WIGGLE"
 wiggleEmptyName = "WIGGLE"
+distanceEmptyName = "DISTANCE"
 partOfTargetCamera = "part of target camera"
 
 useListSeparator = False
@@ -22,17 +23,18 @@ def insertTargetCamera():
 
 	camera = newCamera()
 	movement = newMovementEmpty()
+	distanceEmpty = newDistanceEmpty()
 	strongWiggle = newStrongWiggleEmpty()
 	wiggle = newWiggleEmpty()
 	dataEmpty = newDataEmpty()
 	
 	movement.parent = dataEmpty
-	strongWiggle.parent = movement
-	wiggle.parent = movement
+	distanceEmpty.parent = movement
+	strongWiggle.parent = distanceEmpty
+	wiggle.parent = distanceEmpty
 	camera.parent = wiggle;
 	
-	strongWiggle.location.z = 4
-	wiggle.location.z = 4
+	distanceEmpty.location.z = 4
 	
 	setActive(camera)
 	bpy.context.object.data.dof_object = movement
@@ -61,6 +63,12 @@ def newMovementEmpty():
 	movement.empty_draw_size = 0.2
 	makePartOfTargetCamera(movement)
 	return movement
+	
+def newDistanceEmpty():
+	distanceEmpty = newEmpty(name = distanceEmptyName, location = [0, 0, 0])
+	distanceEmpty.empty_draw_size = 0.2
+	makePartOfTargetCamera(distanceEmpty)
+	return distanceEmpty
 
 def newStrongWiggleEmpty():
 	strongWiggle = newEmpty(name = strongWiggleEmptyName, location = [0, 0, 0])
