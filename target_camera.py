@@ -13,6 +13,8 @@ partOfTargetCamera = "part of target camera"
 useListSeparator = False
 
 calculatedTargetAmount = 0
+oldWiggleScale = 3
+shouldRecalculate = False
 
 
 # insert basic camera setup
@@ -40,7 +42,6 @@ def insertTargetCamera():
 	setActive(camera)
 	bpy.context.object.data.dof_object = movement
 	
-	insertWiggle(strongWiggle, "location", 5, 1)
 	insertWiggleConstraint(wiggle, strongWiggle, dataEmpty)
 	
 	setSelectedObjects(oldSelection)
@@ -69,6 +70,7 @@ def newDistanceEmpty():
 	distanceEmpty = newEmpty(name = distanceEmptyName, location = [0, 0, 0])
 	distanceEmpty.empty_draw_size = 0.2
 	makePartOfTargetCamera(distanceEmpty)
+	distanceEmpty.hide = True
 	return distanceEmpty
 
 def newStrongWiggleEmpty():
@@ -90,6 +92,7 @@ def newDataEmpty():
 	setCustomProperty(dataEmpty, "travel", 1.0, min = 1.0)
 	setCustomProperty(dataEmpty, "stops", [])
 	setCustomProperty(dataEmpty, "wiggle strength", 0.2, min = 0.0, max = 1.0)
+	setCustomProperty(dataEmpty, "wiggle scale", 3.0, min = 0.0)
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
 	makePartOfTargetCamera(dataEmpty)
@@ -109,7 +112,7 @@ def recalculateAnimation():
 	createFullAnimation(getTargetList())
 	
 def createFullAnimation(targetList):
-	global calculatedTargetAmount
+	global calculatedTargetAmount, shouldRecalculate
 	cleanupScene(targetList)
 	removeAnimation()
 
@@ -117,12 +120,16 @@ def createFullAnimation(targetList):
 	dataEmpty = getDataEmpty()
 	deleteAllConstraints(movement)
 	
+	createWiggleModifiers()
+	
 	for target in targetList:
 		createConstraintSet(target)
 		
 	createTravelToConstraintDrivers()
 	createTravelAnimation(targetList)
 	calculatedTargetAmount = getTargetAmount()
+	
+	shouldRecalculate = False
 	
 def cleanupScene(targetList):
 	deselectAll()
@@ -134,6 +141,16 @@ def cleanupScene(targetList):
 	
 def removeAnimation():
 	clearAnimation(getDataEmpty(), '["travel"]')
+	
+def createWiggleModifiers():
+	global oldWiggleScale
+	strongWiggle = getStrongWiggle()
+	dataEmpty = getDataEmpty()
+	wiggleScale = getWiggleScale(dataEmpty)
+	clearAnimation(strongWiggle, "location")
+	strongWiggle.location = [0, 0, 0]
+	insertWiggle(strongWiggle, "location", 6, wiggleScale)
+	oldWiggleScale = wiggleScale
 	
 def createConstraintSet(target):
 	movement = getMovementEmpty()
@@ -246,6 +263,8 @@ def getMovementEmpty():
 	return bpy.data.objects.get(movementEmptyName)
 def getDataEmpty():
 	return bpy.data.objects.get(dataEmptyName)
+def getStrongWiggle():
+	return bpy.data.objects.get(strongWiggleEmptyName)
 			
 def isTargetCamera(object):
 	return object.name == targetCameraName
@@ -325,6 +344,9 @@ def setStops(dataEmpty, stops):
 def getLoadingTime(target):
 	return target["loading time"]
 	
+def getWiggleScale(dataEmpty):
+	return dataEmpty["wiggle scale"]
+	
 def makePartOfTargetCamera(object):
 	object[partOfTargetCamera] = "1"
 	
@@ -349,6 +371,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		return targetCameraExists()
 	
 	def draw(self, context):
+		global shouldRecalculate
+		
 		layout = self.layout
 		
 		camera = getTargetCamera()
@@ -391,9 +415,15 @@ class TargetCameraPanel(bpy.types.Panel):
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
 			box.prop(target, '["loading time"]', slider = False)
 			
-		layout.prop(dataEmpty, '["wiggle strength"]')
+		col = layout.column(align = True)
+		col.label("Wiggle")
+		col.prop(dataEmpty, '["wiggle strength"]', text = "Strength")
+		col.prop(dataEmpty, '["wiggle scale"]', text = "Scale")
 		
-		if calculatedTargetAmount != getTargetAmount():
+		if calculatedTargetAmount != getTargetAmount(): shouldRecalculate = True
+		if oldWiggleScale != getWiggleScale(dataEmpty): shouldRecalculate = True
+		
+		if shouldRecalculate:
 			layout.label("You should recalculate the animation", icon = 'ERROR')
 		#layout.operator("camera_tools.dummy")
 
