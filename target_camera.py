@@ -361,18 +361,19 @@ def createInertiaAnimation(dataEmpty, inertiaBases):
 	for i in range(0, len(travelKeyframes), 2):
 		travelKeyframe = travelKeyframes[i]
 		startFrame = travelKeyframe.co.x
-		if i < len(travelKeyframes): endFrame = travelKeyframes[i+1].co.x
+		if i+1 < len(travelKeyframes): endFrame = travelKeyframes[i+1].co.x
 		else: endFrame = startFrame
-		base = inertiaBases[int(i/2)]
-		dataPath = 'constraints["'+base.constraints[1].name+'"].influence'
-		base.keyframe_insert(data_path=dataPath, frame = startFrame)
-		base.keyframe_insert(data_path=dataPath, frame = endFrame)
-		
-		keyframes = getKeyframePoints(base, dataPath)
-		keyframe = keyframes[0]
-		keyframe.interpolation = "ELASTIC"
-		keyframe.amplitude = 0.3
-		keyframe.period = 7
+		if int(i/2) < len(inertiaBases):
+			base = inertiaBases[int(i/2)]
+			dataPath = 'constraints["'+base.constraints[1].name+'"].influence'
+			base.keyframe_insert(data_path=dataPath, frame = startFrame)
+			base.keyframe_insert(data_path=dataPath, frame = endFrame)
+			
+			keyframes = getKeyframePoints(base, dataPath)
+			keyframe = keyframes[0]
+			keyframe.interpolation = "ELASTIC"
+			keyframe.amplitude = 0.3
+			keyframe.period = 7
 		
 		
 		
@@ -565,9 +566,9 @@ def setStops(dataEmpty, stops):
 	
 	
 def getLoadingTime(target):
-	return target["loading time"]
+	return max(target["loading time"], 1)
 def getStayTime(target):
-	return target["stay time"]
+	return max(target["stay time"], 1)
 def getWiggleScale(dataEmpty):
 	return dataEmpty["wiggle scale"]
 def getTravelValue():
