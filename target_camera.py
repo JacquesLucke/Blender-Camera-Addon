@@ -160,8 +160,12 @@ def createFullAnimation(targetList):
 	
 	createWiggleModifiers()
 	
-	for target in targetList:
-		(base) = createInertiaEmpties(target, target)
+	for i in range(len(targetList)):
+		target = targetList[i]
+		if i == 0: targetBefore = target
+		else: targetBefore = targetList[i-1]
+		
+		(base, emptyAfter) = createInertiaEmpties(target, targetBefore)
 		createConstraintSet(movement, base)
 		createConstraintSet(focus, getTargetObjectFromTarget(base))
 		
@@ -184,10 +188,42 @@ def removeAnimation():
 	clearAnimation(getDataEmpty(), travelDataPath)
 	
 def createInertiaEmpties(target, before):
-	base = newEmpty(name = "base")
-	makeDeleteOnRecalculation(base)
+	base = newEmpty(name = "base", type = "SPHERE")
+	base.empty_draw_size = 0.15
+	
+	emptyAfter = newEmpty(name = "after inertia")
+	emptyAfter.empty_draw_size = 0.1
+	
 	setParentWithoutInverse(base, target)
-	return (base)
+	#setParentWithoutInverse(emptyAfter, base)
+	
+	makeDeleteOnRecalculation(base)
+	makeDeleteOnRecalculation(emptyAfter)
+	
+	createPositionDriver(emptyAfter, target, before)
+	return (base, emptyAfter)
+def createPositionDriver(emptyAfter, target, before):
+	distance = 5
+	
+	driver = newDriver(emptyAfter, "location", index = 0)
+	linkVariablesToIntertiaDriver(driver, target, before)
+	driver.expression = "(x1-x2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+x1"
+	
+	driver = newDriver(emptyAfter, "location", index = 1)
+	linkVariablesToIntertiaDriver(driver, target, before)
+	driver.expression = "(y1-y2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+y1"
+	
+	driver = newDriver(emptyAfter, "location", index = 2)
+	linkVariablesToIntertiaDriver(driver, target, before)
+	driver.expression = "(z1-z2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+z1"
+	
+def linkVariablesToIntertiaDriver(driver, target, before):
+	linkTransformChannelToDriver(driver, "x1", target, "LOC_X")
+	linkTransformChannelToDriver(driver, "x2", before, "LOC_X")
+	linkTransformChannelToDriver(driver, "y1", target, "LOC_Y")
+	linkTransformChannelToDriver(driver, "y2", before, "LOC_Y")
+	linkTransformChannelToDriver(driver, "z1", target, "LOC_Z")
+	linkTransformChannelToDriver(driver, "z2", before, "LOC_Z")
 	
 def createWiggleModifiers():
 	global oldWiggleScale
