@@ -642,6 +642,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		box.operator("camera_tools.new_target_object", icon = 'PLUS')
 		
 		selectedTargets = getSelectedTargets(targetList)
+		selectedTargets.reverse()
 		for target in selectedTargets:
 			box = layout.box()
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")

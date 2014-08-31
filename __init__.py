@@ -51,6 +51,7 @@ class CameraToolsPanel(bpy.types.Panel):
 		col = layout.column(align = True)
 		col.operator("camera_tools.insert_target_camera", icon = "OUTLINER_DATA_CAMERA")
 		col.operator("camera_tools.add_rotating_camera", icon = "OUTLINER_DATA_CAMERA")
+		if target_camera.targetCameraExists(): col.label("Settings are in 'Target Camera' tab.", icon = "INFO")
 		
 		col = layout.column(align = True)
 		col.operator("camera_tools.set_active_camera")
