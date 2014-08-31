@@ -358,13 +358,19 @@ def createInertiaAnimation(dataEmpty, inertiaBases):
 	travelKeyframes = getKeyframePoints(dataEmpty, travelDataPath)
 	
 	for i in range(0, len(travelKeyframes), 2):
-		keyframe = travelKeyframes[i]
-		startFrame = keyframe.co.x
+		travelKeyframe = travelKeyframes[i]
+		startFrame = travelKeyframe.co.x
 		endFrame = travelKeyframes[i+1].co.x
 		base = inertiaBases[int(i/2)]
 		dataPath = 'constraints["'+base.constraints[1].name+'"].influence'
 		base.keyframe_insert(data_path=dataPath, frame = startFrame)
 		base.keyframe_insert(data_path=dataPath, frame = endFrame)
+		
+		keyframes = getKeyframePoints(base, dataPath)
+		keyframe = keyframes[0]
+		keyframe.interpolation = "ELASTIC"
+		keyframe.amplitude = 0.3
+		keyframe.period = 6
 	
 # target operations
 #############################
