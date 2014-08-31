@@ -617,7 +617,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		dataEmpty = getDataEmpty()
 		targetList = getTargetList()
 		
-		layout.operator("camera_tools.recalculate_animation", text = "Recalculate")
+		layout.operator("camera_tools.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
 			
 		row = layout.row(align = True)
 		row.operator("camera_tools.go_to_previous_target", icon = 'TRIA_LEFT', text = "")

@@ -49,8 +49,8 @@ class CameraToolsPanel(bpy.types.Panel):
 		layout = self.layout
 		
 		col = layout.column(align = True)
-		col.operator("camera_tools.add_rotating_camera")
-		col.operator("camera_tools.insert_target_camera")
+		col.operator("camera_tools.insert_target_camera", icon = "OUTLINER_DATA_CAMERA")
+		col.operator("camera_tools.add_rotating_camera", icon = "OUTLINER_DATA_CAMERA")
 		
 		col = layout.column(align = True)
 		col.operator("camera_tools.set_active_camera")
