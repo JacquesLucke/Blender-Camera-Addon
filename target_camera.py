@@ -313,7 +313,6 @@ def goToNextTarget():
 	travel = getTravelValue()
 	newTravel = math.floor(travel) + 1
 	bpy.context.screen.scene.frame_current = getFrameOfTravelValue(newTravel)
-	
 def goToPreviousTarget():
 	travel = getTravelValue()
 	newTravel = math.ceil(travel) - 1
@@ -346,6 +345,10 @@ def copyInterpolationProperties(index):
 def targetCameraExists():
 	if getTargetCamera() is None: return False
 	else: return True
+def isTargetCamera(object):
+	return object.name == targetCameraName
+	
+	
 def getTargetCamera():
 	return bpy.data.objects.get(targetCameraName)
 def getMovementEmpty():
@@ -354,9 +357,7 @@ def getDataEmpty():
 	return bpy.data.objects.get(dataEmptyName)
 def getStrongWiggle():
 	return bpy.data.objects.get(strongWiggleEmptyName)
-			
-def isTargetCamera(object):
-	return object.name == targetCameraName
+	
 	
 def selectTargetCamera():
 	camera = getTargetCamera()
@@ -364,19 +365,17 @@ def selectTargetCamera():
 		deselectAll()
 		camera.select = True
 		setActive(camera)
-		
 def selectMovementEmpty():
 	deselectAll()
 	setActive(getMovementEmpty())
-		
 def selectTarget(index):
 	deselectAll()
 	target = getTargetList()[index]
 	setActive(target)
 		
+		
 def getTargetAmount():
 	return len(getTargetList())
-	
 def getTargetList():
 	targets = []
 	uncleanedTargets = getUncleanedTargetList()
@@ -384,7 +383,13 @@ def getTargetList():
 		if isValidTarget(target) and target not in targets:
 			targets.append(target)
 	return targets
-	
+def getUncleanedTargetList():
+	movement = getMovementEmpty()
+	uncleanedTargets = []
+	for constraint in movement.constraints:
+		if hasattr(constraint, "target"):
+			uncleanedTargets.append(constraint.target)
+	return uncleanedTargets
 def isValidTarget(target):
 	if hasattr(target, "name"):
 		if isTargetName(target.name):
@@ -392,12 +397,9 @@ def isValidTarget(target):
 				if hasattr(target.parent, "name"):
 					return True
 	return False
-	
 def isTargetName(name):
 	return name[:len(realTargetPrefix)] == realTargetPrefix
 	
-def getKeyframeDistance():
-	return getTargetCamera().get(keyframeDistancePropertyName)
 	
 def getSelectedTargets(targetList):
 	objects = getSelectedObjects()
@@ -408,44 +410,36 @@ def getSelectedTargets(targetList):
 			if target not in targets:
 				targets.append(target)
 	return targets
-	
 def getTargetsFromObject(object, targetList):
 	targets = []
 	if isValidTarget(object): targets.append(object)
 	for target in targetList:
 		if target.parent.name == object.name: targets.append(target)
 	return targets
-
-def getUncleanedTargetList():
-	movement = getMovementEmpty()
-	uncleanedTargets = []
-	for constraint in movement.constraints:
-		if hasattr(constraint, "target"):
-			uncleanedTargets.append(constraint.target)
-	return uncleanedTargets
 	
-def getTravelValue():
-	return round(getDataEmpty().get(travelPropertyName), 3)
-	
-def setStops(dataEmpty, stops):
-	dataEmpty['stops'] = stops
-	
-def getLoadingTime(target):
-	return target["loading time"]
-	
-def getStayTime(target):
-	return target["stay time"]
-	
-def getWiggleScale(dataEmpty):
-	return dataEmpty["wiggle scale"]
 	
 def makePartOfTargetCamera(object):
 	object[partOfTargetCamera] = "1"
-	
 def isPartOfTargetCamera(object):
 	if object.get(partOfTargetCamera) is None:
 		return False
 	return True
+	
+	
+def setStops(dataEmpty, stops):
+	dataEmpty['stops'] = stops
+	
+	
+def getLoadingTime(target):
+	return target["loading time"]
+def getStayTime(target):
+	return target["stay time"]
+def getWiggleScale(dataEmpty):
+	return dataEmpty["wiggle scale"]
+def getTravelValue():
+	return round(getDataEmpty().get(travelPropertyName), 3)
+	
+
 
 		
 # interface
