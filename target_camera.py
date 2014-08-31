@@ -617,6 +617,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		targetList = getTargetList()
 		
 		layout.operator("camera_tools.recalculate_animation", text = "Recalculate")
+		if getCurrentSettingsHash() != oldHash:
+			layout.label("You should recalculate the animation", icon = 'ERROR')
 			
 		row = layout.row(align = True)
 		row.operator("camera_tools.go_to_previous_target", icon = 'TRIA_LEFT', text = "")
@@ -662,8 +664,6 @@ class TargetCameraPanel(bpy.types.Panel):
 		
 		layout.prop(dataEmpty, '["'+ inertiaStrengthPropertyName +'"]', text = "Inertia Strength")
 		
-		if getCurrentSettingsHash() != oldHash:
-			layout.label("You should recalculate the animation", icon = 'ERROR')
 
 		
 		
