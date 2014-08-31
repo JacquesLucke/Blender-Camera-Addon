@@ -370,7 +370,10 @@ def createInertiaAnimation(dataEmpty, inertiaBases):
 		keyframe = keyframes[0]
 		keyframe.interpolation = "ELASTIC"
 		keyframe.amplitude = 0.3
-		keyframe.period = 6
+		keyframe.period = 7
+		
+		
+		
 	
 # target operations
 #############################
@@ -653,6 +656,8 @@ class TargetCameraPanel(bpy.types.Panel):
 		col.label("Camera Wiggle")
 		col.prop(dataEmpty, wiggleStrengthDataPath, text = "Strength")
 		col.prop(dataEmpty, '["wiggle scale"]', text = "Time Scale")
+		
+		layout.prop(dataEmpty, '["inertia distance"]', text = "Inertia Strength")
 		
 		if getCurrentSettingsHash() != oldHash:
 			layout.label("You should recalculate the animation", icon = 'ERROR')
