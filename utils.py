@@ -62,6 +62,10 @@ def newDriver(object, dataPath, index = -1, type = "SCRIPTED"):
 	driver = fcurve.driver
 	driver.type = type
 	return driver
+def createCopyValueDriver(fromObject, fromPath, toObject, toPath):
+	driver = newDriver(toObject, toPath)
+	linkFloatPropertyToDriver(driver, "var", fromObject, fromPath)
+	driver.expression = "var"
 
 def linkFloatPropertyToDriver(driver, name, id, dataPath):
 	driverVariable = driver.variables.new()

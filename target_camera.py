@@ -195,27 +195,39 @@ def createInertiaEmpties(target, before):
 	emptyAfter.empty_draw_size = 0.1
 	
 	setParentWithoutInverse(base, target)
-	#setParentWithoutInverse(emptyAfter, base)
+	setParentWithoutInverse(emptyAfter, base)
 	
 	makeDeleteOnRecalculation(base)
 	makeDeleteOnRecalculation(emptyAfter)
 	
-	createPositionDriver(emptyAfter, target, before)
+	createPositionConstraint(emptyAfter, target, before)
 	return (base, emptyAfter)
-def createPositionDriver(emptyAfter, target, before):
-	distance = 5
+def createPositionConstraint(emptyAfter, target, before):
+	constraint = emptyAfter.constraints.new(type = "LIMIT_LOCATION")
+	constraint.use_min_x = True
+	constraint.use_max_x = True
+	constraint.use_min_y = True
+	constraint.use_max_y = True
+	constraint.use_min_z = True
+	constraint.use_max_z = True
+
+	distance = 1
 	
-	driver = newDriver(emptyAfter, "location", index = 0)
+	driver = newDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_x')
 	linkVariablesToIntertiaDriver(driver, target, before)
-	driver.expression = "(x1-x2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+x1"
+	driver.expression = "(x1-x2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+x1"	
+	createCopyValueDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_x', emptyAfter, 'constraints["' + constraint.name + '"].max_x')
 	
-	driver = newDriver(emptyAfter, "location", index = 1)
+	driver = newDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_y')
 	linkVariablesToIntertiaDriver(driver, target, before)
 	driver.expression = "(y1-y2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+y1"
+	createCopyValueDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_y', emptyAfter, 'constraints["' + constraint.name + '"].max_y')
 	
-	driver = newDriver(emptyAfter, "location", index = 2)
+	driver = newDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_z')
 	linkVariablesToIntertiaDriver(driver, target, before)
 	driver.expression = "(z1-z2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+z1"
+	createCopyValueDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_z', emptyAfter, 'constraints["' + constraint.name + '"].max_z')
+	
 	
 def linkVariablesToIntertiaDriver(driver, target, before):
 	linkTransformChannelToDriver(driver, "x1", target, "LOC_X")
