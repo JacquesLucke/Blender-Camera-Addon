@@ -600,7 +600,7 @@ def getHashFromTarget(target):
 class TargetCameraPanel(bpy.types.Panel):
 	bl_space_type = "VIEW_3D"
 	bl_region_type = "TOOLS"
-	bl_category = "Animation"
+	bl_category = "Target Camera"
 	bl_label = "Target Camera"
 	bl_context = "objectmode"
 	
