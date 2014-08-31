@@ -28,7 +28,12 @@ strongWiggleEmptyName = "STRONG WIGGLE"
 wiggleEmptyName = "WIGGLE"
 distanceEmptyName = "DISTANCE"
 realTargetPrefix = "REAL TARGET"
+travelPropertyName = "travel"
+wiggleStrengthPropertyName = "wiggle strength"
 partOfTargetCamera = "part of target camera"
+
+travelDataPath = '["' + travelPropertyName + '"]'
+wiggleStrengthDataPath = '["' + wiggleStrengthPropertyName + '"]'
 
 useListSeparator = False
 
@@ -111,9 +116,9 @@ def newWiggleEmpty():
 
 def newDataEmpty():
 	dataEmpty = newEmpty(name = dataEmptyName, location = [0, 0, 0])
-	setCustomProperty(dataEmpty, "travel", 1.0, min = 1.0)
+	setCustomProperty(dataEmpty, travelPropertyName, 1.0, min = 1.0)
 	setCustomProperty(dataEmpty, "stops", [])
-	setCustomProperty(dataEmpty, "wiggle strength", 0.0, min = 0.0, max = 1.0)
+	setCustomProperty(dataEmpty, wiggleStrengthPropertyName, 0.0, min = 0.0, max = 1.0)
 	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 0.0)
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
@@ -124,7 +129,7 @@ def insertWiggleConstraint(wiggle, strongWiggle, dataEmpty):
 	constraint = wiggle.constraints.new(type = "COPY_TRANSFORMS")
 	constraint.target = strongWiggle
 	driver = newDriver(wiggle, 'constraints["' + constraint.name + '"].influence')
-	linkFloatPropertyToDriver(driver, "var", dataEmpty, '["wiggle strength"]')	
+	linkFloatPropertyToDriver(driver, "var", dataEmpty, wiggleStrengthDataPath)	
 	driver.expression = "var**2"
 	
 # create animation
@@ -159,7 +164,7 @@ def cleanupScene(targetList):
 			delete(object)	
 	
 def removeAnimation():
-	clearAnimation(getDataEmpty(), '["travel"]')
+	clearAnimation(getDataEmpty(), travelDataPath)
 	
 def createWiggleModifiers():
 	global oldWiggleScale
@@ -186,7 +191,7 @@ def createTravelToConstraintDrivers():
 	for i in range(getTargetAmount()):
 		constraint = constraints[i]
 		driver = newDriver(movement, 'constraints["' + constraint.name + '"].influence')
-		linkFloatPropertyToDriver(driver, "var", dataEmpty, '["travel"]')
+		linkFloatPropertyToDriver(driver, "var", dataEmpty, travelDataPath)
 		driver.expression = "var - " + str(i)
 		
 def createTravelAnimation(targetList):
@@ -196,21 +201,21 @@ def createTravelAnimation(targetList):
 	frame = 0
 	for i in range(getTargetAmount()):
 		frame += getLoadingTime(targetList[i])
-		dataEmpty["travel"] = float(i + 1)
-		dataEmpty.keyframe_insert(data_path='["travel"]', frame = frame)
+		dataEmpty[travelPropertyName] = float(i + 1)
+		dataEmpty.keyframe_insert(data_path=travelDataPath, frame = frame)
 		stops.append(frame)
 		
 		frame += getStayTime(targetList[i])
-		dataEmpty["travel"] = float(i + 1)
-		dataEmpty.keyframe_insert(data_path='["travel"]', frame = frame)
+		dataEmpty[travelPropertyName] = float(i + 1)
+		dataEmpty.keyframe_insert(data_path=travelDataPath, frame = frame)
 	setStops(dataEmpty, stops)
 		
 	positionKeyframeHandles(targetList)
 			
 def positionKeyframeHandles(targetList):
 	dataEmpty = getDataEmpty()
-	changeHandleTypeOfAllKeyframes(dataEmpty, '["travel"]', "FREE")
-	keyframes = getKeyframePoints(dataEmpty, '["travel"]')
+	changeHandleTypeOfAllKeyframes(dataEmpty, travelDataPath, "FREE")
+	keyframes = getKeyframePoints(dataEmpty, travelDataPath)
 	if len(keyframes) >= 2:
 		for i in range(len(keyframes)):
 			keyframe = keyframes[i]
@@ -420,7 +425,7 @@ def getUncleanedTargetList():
 	return uncleanedTargets
 	
 def getTravelValue():
-	return round(getDataEmpty().get("travel"), 3)
+	return round(getDataEmpty().get(travelPropertyName), 3)
 	
 def setStops(dataEmpty, stops):
 	dataEmpty['stops'] = stops
@@ -508,7 +513,7 @@ class TargetCameraPanel(bpy.types.Panel):
 			
 		col = layout.column(align = True)
 		col.label("Camera Wiggle")
-		col.prop(dataEmpty, '["wiggle strength"]', text = "Strength")
+		col.prop(dataEmpty, wiggleStrengthDataPath, text = "Strength")
 		col.prop(dataEmpty, '["wiggle scale"]', text = "Time Scale")
 		
 		if calculatedTargetAmount != getTargetAmount(): shouldRecalculate = True
