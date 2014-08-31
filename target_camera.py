@@ -176,7 +176,6 @@ def createFullAnimation(targetList):
 	createTravelToConstraintDrivers(movement)
 	createTravelToConstraintDrivers(focus)	
 	createTravelAnimation(targetList)
-	calculatedTargetAmount = getTargetAmount()
 	
 	oldHash = getCurrentSettingsHash()
 	
@@ -254,7 +253,6 @@ def setBaseBetweenInertiaEmpties(base, emptyAfter, emptyBefore):
 	constraint.influence = 0.5
 	setUseMinMaxToTrue(constraint)
 	createDriversToCopyConstraintValues(emptyBefore, emptyBefore.constraints[0], base, constraint)
-	
 def createDriversToCopyConstraintValues(fromObject, fromConstraint, toObject, toConstraint):
 	createCopyValueDriver(fromObject, 'constraints["' + fromConstraint.name + '"].min_x', toObject, 'constraints["' + toConstraint.name + '"].min_x')
 	createCopyValueDriver(toObject, 'constraints["' + toConstraint.name + '"].min_x', toObject, 'constraints["' + toConstraint.name + '"].max_x')
