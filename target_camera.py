@@ -151,6 +151,7 @@ def recalculateAnimation():
 	
 def createFullAnimation(targetList):
 	global oldHash
+	oldSelection = getSelectedObjects()
 	cleanupScene(targetList)
 	removeAnimation()
 
@@ -180,14 +181,13 @@ def createFullAnimation(targetList):
 	createInertiaAnimation(dataEmpty, inertiaBases)
 	
 	oldHash = getCurrentSettingsHash()
+	setSelectedObjects(oldSelection)
 	
 def cleanupScene(targetList):
-	oldSelection = getSelectedObjects()
 	for object in bpy.context.scene.objects:
 		if isTargetName(object.name) and object not in targetList or isDeleteOnRecalculation(object):
-			oldSelection = [x for x in oldSelection if x != object]
 			delete(object)	
-	setSelectedObjects(oldSelection)
+	
 	
 def removeAnimation():
 	clearAnimation(getDataEmpty(), travelDataPath)
