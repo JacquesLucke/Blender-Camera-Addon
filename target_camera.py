@@ -401,8 +401,8 @@ def newRealTarget(target):
 	setActive(target)
 	bpy.ops.object.origin_set(type = 'ORIGIN_GEOMETRY')
 
-	empty = newEmpty(name = realTargetPrefix, location = [0, 0, 0])
-	empty.empty_draw_size = 0.4
+	empty = newEmpty(name = realTargetPrefix, location = [0, 0, 0], type = "SPHERE")
+	empty.empty_draw_size = 0.2
 	setParentWithoutInverse(empty, target)
 	
 	setCustomProperty(empty, "loading time", 25, min = 1)
