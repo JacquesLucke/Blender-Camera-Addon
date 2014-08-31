@@ -32,6 +32,7 @@ realTargetPrefix = "REAL TARGET"
 travelPropertyName = "travel"
 wiggleStrengthPropertyName = "wiggle strength"
 partOfTargetCamera = "part of target camera"
+deleteOnRecalculation = "delete on recalculation"
 
 travelDataPath = '["' + travelPropertyName + '"]'
 wiggleStrengthDataPath = '["' + wiggleStrengthPropertyName + '"]'
@@ -160,8 +161,9 @@ def createFullAnimation(targetList):
 	createWiggleModifiers()
 	
 	for target in targetList:
-		createConstraintSet(movement, target)
-		createConstraintSet(focus, getTargetObjectFromTarget(target))
+		(base) = createInertiaEmpties(target, target)
+		createConstraintSet(movement, base)
+		createConstraintSet(focus, getTargetObjectFromTarget(base))
 		
 	createTravelToConstraintDrivers(movement)
 	createTravelToConstraintDrivers(focus)	
@@ -173,13 +175,19 @@ def createFullAnimation(targetList):
 def cleanupScene(targetList):
 	oldSelection = getSelectedObjects()
 	for object in bpy.context.scene.objects:
-		if isTargetName(object.name) and object not in targetList:
+		if isTargetName(object.name) and object not in targetList or isDeleteOnRecalculation(object):
 			oldSelection = [x for x in oldSelection if x != object]
 			delete(object)	
 	setSelectedObjects(oldSelection)
 	
 def removeAnimation():
 	clearAnimation(getDataEmpty(), travelDataPath)
+	
+def createInertiaEmpties(target, before):
+	base = newEmpty(name = "base")
+	makeDeleteOnRecalculation(base)
+	setParentWithoutInverse(base, target)
+	return (base)
 	
 def createWiggleModifiers():
 	global oldWiggleScale
@@ -400,12 +408,19 @@ def getTargetList():
 			targets.append(target)
 	return targets
 def getUncleanedTargetList():
-	movement = getMovementEmpty()
+	constraintTargets = getConstraintTargetList()
 	uncleanedTargets = []
+	for constraintTarget in constraintTargets:
+		if hasattr(constraintTarget, "parent"):
+			uncleanedTargets.append(constraintTarget.parent)
+	return uncleanedTargets
+def getConstraintTargetList():
+	movement = getMovementEmpty()
+	constraintTargets = []
 	for constraint in movement.constraints:
 		if hasattr(constraint, "target"):
-			uncleanedTargets.append(constraint.target)
-	return uncleanedTargets
+			constraintTargets.append(constraint.target)
+	return constraintTargets
 def isValidTarget(target):
 	if hasattr(target, "name"):
 		if isTargetName(target.name):
@@ -439,6 +454,12 @@ def makePartOfTargetCamera(object):
 	object[partOfTargetCamera] = "1"
 def isPartOfTargetCamera(object):
 	if object.get(partOfTargetCamera) is None:
+		return False
+	return True
+def makeDeleteOnRecalculation(object):
+	object[deleteOnRecalculation] = "1"
+def isDeleteOnRecalculation(object):
+	if object.get(deleteOnRecalculation) is None:
 		return False
 	return True
 	
