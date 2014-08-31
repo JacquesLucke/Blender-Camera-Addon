@@ -28,10 +28,9 @@ bl_info = {
     "name":        "Camera Tools",
     "description": "A tool to make good camera animations faster",
     "author":      "Jacques Lucke",
-    "version":     (0, 1, 0),
+    "version":     (1, 0, 0),
     "blender":     (2, 7, 1),
     "location":    "View 3D > Tool Shelf",
-    "warning":     "Alpha",
     "category":    "3D View"
     }
 	
