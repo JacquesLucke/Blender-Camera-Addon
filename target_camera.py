@@ -176,6 +176,7 @@ def createFullAnimation(targetList):
 	createTravelToConstraintDrivers(movement)
 	createTravelToConstraintDrivers(focus)	
 	createTravelAnimation(targetList)
+	createInertiaAnimation(dataEmpty, inertiaBases)
 	
 	oldHash = getCurrentSettingsHash()
 	
@@ -352,6 +353,18 @@ def getInterpolationParametersFromSingleValue(easyValue):
 		easy = (easyValue - 0.2) * 5 / 3
 		influence = 0.5
 	return (easy, influence)
+	
+def createInertiaAnimation(dataEmpty, inertiaBases):
+	travelKeyframes = getKeyframePoints(dataEmpty, travelDataPath)
+	
+	for i in range(0, len(travelKeyframes), 2):
+		keyframe = travelKeyframes[i]
+		startFrame = keyframe.co.x
+		endFrame = travelKeyframes[i+1].co.x
+		base = inertiaBases[int(i/2)]
+		dataPath = 'constraints["'+base.constraints[1].name+'"].influence'
+		base.keyframe_insert(data_path=dataPath, frame = startFrame)
+		base.keyframe_insert(data_path=dataPath, frame = endFrame)
 	
 # target operations
 #############################
