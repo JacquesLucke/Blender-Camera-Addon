@@ -333,10 +333,10 @@ def copyInterpolationProperties(index):
 	sourceTarget = targets[index]
 	easyIn = sourceTarget["easy in"]
 	easyOut = sourceTarget["easy out"]
-	
 	for target in targets:
 		target["easy in"] = easyIn
 		target["easy out"] = easyOut
+	recalculateAnimation()
 	
 	
 # utilities
