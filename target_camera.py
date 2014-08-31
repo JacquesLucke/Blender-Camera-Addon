@@ -361,7 +361,8 @@ def createInertiaAnimation(dataEmpty, inertiaBases):
 	for i in range(0, len(travelKeyframes), 2):
 		travelKeyframe = travelKeyframes[i]
 		startFrame = travelKeyframe.co.x
-		endFrame = travelKeyframes[i+1].co.x
+		if i < len(travelKeyframes): endFrame = travelKeyframes[i+1].co.x
+		else: endFrame = startFrame
 		base = inertiaBases[int(i/2)]
 		dataPath = 'constraints["'+base.constraints[1].name+'"].influence'
 		base.keyframe_insert(data_path=dataPath, frame = startFrame)
