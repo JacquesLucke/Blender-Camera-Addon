@@ -129,6 +129,7 @@ def newDataEmpty():
 	setCustomProperty(dataEmpty, "stops", [])
 	setCustomProperty(dataEmpty, wiggleStrengthPropertyName, 0.0, min = 0.0, max = 1.0)
 	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 0.0)
+	setCustomProperty(dataEmpty, "inertia distance", 1.0, min = 0.0, max = 5.0)
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
 	makePartOfTargetCamera(dataEmpty)
@@ -202,8 +203,8 @@ def createInertiaEmpties(target, before):
 	
 	createPositionConstraint(emptyAfter, target, before)
 	return (base, emptyAfter)
-def createPositionConstraint(emptyAfter, target, before):
-	constraint = emptyAfter.constraints.new(type = "LIMIT_LOCATION")
+def createPositionConstraint(object, target, before):
+	constraint = object.constraints.new(type = "LIMIT_LOCATION")
 	constraint.use_min_x = True
 	constraint.use_max_x = True
 	constraint.use_min_y = True
@@ -213,29 +214,31 @@ def createPositionConstraint(emptyAfter, target, before):
 
 	distance = 1
 	
-	driver = newDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_x')
+	driver = newDriver(object, 'constraints["' + constraint.name + '"].min_x')
 	linkVariablesToIntertiaDriver(driver, target, before)
-	driver.expression = "(x1-x2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+x1"	
-	createCopyValueDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_x', emptyAfter, 'constraints["' + constraint.name + '"].max_x')
+	driver.expression = "(x1-x2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001)*distance+x1"	
+	createCopyValueDriver(object, 'constraints["' + constraint.name + '"].min_x', object, 'constraints["' + constraint.name + '"].max_x')
 	
-	driver = newDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_y')
+	driver = newDriver(object, 'constraints["' + constraint.name + '"].min_y')
 	linkVariablesToIntertiaDriver(driver, target, before)
-	driver.expression = "(y1-y2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+y1"
-	createCopyValueDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_y', emptyAfter, 'constraints["' + constraint.name + '"].max_y')
+	driver.expression = "(y1-y2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001)*distance+y1"
+	createCopyValueDriver(object, 'constraints["' + constraint.name + '"].min_y', object, 'constraints["' + constraint.name + '"].max_y')
 	
-	driver = newDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_z')
+	driver = newDriver(object, 'constraints["' + constraint.name + '"].min_z')
 	linkVariablesToIntertiaDriver(driver, target, before)
-	driver.expression = "(z1-z2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001) * "+ str(distance) +"+z1"
-	createCopyValueDriver(emptyAfter, 'constraints["' + constraint.name + '"].min_z', emptyAfter, 'constraints["' + constraint.name + '"].max_z')
+	driver.expression = "(z1-z2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001)*distance+z1"
+	createCopyValueDriver(object, 'constraints["' + constraint.name + '"].min_z', object, 'constraints["' + constraint.name + '"].max_z')
 	
 	
 def linkVariablesToIntertiaDriver(driver, target, before):
+	dataEmpty = getDataEmpty()
 	linkTransformChannelToDriver(driver, "x1", target, "LOC_X")
 	linkTransformChannelToDriver(driver, "x2", before, "LOC_X")
 	linkTransformChannelToDriver(driver, "y1", target, "LOC_Y")
 	linkTransformChannelToDriver(driver, "y2", before, "LOC_Y")
 	linkTransformChannelToDriver(driver, "z1", target, "LOC_Z")
 	linkTransformChannelToDriver(driver, "z2", before, "LOC_Z")
+	linkFloatPropertyToDriver(driver, "distance", dataEmpty, '["inertia distance"]')
 	
 def createWiggleModifiers():
 	global oldWiggleScale
