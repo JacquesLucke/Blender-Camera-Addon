@@ -38,9 +38,7 @@ wiggleStrengthDataPath = '["' + wiggleStrengthPropertyName + '"]'
 
 useListSeparator = False
 
-calculatedTargetAmount = 0
-oldWiggleScale = 3
-shouldRecalculate = False
+oldHash = ""
 
 
 # insert basic camera setup
@@ -149,7 +147,7 @@ def recalculateAnimation():
 	createFullAnimation(getTargetList())
 	
 def createFullAnimation(targetList):
-	global calculatedTargetAmount, shouldRecalculate
+	global oldHash
 	cleanupScene(targetList)
 	removeAnimation()
 
@@ -170,7 +168,7 @@ def createFullAnimation(targetList):
 	createTravelAnimation(targetList)
 	calculatedTargetAmount = getTargetAmount()
 	
-	shouldRecalculate = False
+	oldHash = getCurrentSettingsHash()
 	
 def cleanupScene(targetList):
 	oldSelection = getSelectedObjects()
@@ -459,6 +457,23 @@ def getTravelValue():
 	return round(getDataEmpty().get(travelPropertyName), 3)
 	
 
+def getCurrentSettingsHash():
+	hash = getHashFromTargets()
+	hash += str(getWiggleScale(getDataEmpty()))
+	return hash
+def getHashFromTargets():
+	hash = ""
+	targets = getTargetList()
+	for target in targets:
+		hash += getHashFromTarget(target)
+	return hash
+def getHashFromTarget(target):
+	hash = str(getLoadingTime(target))
+	hash += str(getStayTime(target))
+	hash += str(target["easy in"])
+	hash += str(target["easy out"])
+	return hash
+
 
 		
 # interface
@@ -475,9 +490,7 @@ class TargetCameraPanel(bpy.types.Panel):
 	def poll(self, context):
 		return targetCameraExists()
 	
-	def draw(self, context):
-		global shouldRecalculate
-		
+	def draw(self, context):		
 		layout = self.layout
 		
 		camera = getTargetCamera()
@@ -529,10 +542,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		col.prop(dataEmpty, wiggleStrengthDataPath, text = "Strength")
 		col.prop(dataEmpty, '["wiggle scale"]', text = "Time Scale")
 		
-		if calculatedTargetAmount != getTargetAmount(): shouldRecalculate = True
-		if oldWiggleScale != getWiggleScale(dataEmpty): shouldRecalculate = True
-		
-		if shouldRecalculate:
+		if getCurrentSettingsHash() != oldHash:
 			layout.label("You should recalculate the animation", icon = 'ERROR')
 
 		
