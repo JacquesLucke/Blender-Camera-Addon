@@ -192,13 +192,11 @@ def cleanupScene(targetList):
 def removeAnimation():
 	clearAnimation(getDataEmpty(), travelDataPath)
 	
-def createInertiaEmpties(target, before):
+def createInertiaEmpties(target, targetBefore):
 	base = newEmpty(name = "base", type = "SPHERE")
 	base.empty_draw_size = 0.15
-	
 	emptyAfter = newEmpty(name = "after inertia")
 	emptyAfter.empty_draw_size = 0.1
-	
 	emptyBefore = newEmpty(name = "before inertia")
 	emptyBefore.empty_draw_size = 0.1
 	
@@ -210,11 +208,13 @@ def createInertiaEmpties(target, before):
 	makeDeleteOnRecalculation(emptyAfter)
 	makeDeleteOnRecalculation(emptyBefore)
 	
-	createPositionConstraint(emptyAfter, target, before, negate = False)
-	createPositionConstraint(emptyBefore, target, before, negate = True)
-	
+	createPositionConstraint(emptyAfter, target, targetBefore, negate = False)
+	createPositionConstraint(emptyBefore, target, targetBefore, negate = True)
 	setBaseBetweenInertiaEmpties(base, emptyAfter, emptyBefore)
 	
+	base.hide = True
+	emptyAfter.hide = True
+	emptyBefore.hide = True
 	return base
 def createPositionConstraint(object, target, before, negate = False):
 	constraint = object.constraints.new(type = "LIMIT_LOCATION")
