@@ -161,12 +161,15 @@ def createFullAnimation(targetList):
 	
 	createWiggleModifiers()
 	
+	inertiaBases = []
+	
 	for i in range(len(targetList)):
 		target = targetList[i]
 		if i == 0: targetBefore = target
 		else: targetBefore = targetList[i-1]
 		
-		(base, emptyAfter, emptyBefore) = createInertiaEmpties(target, targetBefore)
+		base = createInertiaEmpties(target, targetBefore)
+		inertiaBases.append(base)
 		createConstraintSet(movement, base)
 		createConstraintSet(focus, getTargetObjectFromTarget(base))
 		
@@ -211,7 +214,7 @@ def createInertiaEmpties(target, before):
 	
 	setBaseBetweenInertiaEmpties(base, emptyAfter, emptyBefore)
 	
-	return (base, emptyAfter, emptyBefore)
+	return base
 def createPositionConstraint(object, target, before, negate = False):
 	constraint = object.constraints.new(type = "LIMIT_LOCATION")
 	setUseMinMaxToTrue(constraint)
@@ -245,22 +248,20 @@ def linkVariablesToIntertiaDriver(driver, target, before):
 def setBaseBetweenInertiaEmpties(base, emptyAfter, emptyBefore):
 	constraint = base.constraints.new(type = "LIMIT_LOCATION")
 	setUseMinMaxToTrue(constraint)
-	createCopyValueDriver(emptyAfter, 'constraints["' + emptyAfter.constraints[0].name + '"].min_x', base, 'constraints["' + constraint.name + '"].min_x')
-	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_x', base, 'constraints["' + constraint.name + '"].max_x')
-	createCopyValueDriver(emptyAfter, 'constraints["' + emptyAfter.constraints[0].name + '"].min_y', base, 'constraints["' + constraint.name + '"].min_y')
-	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_y', base, 'constraints["' + constraint.name + '"].max_y')
-	createCopyValueDriver(emptyAfter, 'constraints["' + emptyAfter.constraints[0].name + '"].min_z', base, 'constraints["' + constraint.name + '"].min_z')
-	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_z', base, 'constraints["' + constraint.name + '"].max_z')
+	createDriversToCopyConstraintValues(emptyAfter, emptyAfter.constraints[0], base, constraint)
 	
 	constraint = base.constraints.new(type = "LIMIT_LOCATION")
 	constraint.influence = 0.5
 	setUseMinMaxToTrue(constraint)
-	createCopyValueDriver(emptyBefore, 'constraints["' + emptyBefore.constraints[0].name + '"].min_x', base, 'constraints["' + constraint.name + '"].min_x')
-	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_x', base, 'constraints["' + constraint.name + '"].max_x')
-	createCopyValueDriver(emptyBefore, 'constraints["' + emptyBefore.constraints[0].name + '"].min_y', base, 'constraints["' + constraint.name + '"].min_y')
-	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_y', base, 'constraints["' + constraint.name + '"].max_y')
-	createCopyValueDriver(emptyBefore, 'constraints["' + emptyBefore.constraints[0].name + '"].min_z', base, 'constraints["' + constraint.name + '"].min_z')
-	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_z', base, 'constraints["' + constraint.name + '"].max_z')
+	createDriversToCopyConstraintValues(emptyBefore, emptyBefore.constraints[0], base, constraint)
+	
+def createDriversToCopyConstraintValues(fromObject, fromConstraint, toObject, toConstraint):
+	createCopyValueDriver(fromObject, 'constraints["' + fromConstraint.name + '"].min_x', toObject, 'constraints["' + toConstraint.name + '"].min_x')
+	createCopyValueDriver(toObject, 'constraints["' + toConstraint.name + '"].min_x', toObject, 'constraints["' + toConstraint.name + '"].max_x')
+	createCopyValueDriver(fromObject, 'constraints["' + fromConstraint.name + '"].min_y', toObject, 'constraints["' + toConstraint.name + '"].min_y')
+	createCopyValueDriver(toObject, 'constraints["' + toConstraint.name + '"].min_y', toObject, 'constraints["' + toConstraint.name + '"].max_y')
+	createCopyValueDriver(fromObject, 'constraints["' + fromConstraint.name + '"].min_z', toObject, 'constraints["' + toConstraint.name + '"].min_z')
+	createCopyValueDriver(toObject, 'constraints["' + toConstraint.name + '"].min_z', toObject, 'constraints["' + toConstraint.name + '"].max_z')
 	
 def createWiggleModifiers():
 	global oldWiggleScale
