@@ -27,6 +27,7 @@ dataEmptyName = "TARGET CAMERA CONTAINER"
 strongWiggleEmptyName = "STRONG WIGGLE"
 wiggleEmptyName = "WIGGLE"
 distanceEmptyName = "DISTANCE"
+focusEmptyName = "FOCUS"
 realTargetPrefix = "REAL TARGET"
 travelPropertyName = "travel"
 wiggleStrengthPropertyName = "wiggle strength"
@@ -50,12 +51,14 @@ def insertTargetCamera():
 	removeOldTargetCameraObjects()
 
 	camera = newCamera()
+	focus = newFocusEmpty()
 	movement = newMovementEmpty()
 	distanceEmpty = newDistanceEmpty()
 	strongWiggle = newStrongWiggleEmpty()
 	wiggle = newWiggleEmpty()
 	dataEmpty = newDataEmpty()
 	
+	focus.parent = dataEmpty
 	movement.parent = dataEmpty
 	distanceEmpty.parent = movement
 	strongWiggle.parent = distanceEmpty
@@ -65,7 +68,7 @@ def insertTargetCamera():
 	distanceEmpty.location.z = 4
 	
 	setActive(camera)
-	bpy.context.object.data.dof_object = movement
+	bpy.context.object.data.dof_object = focus
 	
 	insertWiggleConstraint(wiggle, strongWiggle, dataEmpty)
 	
@@ -73,7 +76,7 @@ def insertTargetCamera():
 	newTargets()
 	
 def removeOldTargetCameraObjects():
-	for object in bpy.data.objects:
+	for object in bpy.context.scene.objects:
 		if isPartOfTargetCamera(object):
 			delete(object)
 	
@@ -85,6 +88,13 @@ def newCamera():
 	makePartOfTargetCamera(camera)
 	bpy.context.scene.camera = camera
 	return camera
+	
+def newFocusEmpty():
+	focus = newEmpty(name = focusEmptyName, location = [0, 0, 0])
+	focus.empty_draw_size = 0.2
+	makePartOfTargetCamera(focus)
+	focus.hide = True
+	return focus
 	
 def newMovementEmpty():
 	movement = newEmpty(name = movementEmptyName, location = [0, 0, 0])
@@ -144,24 +154,31 @@ def createFullAnimation(targetList):
 	removeAnimation()
 
 	movement = getMovementEmpty()
+	focus = getFocusEmpty()
 	dataEmpty = getDataEmpty()
 	deleteAllConstraints(movement)
+	deleteAllConstraints(focus)
 	
 	createWiggleModifiers()
 	
 	for target in targetList:
-		createConstraintSet(target)
+		createConstraintSet(movement, target)
+		createConstraintSet(focus, getTargetObjectFromTarget(target))
 		
-	createTravelToConstraintDrivers()
+	createTravelToConstraintDrivers(movement)
+	createTravelToConstraintDrivers(focus)	
 	createTravelAnimation(targetList)
 	calculatedTargetAmount = getTargetAmount()
 	
 	shouldRecalculate = False
 	
 def cleanupScene(targetList):
+	oldSelection = getSelectedObjects()
 	for object in bpy.context.scene.objects:
 		if isTargetName(object.name) and object not in targetList:
+			oldSelection = [x for x in oldSelection if x != object]
 			delete(object)	
+	setSelectedObjects(oldSelection)
 	
 def removeAnimation():
 	clearAnimation(getDataEmpty(), travelDataPath)
@@ -176,21 +193,18 @@ def createWiggleModifiers():
 	insertWiggle(strongWiggle, "location", 6, wiggleScale)
 	oldWiggleScale = wiggleScale
 	
-def createConstraintSet(target):
-	movement = getMovementEmpty()
-	constraint = movement.constraints.new(type = "COPY_TRANSFORMS")
+def createConstraintSet(object, target):
+	constraint = object.constraints.new(type = "COPY_TRANSFORMS")
 	constraint.target = target
 	constraint.influence = 0
 	constraint.show_expanded = False
 	
-def createTravelToConstraintDrivers():
-	movement = getMovementEmpty()
+def createTravelToConstraintDrivers(object):
 	dataEmpty = getDataEmpty()
-	constraints = movement.constraints
-	
+	constraints = object.constraints
 	for i in range(getTargetAmount()):
 		constraint = constraints[i]
-		driver = newDriver(movement, 'constraints["' + constraint.name + '"].influence')
+		driver = newDriver(object, 'constraints["' + constraint.name + '"].influence')
 		linkFloatPropertyToDriver(driver, "var", dataEmpty, travelDataPath)
 		driver.expression = "var - " + str(i)
 		
@@ -292,6 +306,8 @@ def newRealTarget(target):
 	setCustomProperty(empty, "easy in", 0.8, min = 0.0, max = 1.0)
 	setCustomProperty(empty, "easy out", 0.8, min = 0.0, max = 1.0)
 	
+	makePartOfTargetCamera(empty)
+	
 	return empty
 	
 def deleteTarget(index):
@@ -351,6 +367,8 @@ def isTargetCamera(object):
 	
 def getTargetCamera():
 	return bpy.data.objects.get(targetCameraName)
+def getFocusEmpty():
+	return bpy.data.objects.get(focusEmptyName)
 def getMovementEmpty():
 	return bpy.data.objects.get(movementEmptyName)
 def getDataEmpty():
@@ -400,7 +418,8 @@ def isValidTarget(target):
 def isTargetName(name):
 	return name[:len(realTargetPrefix)] == realTargetPrefix
 	
-	
+def getTargetObjectFromTarget(target):
+	return target.parent
 def getSelectedTargets(targetList):
 	objects = getSelectedObjects()
 	targets = []
@@ -479,7 +498,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		for i in range(len(targetList)):
 			row = col.split(percentage=0.6, align = True)
 			row.scale_y = 1.35
-			name = row.operator("camera_tools.select_target", targetList[i].parent.name)
+			name = row.operator("camera_tools.select_target", getTargetObjectFromTarget(targetList[i]).name)
 			name.currentIndex = i
 			up = row.operator("camera_tools.move_target_up", icon = 'TRIA_UP', text = "")
 			up.currentIndex = i

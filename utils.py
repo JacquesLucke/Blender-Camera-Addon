@@ -244,7 +244,11 @@ def isTextObject(object):
 	return False
 	
 def delete(object):
-	bpy.context.scene.objects.unlink(object)
+	deselectAll()
+	object.select = True
+	object.hide = False
+	object.name = "DELETED" + object.name
+	bpy.ops.object.delete()
 	
 def getCurrentFrame():
 	return bpy.context.screen.scene.frame_current
