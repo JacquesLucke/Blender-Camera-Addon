@@ -295,6 +295,7 @@ def createTravelAnimation(targetList):
 	frame = 0
 	for i in range(getTargetAmount()):
 		frame += getLoadingTime(targetList[i])
+		if i == 0: frame = 1
 		dataEmpty[travelPropertyName] = float(i + 1)
 		dataEmpty.keyframe_insert(data_path=travelDataPath, frame = frame)
 		stops.append(frame)
