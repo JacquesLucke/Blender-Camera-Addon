@@ -31,6 +31,7 @@ focusEmptyName = "FOCUS"
 realTargetPrefix = "REAL TARGET"
 travelPropertyName = "travel"
 wiggleStrengthPropertyName = "wiggle strength"
+inertiaStrengthPropertyName = "inertia strength"
 partOfTargetCamera = "part of target camera"
 deleteOnRecalculation = "delete on recalculation"
 
@@ -129,7 +130,7 @@ def newDataEmpty():
 	setCustomProperty(dataEmpty, "stops", [])
 	setCustomProperty(dataEmpty, wiggleStrengthPropertyName, 0.0, min = 0.0, max = 1.0)
 	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 0.0)
-	setCustomProperty(dataEmpty, "inertia distance", 1.0, min = 0.0, max = 5.0)
+	setCustomProperty(dataEmpty, inertiaStrengthPropertyName, 0.0, min = 0.0)
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
 	makePartOfTargetCamera(dataEmpty)
@@ -244,7 +245,7 @@ def linkVariablesToIntertiaDriver(driver, target, before):
 	linkTransformChannelToDriver(driver, "y2", before, "LOC_Y")
 	linkTransformChannelToDriver(driver, "z1", target, "LOC_Z")
 	linkTransformChannelToDriver(driver, "z2", before, "LOC_Z")
-	linkFloatPropertyToDriver(driver, "distance", dataEmpty, '["inertia distance"]')
+	linkFloatPropertyToDriver(driver, "distance", dataEmpty, '["'+ inertiaStrengthPropertyName +'"]')
 def setBaseBetweenInertiaEmpties(base, emptyAfter, emptyBefore):
 	constraint = base.constraints.new(type = "LIMIT_LOCATION")
 	setUseMinMaxToTrue(constraint)
@@ -657,7 +658,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		col.prop(dataEmpty, wiggleStrengthDataPath, text = "Strength")
 		col.prop(dataEmpty, '["wiggle scale"]', text = "Time Scale")
 		
-		layout.prop(dataEmpty, '["inertia distance"]', text = "Inertia Strength")
+		layout.prop(dataEmpty, '["'+ inertiaStrengthPropertyName +'"]', text = "Inertia Strength")
 		
 		if getCurrentSettingsHash() != oldHash:
 			layout.label("You should recalculate the animation", icon = 'ERROR')
