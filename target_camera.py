@@ -166,7 +166,7 @@ def createFullAnimation(targetList):
 		if i == 0: targetBefore = target
 		else: targetBefore = targetList[i-1]
 		
-		(base, emptyAfter) = createInertiaEmpties(target, targetBefore)
+		(base, emptyAfter, emptyBefore) = createInertiaEmpties(target, targetBefore)
 		createConstraintSet(movement, base)
 		createConstraintSet(focus, getTargetObjectFromTarget(base))
 		
@@ -199,8 +199,8 @@ def createInertiaEmpties(target, before):
 	emptyBefore.empty_draw_size = 0.1
 	
 	setParentWithoutInverse(base, target)
-	setParentWithoutInverse(emptyAfter, base)
-	setParentWithoutInverse(emptyBefore, base)
+	setParentWithoutInverse(emptyAfter, target)
+	setParentWithoutInverse(emptyBefore, target)
 	
 	makeDeleteOnRecalculation(base)
 	makeDeleteOnRecalculation(emptyAfter)
@@ -208,17 +208,13 @@ def createInertiaEmpties(target, before):
 	
 	createPositionConstraint(emptyAfter, target, before, negate = False)
 	createPositionConstraint(emptyBefore, target, before, negate = True)
-	return (base, emptyAfter)
+	
+	setBaseBetweenInertiaEmpties(base, emptyAfter, emptyBefore)
+	
+	return (base, emptyAfter, emptyBefore)
 def createPositionConstraint(object, target, before, negate = False):
 	constraint = object.constraints.new(type = "LIMIT_LOCATION")
-	constraint.use_min_x = True
-	constraint.use_max_x = True
-	constraint.use_min_y = True
-	constraint.use_max_y = True
-	constraint.use_min_z = True
-	constraint.use_max_z = True
-
-	distance = 1
+	setUseMinMaxToTrue(constraint)
 	
 	driver = newDriver(object, 'constraints["' + constraint.name + '"].min_x')
 	linkVariablesToIntertiaDriver(driver, target, before)
@@ -237,8 +233,6 @@ def createPositionConstraint(object, target, before, negate = False):
 	if negate: driver.expression = "-(z1-z2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001)*distance+z1"
 	else: driver.expression = "(z1-z2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001)*distance+z1"
 	createCopyValueDriver(object, 'constraints["' + constraint.name + '"].min_z', object, 'constraints["' + constraint.name + '"].max_z')
-	
-	
 def linkVariablesToIntertiaDriver(driver, target, before):
 	dataEmpty = getDataEmpty()
 	linkTransformChannelToDriver(driver, "x1", target, "LOC_X")
@@ -248,6 +242,25 @@ def linkVariablesToIntertiaDriver(driver, target, before):
 	linkTransformChannelToDriver(driver, "z1", target, "LOC_Z")
 	linkTransformChannelToDriver(driver, "z2", before, "LOC_Z")
 	linkFloatPropertyToDriver(driver, "distance", dataEmpty, '["inertia distance"]')
+def setBaseBetweenInertiaEmpties(base, emptyAfter, emptyBefore):
+	constraint = base.constraints.new(type = "LIMIT_LOCATION")
+	setUseMinMaxToTrue(constraint)
+	createCopyValueDriver(emptyAfter, 'constraints["' + emptyAfter.constraints[0].name + '"].min_x', base, 'constraints["' + constraint.name + '"].min_x')
+	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_x', base, 'constraints["' + constraint.name + '"].max_x')
+	createCopyValueDriver(emptyAfter, 'constraints["' + emptyAfter.constraints[0].name + '"].min_y', base, 'constraints["' + constraint.name + '"].min_y')
+	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_y', base, 'constraints["' + constraint.name + '"].max_y')
+	createCopyValueDriver(emptyAfter, 'constraints["' + emptyAfter.constraints[0].name + '"].min_z', base, 'constraints["' + constraint.name + '"].min_z')
+	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_z', base, 'constraints["' + constraint.name + '"].max_z')
+	
+	constraint = base.constraints.new(type = "LIMIT_LOCATION")
+	constraint.influence = 0.5
+	setUseMinMaxToTrue(constraint)
+	createCopyValueDriver(emptyBefore, 'constraints["' + emptyBefore.constraints[0].name + '"].min_x', base, 'constraints["' + constraint.name + '"].min_x')
+	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_x', base, 'constraints["' + constraint.name + '"].max_x')
+	createCopyValueDriver(emptyBefore, 'constraints["' + emptyBefore.constraints[0].name + '"].min_y', base, 'constraints["' + constraint.name + '"].min_y')
+	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_y', base, 'constraints["' + constraint.name + '"].max_y')
+	createCopyValueDriver(emptyBefore, 'constraints["' + emptyBefore.constraints[0].name + '"].min_z', base, 'constraints["' + constraint.name + '"].min_z')
+	createCopyValueDriver(base, 'constraints["' + constraint.name + '"].min_z', base, 'constraints["' + constraint.name + '"].max_z')
 	
 def createWiggleModifiers():
 	global oldWiggleScale
