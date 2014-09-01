@@ -690,13 +690,14 @@ class TargetCameraPanel(bpy.types.Panel):
 		dataEmpty = getDataEmpty()
 		targetList = getTargetList()
 		
-		layout.operator("camera_tools.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
+		col = layout.column(align = True)
+		col.operator("camera_tools.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
+		col.operator("camera_tools.open_dope_sheet", text = "Manipulate Timing", icon = "ACTION")
 			
 		row = layout.row(align = True)
 		row.operator("camera_tools.go_to_previous_target", icon = 'TRIA_LEFT', text = "")
 		row.label("Travel: " + str(getTravelValue()))
 		row.operator("camera_tools.go_to_next_target", icon = 'TRIA_RIGHT', text = "")
-		layout.label("Change keyframes in Dope Sheet.", icon = 'INFO')
 		
 		box = layout.box()
 		col = box.column(align = True)
