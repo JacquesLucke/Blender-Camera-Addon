@@ -160,6 +160,7 @@ def recalculateAnimation():
 	
 def createFullAnimation(targetList):
 	global oldHash
+	getAnimationDataFromExtraObject()
 	oldSelection = getSelectedObjects()
 	cleanupScene(targetList)
 	removeAnimation()
@@ -680,7 +681,11 @@ class TargetCameraPanel(bpy.types.Panel):
 		dataEmpty = getDataEmpty()
 		targetList = getTargetList()
 		
-		layout.operator("camera_tools.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
+		col = layout.column(align = True)
+		col.operator("camera_tools.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
+		row = col.row(align = True)
+		row.operator("camera_tools.set_animation_data_on_extra_object", text = "Copy", icon = "COPYDOWN")
+		row.operator("camera_tools.paste_animation_data_from_extra_object", text = "Paste", icon = "PASTEDOWN")
 			
 		row = layout.row(align = True)
 		row.operator("camera_tools.go_to_previous_target", icon = 'TRIA_LEFT', text = "")
@@ -709,13 +714,6 @@ class TargetCameraPanel(bpy.types.Panel):
 		for target in selectedTargets:
 			box = layout.box()
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
-			
-			col = box.column(align = True)
-			col.prop(target, '["loading time"]', slider = False, text = "Loading Time")
-			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
-			row = col.row(align = True)
-			row.operator("camera_tools.set_animation_data_on_extra_object", text = "Copy", icon = "COPYDOWN")
-			row.operator("camera_tools.paste_animation_data_from_extra_object", text = "Paste", icon = "PASTEDOWN")
 			
 			col = box.column(align = True)
 			col.prop(target, '["easy in"]', slider = False, text = "Slow In")
@@ -839,7 +837,7 @@ class CopyInterpolationPropertiesToAll(bpy.types.Operator):
 class SetAnimationDataOnExtraObject(bpy.types.Operator):
 	bl_idname = "camera_tools.set_animation_data_on_extra_object"
 	bl_label = "Set Animation Data On Extra Object"
-	bl_description = "Set animation data on extra object"
+	bl_description = "Set animation data on extra object (look into Dope Sheet"
 	
 	def execute(self, context):
 		recalculateAnimation()
@@ -848,8 +846,8 @@ class SetAnimationDataOnExtraObject(bpy.types.Operator):
 		
 class GetAnimationDataFromExtraObject(bpy.types.Operator):
 	bl_idname = "camera_tools.paste_animation_data_from_extra_object"
-	bl_label = "Paste Animation Data From Extra Object"
-	bl_description = "Set animation data from extra object"
+	bl_label = "Paste Animation Data From Extra Object)"
+	bl_description = "Set animation data from extra object (look into Dope Sheet"
 	
 	def execute(self, context):
 		getAnimationDataFromExtraObject()
