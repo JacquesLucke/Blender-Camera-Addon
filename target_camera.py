@@ -190,6 +190,7 @@ def createFullAnimation(targetList):
 	createInertiaAnimation(dataEmpty, inertiaBases)
 	
 	correctProperties()
+	setKeyframesOnAnimationDataEmpty()
 	
 	oldHash = getCurrentSettingsHash()
 	setSelectedObjects(oldSelection)
@@ -391,7 +392,6 @@ def createInertiaAnimation(dataEmpty, inertiaBases):
 #############################	
 
 def setKeyframesOnAnimationDataEmpty():
-	recalculateAnimation()
 	dataEmpty = getDataEmpty()
 	animationData = getAnimationDataEmpty()
 	clearAnimation(animationData, travelDataPath)
@@ -409,16 +409,15 @@ def getAnimationDataFromExtraObject():
 		for i in range(len(targets)):
 			target = targets[i]
 			
-			keyframe = keyframes[i*2]
-			if i > 0: keyframeBefore = keyframes[i*2-1]
-			else: keyframeBefore = keyframe 
-			if i*2+1 < len(keyframes): keyframeAfter = keyframes[i*2+1]
-			else: keyframeAfter = keyframe
+			position = max(keyframes[i*2].co.x, 1)
+			if i > 0: positionBefore = max(keyframes[i*2-1].co.x, 1)
+			else: positionBefore = 0
+			if i*2+1 < len(keyframes): positionAfter = max(keyframes[i*2+1].co.x, 1)
+			else: positionAfter = position
 			
-			setLoadingTime(target, keyframe.co.x - keyframeBefore.co.x)
-			setStayTime(target, keyframeAfter.co.x - keyframe.co.x)
-			
-	recalculateAnimation()
+			setLoadingTime(target, position - positionBefore)
+			setStayTime(target, positionAfter - position)
+			correctPropertiesOfTarget(target)
 	
 def isValidKeyframeAmount(keyframes, targetList):
 	return len(keyframes) == len(targetList) * 2
@@ -432,7 +431,7 @@ def newTargets():
 	targets = getTargetList()
 	selectedObjects = []
 	for object in getSelectedObjects():
-		if not (object == getTargetCamera() or object == getMovementEmpty()):
+		if not isPartOfTargetCamera(object):
 			selectedObjects.append(object)
 		
 	selectedObjects.reverse()
@@ -843,6 +842,7 @@ class SetAnimationDataOnExtraObject(bpy.types.Operator):
 	bl_description = "Set animation data on extra object"
 	
 	def execute(self, context):
+		recalculateAnimation()
 		setKeyframesOnAnimationDataEmpty()
 		return{"FINISHED"}
 		
@@ -853,6 +853,7 @@ class GetAnimationDataFromExtraObject(bpy.types.Operator):
 	
 	def execute(self, context):
 		getAnimationDataFromExtraObject()
+		recalculateAnimation()
 		return{"FINISHED"}
 
 		
