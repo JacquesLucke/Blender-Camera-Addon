@@ -657,7 +657,15 @@ def getHashFromTarget(target):
 	hash += str(target["easy in"])
 	hash += str(target["easy out"])
 	return hash
-
+	
+	
+def openDopeSheet():
+	area1 = bpy.context.area
+	area1.type = "DOPESHEET_EDITOR"
+	bpy.ops.screen.area_split(direction = "HORIZONTAL", factor = 0.9)
+	area1.type = "VIEW_3D"
+	area2 = getAreaByType("DOPESHEET_EDITOR")
+	
 
 		
 # interface
@@ -729,7 +737,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		if getCurrentSettingsHash() != oldHash:
 			layout.label("You should recalculate the animation", icon = 'ERROR')
 
-		
+		layout.operator("camera_tools.open_dope_sheet")
 		
 	
 # operators
@@ -830,6 +838,19 @@ class CopyInterpolationPropertiesToAll(bpy.types.Operator):
 	
 	def execute(self, context):
 		copyInterpolationProperties(self.currentIndex)
+		return{"FINISHED"}
+		
+class OpenDopeSheet(bpy.types.Operator):
+	bl_idname = "camera_tools.open_dope_sheet"
+	bl_label = "Open Dope Sheet"
+	bl_description = "Open dope sheet to manipulate the timing."
+	
+	@classmethod
+	def poll(self, context):
+		return not areaTypeExists("DOPESHEET_EDITOR")
+	
+	def execute(self, context):
+		openDopeSheet()
 		return{"FINISHED"}
 
 		

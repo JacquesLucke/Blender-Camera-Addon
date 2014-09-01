@@ -296,4 +296,15 @@ def setKeyframeSelection(keyframe, select):
 	keyframe.select_control_point = select
 	keyframe.select_left_handle = select
 	keyframe.select_right_handle = select
+	
+def areaTypeExists(type):
+	return getAreaByType(type) is not None
+def getAreaByType(type):
+	for area in bpy.context.screen.areas:
+		if area.type == type: return area
+	return None
+def swapAreaTypes(area1, area2):
+	type1 = area1.type
+	area1.type = area2.type
+	area2.type = type1
 					
