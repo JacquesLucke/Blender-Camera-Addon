@@ -643,6 +643,7 @@ def getTravelValue():
 
 def getCurrentSettingsHash():
 	hash = getHashFromTargets()
+	hash += getAnimationKeyframesHash()
 	hash += str(getWiggleScale(getDataEmpty()))
 	return hash
 def getHashFromTargets():
@@ -650,6 +651,12 @@ def getHashFromTargets():
 	targets = getTargetList()
 	for target in targets:
 		hash += getHashFromTarget(target)
+	return hash
+def getAnimationKeyframesHash():
+	hash = ""
+	keyframes = getKeyframePoints(getAnimationDataEmpty(), travelDataPath)
+	for keyframe in keyframes:
+		hash += str(keyframe.co.x)
 	return hash
 def getHashFromTarget(target):
 	hash = str(getLoadingTime(target))
