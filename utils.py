@@ -282,4 +282,18 @@ def insertWiggle(object, dataPath, strength, scale):
 		
 def clamp(value, minValue, maxValue):
 	return max(min(value, maxValue), minValue)
+	
+def getSelectedKeyframeFrames(keyframes):
+	selectedFrames = []
+	for keyframe in keyframes:
+		if keyframe.select_control_point: selectedFrames.append(keyframe.co.x)
+	return selectedFrames
+def selectKeyframes(keyframes, keyframeFrames):
+	for keyframe in keyframes:
+		if keyframe.co.x in keyframeFrames: setKeyframeSelection(keyframe, True)
+		else: setKeyframeSelection(keyframe, False)
+def setKeyframeSelection(keyframe, select):
+	keyframe.select_control_point = select
+	keyframe.select_left_handle = select
+	keyframe.select_right_handle = select
 					

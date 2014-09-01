@@ -395,11 +395,13 @@ def createInertiaAnimation(dataEmpty, inertiaBases):
 def setKeyframesOnAnimationDataEmpty():
 	dataEmpty = getDataEmpty()
 	animationData = getAnimationDataEmpty()
+	selectedKeyframeFrames = getSelectedKeyframeFrames(getKeyframePoints(animationData, travelDataPath))
 	clearAnimation(animationData, travelDataPath)
 	keyframes = getKeyframePoints(dataEmpty, travelDataPath)
 	for keyframe in keyframes:
 		animationData[travelPropertyName] = keyframe.co.y
 		animationData.keyframe_insert(data_path = travelDataPath, frame = keyframe.co.x)
+	selectKeyframes(getKeyframePoints(animationData, travelDataPath), selectedKeyframeFrames)
 		
 def getAnimationDataFromExtraObject():
 	targets = getTargetList()
