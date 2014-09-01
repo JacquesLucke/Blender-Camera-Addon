@@ -29,6 +29,7 @@ wiggleEmptyName = "WIGGLE"
 distanceEmptyName = "DISTANCE"
 focusEmptyName = "FOCUS"
 realTargetPrefix = "REAL TARGET"
+animationDataName = "ANIMATION DATA"
 travelPropertyName = "travel"
 wiggleStrengthPropertyName = "wiggle strength"
 inertiaStrengthPropertyName = "inertia strength"
@@ -57,7 +58,9 @@ def insertTargetCamera():
 	strongWiggle = newStrongWiggleEmpty()
 	wiggle = newWiggleEmpty()
 	dataEmpty = newDataEmpty()
+	animationData = newAnimationDataEmpty()
 	
+	animationData.parent = dataEmpty
 	focus.parent = dataEmpty
 	movement.parent = dataEmpty
 	distanceEmpty.parent = movement
@@ -135,6 +138,12 @@ def newDataEmpty():
 	lockCurrentTransforms(dataEmpty)
 	makePartOfTargetCamera(dataEmpty)
 	return dataEmpty
+	
+def newAnimationDataEmpty():
+	animationData = newEmpty(name = animationDataName, location = [0, 0, 0])
+	setCustomProperty(animationData, travelPropertyName, 1.0)
+	makePartOfTargetCamera(animationData)
+	return animationData
 
 def insertWiggleConstraint(wiggle, strongWiggle, dataEmpty):
 	constraint = wiggle.constraints.new(type = "COPY_TRANSFORMS")
@@ -376,8 +385,21 @@ def createInertiaAnimation(dataEmpty, inertiaBases):
 			keyframe.amplitude = 0.3
 			keyframe.period = 7
 		
-		
-		
+
+# animation extra object		
+#############################	
+
+def setKeyframesOnAnimationDataEmpty():
+	recalculateAnimation()
+	dataEmpty = getDataEmpty()
+	animationData = getAnimationDataEmpty()
+	clearAnimation(animationData, travelDataPath)
+	keyframes = getKeyframePoints(dataEmpty, travelDataPath)
+	for keyframe in keyframes:
+		animationData[travelPropertyName] = keyframe.co.y
+		animationData.keyframe_insert(data_path = travelDataPath, frame = keyframe.co.x)
+
+
 	
 # target operations
 #############################
@@ -483,6 +505,8 @@ def getDataEmpty():
 	return bpy.data.objects.get(dataEmptyName)
 def getStrongWiggle():
 	return bpy.data.objects.get(strongWiggleEmptyName)
+def getAnimationDataEmpty():
+	return bpy.data.objects.get(animationDataName)
 	
 	
 def selectTargetCamera():
@@ -654,6 +678,7 @@ class TargetCameraPanel(bpy.types.Panel):
 			col = box.column(align = True)
 			col.prop(target, '["loading time"]', slider = False, text = "Loading Time")
 			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
+			col.operator("camera_tools.set_animation_data_on_extra_object", text = "Copy to Keyframes")
 			
 			col = box.column(align = True)
 			col.prop(target, '["easy in"]', slider = False, text = "Slow In")
@@ -772,6 +797,15 @@ class CopyInterpolationPropertiesToAll(bpy.types.Operator):
 	
 	def execute(self, context):
 		copyInterpolationProperties(self.currentIndex)
+		return{"FINISHED"}
+		
+class SetAnimationDataOnExtraObject(bpy.types.Operator):
+	bl_idname = "camera_tools.set_animation_data_on_extra_object"
+	bl_label = "Set Animation Data On Extra Object"
+	bl_description = "Set animation data on extra object"
+	
+	def execute(self, context):
+		setKeyframesOnAnimationDataEmpty()
 		return{"FINISHED"}
 
 		
