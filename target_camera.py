@@ -662,7 +662,7 @@ def getHashFromTarget(target):
 def openDopeSheet():
 	area1 = bpy.context.area
 	area1.type = "DOPESHEET_EDITOR"
-	bpy.ops.screen.area_split(direction = "HORIZONTAL", factor = 0.9)
+	bpy.ops.screen.area_split(direction = "HORIZONTAL", factor = 0.86)
 	area1.type = "VIEW_3D"
 	area2 = getAreaByType("DOPESHEET_EDITOR")
 	
@@ -725,7 +725,7 @@ class TargetCameraPanel(bpy.types.Panel):
 			col = box.column(align = True)
 			col.prop(target, '["easy in"]', slider = False, text = "Slow In")
 			col.prop(target, '["easy out"]', slider = False, text = "Slow Out")
-			copyToAll = col.operator("camera_tools.copy_interpolation_properties_to_all", text = "Copy to All")
+			copyToAll = col.operator("camera_tools.copy_interpolation_properties_to_all", text = "Copy to All", icon = "COPYDOWN")
 			copyToAll.currentIndex = targetList.index(target)			
 			
 		col = layout.column(align = True)
@@ -737,8 +737,6 @@ class TargetCameraPanel(bpy.types.Panel):
 		
 		if getCurrentSettingsHash() != oldHash:
 			layout.label("You should recalculate the animation", icon = 'ERROR')
-
-		layout.operator("camera_tools.open_dope_sheet")
 		
 	
 # operators
