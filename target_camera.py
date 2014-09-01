@@ -189,6 +189,8 @@ def createFullAnimation(targetList):
 	createTravelAnimation(targetList)
 	createInertiaAnimation(dataEmpty, inertiaBases)
 	
+	correctProperties()
+	
 	oldHash = getCurrentSettingsHash()
 	setSelectedObjects(oldSelection)
 	
@@ -398,6 +400,29 @@ def setKeyframesOnAnimationDataEmpty():
 	for keyframe in keyframes:
 		animationData[travelPropertyName] = keyframe.co.y
 		animationData.keyframe_insert(data_path = travelDataPath, frame = keyframe.co.x)
+		
+def getAnimationDataFromExtraObject():
+	targets = getTargetList()
+	animationData = getAnimationDataEmpty()
+	keyframes = getKeyframePoints(animationData, travelDataPath)
+	
+	if isValidKeyframeAmount(keyframes, targets):
+		for i in range(len(targets)):
+			target = targets[i]
+			
+			keyframe = keyframes[i*2]
+			if i > 0: keyframeBefore = keyframes[i*2-1]
+			else: keyframeBefore = keyframe 
+			if i*2+1 < len(keyframes): keyframeAfter = keyframes[i*2+1]
+			else: keyframeAfter = keyframe
+			
+			setLoadingTime(target, keyframe.co.x - keyframeBefore.co.x)
+			setStayTime(target, keyframeAfter.co.x - keyframe.co.x)
+			
+	recalculateAnimation()
+	
+def isValidKeyframeAmount(keyframes, targetList):
+	return len(keyframes) == len(targetList) * 2
 
 
 	
@@ -593,12 +618,22 @@ def isDeleteOnRecalculation(object):
 def setStops(dataEmpty, stops):
 	dataEmpty['stops'] = stops
 	
-	
-def getLoadingTime(target):
+def correctProperties():
+	targets = getTargetList()
+	for target in targets:
+		correctPropertiesOfTarget(target)
+def correctPropertiesOfTarget(target):
 	target["loading time"] = max(target["loading time"], 1)
+	target["stay time"] = max(target["stay time"], 1)
+
+def setLoadingTime(target, value):
+	target["loading time"] = int(value)
+def setStayTime(target, value):
+	target["stay time"] = int(value)
+
+def getLoadingTime(target):
 	return target["loading time"]
 def getStayTime(target):
-	target["stay time"] = max(target["stay time"], 1)
 	return target["stay time"]
 def getWiggleScale(dataEmpty):
 	return dataEmpty["wiggle scale"]
@@ -680,7 +715,9 @@ class TargetCameraPanel(bpy.types.Panel):
 			col = box.column(align = True)
 			col.prop(target, '["loading time"]', slider = False, text = "Loading Time")
 			col.prop(target, '["stay time"]', slider = False, text = "Time to Stay")
-			col.operator("camera_tools.set_animation_data_on_extra_object", text = "Copy to Keyframes")
+			row = col.row(align = True)
+			row.operator("camera_tools.set_animation_data_on_extra_object", text = "Copy", icon = "COPYDOWN")
+			row.operator("camera_tools.paste_animation_data_from_extra_object", text = "Paste", icon = "PASTEDOWN")
 			
 			col = box.column(align = True)
 			col.prop(target, '["easy in"]', slider = False, text = "Slow In")
@@ -808,6 +845,15 @@ class SetAnimationDataOnExtraObject(bpy.types.Operator):
 	
 	def execute(self, context):
 		setKeyframesOnAnimationDataEmpty()
+		return{"FINISHED"}
+		
+class GetAnimationDataFromExtraObject(bpy.types.Operator):
+	bl_idname = "camera_tools.paste_animation_data_from_extra_object"
+	bl_label = "Paste Animation Data From Extra Object"
+	bl_description = "Set animation data from extra object"
+	
+	def execute(self, context):
+		getAnimationDataFromExtraObject()
 		return{"FINISHED"}
 
 		
