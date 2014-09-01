@@ -160,7 +160,7 @@ def recalculateAnimation():
 	
 def createFullAnimation(targetList):
 	global oldHash
-	getAnimationDataFromExtraObject()
+	getAnimationDataFromExtraObject(targetList)
 	oldSelection = getSelectedObjects()
 	cleanupScene(targetList)
 	removeAnimation()
@@ -403,8 +403,7 @@ def setKeyframesOnAnimationDataEmpty():
 		animationData.keyframe_insert(data_path = travelDataPath, frame = keyframe.co.x)
 	selectKeyframes(getKeyframePoints(animationData, travelDataPath), selectedKeyframeFrames)
 		
-def getAnimationDataFromExtraObject():
-	targets = getTargetList()
+def getAnimationDataFromExtraObject(targets):
 	animationData = getAnimationDataEmpty()
 	keyframes = getKeyframePoints(animationData, travelDataPath)
 	
@@ -852,7 +851,7 @@ class GetAnimationDataFromExtraObject(bpy.types.Operator):
 	bl_description = "Set animation data from extra object (look into Dope Sheet"
 	
 	def execute(self, context):
-		getAnimationDataFromExtraObject()
+		getAnimationDataFromExtraObject(getTargetList())
 		recalculateAnimation()
 		return{"FINISHED"}
 
