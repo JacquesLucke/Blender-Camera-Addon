@@ -227,10 +227,7 @@ def getFCurvesWithDataPath(object, dataPath):
 	return fcurves
 	
 def deleteKeyframesInFCurve(object, fcurve):
-	for keyframe in fcurve.keyframe_points:
-		object.keyframe_delete(fcurve.data_path, frame = keyframe.co.x)
-	for keyframe in fcurve.keyframe_points:
-		object.keyframe_delete(fcurve.data_path, frame = keyframe.co.x)
+	object.animation_data.action.fcurves.remove(fcurve)
 
 def changeHandleTypeOfAllKeyframes(object, dataPath, type):
 	fcurves = getFCurvesWithDataPath(object, dataPath)
