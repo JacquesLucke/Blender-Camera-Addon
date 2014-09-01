@@ -595,9 +595,11 @@ def setStops(dataEmpty, stops):
 	
 	
 def getLoadingTime(target):
-	return max(target["loading time"], 1)
+	target["loading time"] = max(target["loading time"], 1)
+	return target["loading time"]
 def getStayTime(target):
-	return max(target["stay time"], 1)
+	target["stay time"] = max(target["stay time"], 1)
+	return target["stay time"]
 def getWiggleScale(dataEmpty):
 	return dataEmpty["wiggle scale"]
 def getTravelValue():
