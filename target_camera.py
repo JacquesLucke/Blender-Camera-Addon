@@ -462,8 +462,12 @@ def copyInterpolationProperties(index):
 # utilities
 #############################
 
-def targetCameraExists():
-	if getTargetCamera() is None: return False
+def targetCameraSetupExists():
+	if (getTargetCamera() is None or
+		getFocusEmpty() is None or
+		getMovementEmpty() is None or
+		getDataEmpty() is None or
+		getStrongWiggle() is None): return False
 	else: return True
 def isTargetCamera(object):
 	return object.name == targetCameraName
@@ -607,7 +611,7 @@ class TargetCameraPanel(bpy.types.Panel):
 	
 	@classmethod
 	def poll(self, context):
-		return targetCameraExists()
+		return targetCameraSetupExists()
 	
 	def draw(self, context):		
 		layout = self.layout
@@ -680,7 +684,7 @@ class AddTargetCamera(bpy.types.Operator):
 	
 	@classmethod
 	def poll(self, context):
-		return not targetCameraExists()
+		return not targetCameraSetupExists()
 		
 	def execute(self, context):
 		insertTargetCamera()
