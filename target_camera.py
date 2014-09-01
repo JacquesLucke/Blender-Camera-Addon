@@ -682,11 +682,7 @@ class TargetCameraPanel(bpy.types.Panel):
 		dataEmpty = getDataEmpty()
 		targetList = getTargetList()
 		
-		col = layout.column(align = True)
-		col.operator("camera_tools.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
-		row = col.row(align = True)
-		row.operator("camera_tools.set_animation_data_on_extra_object", text = "Copy", icon = "COPYDOWN")
-		row.operator("camera_tools.paste_animation_data_from_extra_object", text = "Paste", icon = "PASTEDOWN")
+		layout.operator("camera_tools.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
 			
 		row = layout.row(align = True)
 		row.operator("camera_tools.go_to_previous_target", icon = 'TRIA_LEFT', text = "")
@@ -833,26 +829,6 @@ class CopyInterpolationPropertiesToAll(bpy.types.Operator):
 	
 	def execute(self, context):
 		copyInterpolationProperties(self.currentIndex)
-		return{"FINISHED"}
-		
-class SetAnimationDataOnExtraObject(bpy.types.Operator):
-	bl_idname = "camera_tools.set_animation_data_on_extra_object"
-	bl_label = "Set Animation Data On Extra Object"
-	bl_description = "Set animation data on extra object (look into Dope Sheet"
-	
-	def execute(self, context):
-		recalculateAnimation()
-		setKeyframesOnAnimationDataEmpty()
-		return{"FINISHED"}
-		
-class GetAnimationDataFromExtraObject(bpy.types.Operator):
-	bl_idname = "camera_tools.paste_animation_data_from_extra_object"
-	bl_label = "Paste Animation Data From Extra Object)"
-	bl_description = "Set animation data from extra object (look into Dope Sheet"
-	
-	def execute(self, context):
-		getAnimationDataFromExtraObject(getTargetList())
-		recalculateAnimation()
 		return{"FINISHED"}
 
 		
