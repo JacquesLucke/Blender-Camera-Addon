@@ -629,27 +629,27 @@ def correctPropertiesOfTarget(target):
 	setEasyOut(target, getEasyOut(target))
 
 def setLoadingTime(target, value):
-	target["loading time"] = max(int(value), 1)
+	target["loading time"] = value
 def setStayTime(target, value):
-	target["stay time"] = max(int(value), 1)
+	target["stay time"] = value
 def setEasyIn(target, value):
-	target["easy in"] = clamp(value, 0.0, 1.0)
+	target["easy in"] = value
 def setEasyOut(target, value):
-	target["easy out"] = clamp(value, 0.0, 1.0)
+	target["easy out"] = value
 
 def getLoadingTime(target):
-	return max(target["loading time"], 1)
+	return target["loading time"]
 def getStayTime(target):
-	return max(target["stay time"], 1)
+	return target["stay time"]
 def getEasyIn(target):
-	return clamp(target["easy in"], 0.0, 1.0)
+	return target["easy in"]
 def getEasyOut(target):
-	return clamp(target["easy out"], 0.0, 1.0)
+	return target["easy out"]
 	
 def setWiggleScale(value):
-	getDataEmpty()["wiggle scale"] = max(value, 0.0)
+	getDataEmpty()["wiggle scale"] = value
 def getWiggleScale():
-	return max(getDataEmpty()["wiggle scale"], 0.0)
+	return getDataEmpty()["wiggle scale"]
 def getTravelValue():
 	return round(getDataEmpty().get(travelPropertyName), 3)
 	
