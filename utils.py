@@ -53,9 +53,17 @@ def setParentWithoutInverse(child, parent):
 	setActive(parent)
 	bpy.ops.object.parent_no_inverse_set()
 	
-def setCustomProperty(object, propertyName, value, min = -1000000.0, max = 1000000.0):
+def setCustomProperty(object, propertyName, value, min = -1000000.0, max = 1000000.0, description = ""):
 	object[propertyName] = value
-	object["_RNA_UI"] = { propertyName: {"min": min, "max": max} } 
+	insertPropertyParameters(object, propertyName, min, max, description)
+def insertPropertyParameters(object, propertyName, min, max, description):
+	rna = { "min": min,
+			"max": max,
+			"description": description }
+	if "_RNA_UI" in object: 
+		object["_RNA_UI"][propertyName] = rna
+	else: 
+		object["_RNA_UI"] = {propertyName: rna}
 	
 def newDriver(object, dataPath, index = -1, type = "SCRIPTED"):
 	fcurve = object.driver_add(dataPath, index)
