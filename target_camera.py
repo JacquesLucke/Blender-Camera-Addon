@@ -21,6 +21,7 @@ Created by Jacques Lucke
 import bpy, math
 from utils import *
 
+# object names
 targetCameraName = "TARGET CAMERA"
 movementEmptyName = "MOVEMENT"
 dataEmptyName = "TARGET CAMERA CONTAINER"
@@ -30,12 +31,15 @@ distanceEmptyName = "DISTANCE"
 focusEmptyName = "FOCUS"
 realTargetPrefix = "REAL TARGET"
 animationDataName = "ANIMATION DATA"
+
+# property names
 travelPropertyName = "travel"
 wiggleStrengthPropertyName = "wiggle strength"
 inertiaStrengthPropertyName = "inertia strength"
 partOfTargetCamera = "part of target camera"
 deleteOnRecalculation = "delete on recalculation"
 
+# property data paths
 travelDataPath = '["' + travelPropertyName + '"]'
 wiggleStrengthDataPath = '["' + wiggleStrengthPropertyName + '"]'
 
