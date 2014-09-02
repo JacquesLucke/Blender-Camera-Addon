@@ -205,8 +205,8 @@ def createFullAnimation(targetList):
 	createTravelAnimation(targetList)
 	createInertiaAnimation(dataEmpty, inertiaBases)
 	
-	correctProperties()
 	setKeyframesOnAnimationDataEmpty()
+	reHideUnneededObjects()
 	
 	oldHash = getCurrentSettingsHash()
 	setSelectedObjects(oldSelection)
@@ -293,7 +293,7 @@ def createDriversToCopyConstraintValues(fromObject, fromConstraint, toObject, to
 	
 def createWiggleModifiers():
 	global oldWiggleScale
-	strongWiggle = getStrongWiggle()
+	strongWiggle = getStrongWiggleEmpty()
 	wiggleScale = getWiggleScale()
 	clearAnimation(strongWiggle, "location")
 	strongWiggle.location = [0, 0, 0]
@@ -399,6 +399,15 @@ def createInertiaAnimation(dataEmpty, inertiaBases):
 			keyframe.interpolation = "ELASTIC"
 			keyframe.amplitude = 0.3
 			keyframe.period = 7
+			
+def reHideUnneededObjects():
+	getDataEmpty().hide = True
+	getFocusEmpty().hide = True
+	getMovementEmpty().hide = True
+	getDistanceEmpty().hide = True
+	getStrongWiggleEmpty().hide = True
+	getWiggleEmpty().hide = True
+	
 		
 
 # animation extra object		
@@ -431,7 +440,6 @@ def getAnimationDataFromExtraObject(targets):
 			
 			setLoadingTime(target, position - positionBefore)
 			setStayTime(target, positionAfter - position)
-			correctPropertiesOfTarget(target)
 	
 def isValidKeyframeAmount(keyframes, targetList):
 	return len(keyframes) == len(targetList) * 2
@@ -526,7 +534,7 @@ def targetCameraSetupExists():
 		getFocusEmpty() is None or
 		getMovementEmpty() is None or
 		getDataEmpty() is None or
-		getStrongWiggle() is None): return False
+		getStrongWiggleEmpty() is None): return False
 	else: return True
 def isTargetCamera(object):
 	return object.name == targetCameraName
@@ -540,8 +548,12 @@ def getMovementEmpty():
 	return bpy.data.objects.get(movementEmptyName)
 def getDataEmpty():
 	return bpy.data.objects.get(dataEmptyName)
-def getStrongWiggle():
+def getDistanceEmpty():
+	return bpy.data.objects.get(distanceEmptyName)
+def getStrongWiggleEmpty():
 	return bpy.data.objects.get(strongWiggleEmptyName)
+def getWiggleEmpty():
+	return bpy.data.objects.get(wiggleEmptyName)
 def getAnimationDataEmpty():
 	return bpy.data.objects.get(animationDataName)
 	
@@ -629,19 +641,6 @@ def isDeleteOnRecalculation(object):
 	
 def setStops(dataEmpty, stops):
 	dataEmpty['stops'] = stops
-	
-def correctProperties():
-	targets = getTargetList()
-	for target in targets:
-		correctPropertiesOfTarget(target)
-		
-	setWiggleScale(getWiggleScale())
-	
-def correctPropertiesOfTarget(target):
-	setLoadingTime(target, getLoadingTime(target))
-	setStayTime(target, getStayTime(target))
-	setSlowIn(target, getSlowIn(target))
-	setSlowOut(target, getSlowOut(target))
 
 def setLoadingTime(target, value):
 	target[loadingTimePropertyName] = value
