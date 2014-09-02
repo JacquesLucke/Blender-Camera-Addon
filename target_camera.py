@@ -132,7 +132,7 @@ def newDataEmpty():
 	setCustomProperty(dataEmpty, travelPropertyName, 1.0, min = 1.0)
 	setCustomProperty(dataEmpty, "stops", [])
 	setCustomProperty(dataEmpty, wiggleStrengthPropertyName, 0.0, min = 0.0, max = 1.0)
-	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 0.0)
+	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 1.0, description = "Smaller values result in a faster wiggle.")
 	setCustomProperty(dataEmpty, inertiaStrengthPropertyName, 0.0, min = 0.0)
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
@@ -279,8 +279,7 @@ def createDriversToCopyConstraintValues(fromObject, fromConstraint, toObject, to
 def createWiggleModifiers():
 	global oldWiggleScale
 	strongWiggle = getStrongWiggle()
-	dataEmpty = getDataEmpty()
-	wiggleScale = getWiggleScale(dataEmpty)
+	wiggleScale = getWiggleScale()
 	clearAnimation(strongWiggle, "location")
 	strongWiggle.location = [0, 0, 0]
 	insertWiggle(strongWiggle, "location", 6, wiggleScale)
@@ -349,10 +348,8 @@ def positionKeyframeHandles(targetList):
 			
 		
 def getInterpolationParameters(target):
-	target["easy in"] = clamp(target["easy in"], 0.0, 1.0)
-	target["easy out"] = clamp(target["easy out"], 0.0, 1.0)
-	(easyIn, influenceIn) = getInterpolationParametersFromSingleValue(target["easy in"])
-	(easyOut, influenceOut) = getInterpolationParametersFromSingleValue(target["easy out"])
+	(easyIn, influenceIn) = getInterpolationParametersFromSingleValue(getEasyIn(target))
+	(easyOut, influenceOut) = getInterpolationParametersFromSingleValue(getEasyOut(target))
 	return (easyIn, influenceIn, easyOut, influenceOut)
 	
 def getInterpolationParametersFromSingleValue(easyValue):
@@ -498,11 +495,11 @@ def getFrameOfTravelValue(travel):
 def copyInterpolationProperties(index):
 	targets = getTargetList()
 	sourceTarget = targets[index]
-	easyIn = sourceTarget["easy in"]
-	easyOut = sourceTarget["easy out"]
+	easyIn = getEasyIn(sourceTarget)
+	easyOut = getEasyOut(sourceTarget)
 	for target in targets:
-		target["easy in"] = easyIn
-		target["easy out"] = easyOut
+		setEasyIn(target, easyIn)
+		setEasyOut(target, easyOut)
 	recalculateAnimation()
 	
 	
@@ -622,21 +619,37 @@ def correctProperties():
 	targets = getTargetList()
 	for target in targets:
 		correctPropertiesOfTarget(target)
+		
+	setWiggleScale(getWiggleScale())
+	
 def correctPropertiesOfTarget(target):
-	target["loading time"] = max(target["loading time"], 1)
-	target["stay time"] = max(target["stay time"], 1)
+	setLoadingTime(target, getLoadingTime(target))
+	setStayTime(target, getStayTime(target))
+	setEasyIn(target, getEasyIn(target))
+	setEasyOut(target, getEasyOut(target))
 
 def setLoadingTime(target, value):
-	target["loading time"] = int(value)
+	target["loading time"] = max(int(value), 1)
 def setStayTime(target, value):
-	target["stay time"] = int(value)
+	target["stay time"] = max(int(value), 1)
+def setEasyIn(target, value):
+	target["easy in"] = clamp(value, 0.0, 1.0)
+def setEasyOut(target, value):
+	target["easy out"] = clamp(value, 0.0, 1.0)
 
 def getLoadingTime(target):
-	return target["loading time"]
+	return max(target["loading time"], 1)
 def getStayTime(target):
-	return target["stay time"]
-def getWiggleScale(dataEmpty):
-	return dataEmpty["wiggle scale"]
+	return max(target["stay time"], 1)
+def getEasyIn(target):
+	return clamp(target["easy in"], 0.0, 1.0)
+def getEasyOut(target):
+	return clamp(target["easy out"], 0.0, 1.0)
+	
+def setWiggleScale(value):
+	getDataEmpty()["wiggle scale"] = max(value, 0.0)
+def getWiggleScale():
+	return max(getDataEmpty()["wiggle scale"], 0.0)
 def getTravelValue():
 	return round(getDataEmpty().get(travelPropertyName), 3)
 	
@@ -644,7 +657,7 @@ def getTravelValue():
 def getCurrentSettingsHash():
 	hash = getHashFromTargets()
 	hash += getAnimationKeyframesHash()
-	hash += str(getWiggleScale(getDataEmpty()))
+	hash += str(getWiggleScale())
 	return hash
 def getHashFromTargets():
 	hash = ""
@@ -661,8 +674,8 @@ def getAnimationKeyframesHash():
 def getHashFromTarget(target):
 	hash = str(getLoadingTime(target))
 	hash += str(getStayTime(target))
-	hash += str(target["easy in"])
-	hash += str(target["easy out"])
+	hash += str(getEasyIn(target))
+	hash += str(getEasyOut(target))
 	return hash
 	
 	
