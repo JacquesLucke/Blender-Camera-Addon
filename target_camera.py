@@ -129,11 +129,11 @@ def newWiggleEmpty():
 
 def newDataEmpty():
 	dataEmpty = newEmpty(name = dataEmptyName, location = [0, 0, 0])
-	setCustomProperty(dataEmpty, travelPropertyName, 1.0, min = 1.0)
-	setCustomProperty(dataEmpty, "stops", [])
-	setCustomProperty(dataEmpty, wiggleStrengthPropertyName, 0.0, min = 0.0, max = 1.0)
-	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 1.0, description = "Smaller values result in a faster wiggle.")
-	setCustomProperty(dataEmpty, inertiaStrengthPropertyName, 0.0, min = 0.0)
+	setCustomProperty(dataEmpty, travelPropertyName, 1.0, min = 1.0, description = "Progress of Animation")
+	setCustomProperty(dataEmpty, "stops", [], description = "Stores the frames where an target is fully loaded.")
+	setCustomProperty(dataEmpty, wiggleStrengthPropertyName, 0.0, min = 0.0, max = 1.0, description = "Higher values result in more wiggle.")
+	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 1.0, description = "Higher values result in a slower wiggle.")
+	setCustomProperty(dataEmpty, inertiaStrengthPropertyName, 0.0, min = 0.0, description = "Set how far the camera will overshoot the targets.")
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
 	makePartOfTargetCamera(dataEmpty)
@@ -141,7 +141,8 @@ def newDataEmpty():
 	
 def newAnimationDataEmpty():
 	animationData = newEmpty(name = animationDataName, location = [0, 0, 0])
-	setCustomProperty(animationData, travelPropertyName, 1.0)
+	animationData.empty_draw_size = 0.1
+	setCustomProperty(animationData, travelPropertyName, 1.0, description = "Create your keyframes here. Keyframe handles have no impact in the animation. -> Look into 'Slow In' and 'Slow Out'.")
 	makePartOfTargetCamera(animationData)
 	return animationData
 
@@ -449,10 +450,10 @@ def newRealTarget(target):
 	empty.empty_draw_size = 0.2
 	setParentWithoutInverse(empty, target)
 	
-	setCustomProperty(empty, "loading time", 25, min = 1)
-	setCustomProperty(empty, "stay time", 20, min = 0)
-	setCustomProperty(empty, "easy in", 0.8, min = 0.0, max = 1.0)
-	setCustomProperty(empty, "easy out", 0.8, min = 0.0, max = 1.0)
+	setCustomProperty(empty, "loading time", 25, min = 1, description = "Frames needed to move to this target.")
+	setCustomProperty(empty, "stay time", 20, min = 0, description = "How many frames will the camera hold on this target.")
+	setCustomProperty(empty, "easy in", 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera stop on this target.")
+	setCustomProperty(empty, "easy out", 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera start on this target.")
 	
 	makePartOfTargetCamera(empty)
 	
