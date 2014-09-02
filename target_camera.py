@@ -353,8 +353,8 @@ def positionKeyframeHandles(targetList):
 			
 		
 def getInterpolationParameters(target):
-	(easyIn, influenceIn) = getInterpolationParametersFromSingleValue(getEasyIn(target))
-	(easyOut, influenceOut) = getInterpolationParametersFromSingleValue(getEasyOut(target))
+	(easyIn, influenceIn) = getInterpolationParametersFromSingleValue(getSlowIn(target))
+	(easyOut, influenceOut) = getInterpolationParametersFromSingleValue(getSlowOut(target))
 	return (easyIn, influenceIn, easyOut, influenceOut)
 	
 def getInterpolationParametersFromSingleValue(easyValue):
@@ -456,8 +456,8 @@ def newRealTarget(target):
 	
 	setCustomProperty(empty, "loading time", 25, min = 1, description = "Frames needed to move to this target.")
 	setCustomProperty(empty, "stay time", 20, min = 0, description = "How many frames will the camera hold on this target.")
-	setCustomProperty(empty, "easy in", 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera stop on this target.")
-	setCustomProperty(empty, "easy out", 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera start on this target.")
+	setCustomProperty(empty, "slow in", 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera stop on this target.")
+	setCustomProperty(empty, "slow out", 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera start on this target.")
 	
 	makePartOfTargetCamera(empty)
 	
@@ -500,11 +500,11 @@ def getFrameOfTravelValue(travel):
 def copyInterpolationProperties(index):
 	targets = getTargetList()
 	sourceTarget = targets[index]
-	easyIn = getEasyIn(sourceTarget)
-	easyOut = getEasyOut(sourceTarget)
+	easyIn = getSlowIn(sourceTarget)
+	easyOut = getSlowOut(sourceTarget)
 	for target in targets:
-		setEasyIn(target, easyIn)
-		setEasyOut(target, easyOut)
+		setSlowIn(target, easyIn)
+		setSlowOut(target, easyOut)
 	recalculateAnimation()
 	
 	
@@ -630,26 +630,26 @@ def correctProperties():
 def correctPropertiesOfTarget(target):
 	setLoadingTime(target, getLoadingTime(target))
 	setStayTime(target, getStayTime(target))
-	setEasyIn(target, getEasyIn(target))
-	setEasyOut(target, getEasyOut(target))
+	setSlowIn(target, getSlowIn(target))
+	setSlowOut(target, getSlowOut(target))
 
 def setLoadingTime(target, value):
 	target["loading time"] = value
 def setStayTime(target, value):
 	target["stay time"] = value
-def setEasyIn(target, value):
-	target["easy in"] = value
-def setEasyOut(target, value):
-	target["easy out"] = value
+def setSlowIn(target, value):
+	target["slow in"] = value
+def setSlowOut(target, value):
+	target["slow out"] = value
 
 def getLoadingTime(target):
 	return target["loading time"]
 def getStayTime(target):
 	return target["stay time"]
-def getEasyIn(target):
-	return target["easy in"]
-def getEasyOut(target):
-	return target["easy out"]
+def getSlowIn(target):
+	return target["slow in"]
+def getSlowOut(target):
+	return target["slow out"]
 	
 def setWiggleScale(value):
 	getDataEmpty()["wiggle scale"] = value
@@ -679,8 +679,8 @@ def getAnimationKeyframesHash():
 def getHashFromTarget(target):
 	hash = str(getLoadingTime(target))
 	hash += str(getStayTime(target))
-	hash += str(getEasyIn(target))
-	hash += str(getEasyOut(target))
+	hash += str(getSlowIn(target))
+	hash += str(getSlowOut(target))
 	return hash
 	
 	
@@ -748,8 +748,8 @@ class TargetCameraPanel(bpy.types.Panel):
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
 			
 			col = box.column(align = True)
-			col.prop(target, '["easy in"]', slider = False, text = "Slow In")
-			col.prop(target, '["easy out"]', slider = False, text = "Slow Out")
+			col.prop(target, '["slow in"]', slider = False, text = "Slow In")
+			col.prop(target, '["slow out"]', slider = False, text = "Slow Out")
 			copyToAll = col.operator("camera_tools.copy_interpolation_properties_to_all", text = "Copy to All", icon = "COPYDOWN")
 			copyToAll.currentIndex = targetList.index(target)			
 			
