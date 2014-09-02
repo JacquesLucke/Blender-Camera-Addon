@@ -35,13 +35,23 @@ animationDataName = "ANIMATION DATA"
 # property names
 travelPropertyName = "travel"
 wiggleStrengthPropertyName = "wiggle strength"
+wiggleScalePropertyName = "wiggle scale"
 inertiaStrengthPropertyName = "inertia strength"
 partOfTargetCamera = "part of target camera"
 deleteOnRecalculation = "delete on recalculation"
+slowInPropertyName = "slow in"
+slowOutPropertyName = "slow out"
+loadingTimePropertyName = "loading time"
+stayTimePropertyName = "stay time"
 
 # property data paths
-travelDataPath = '["' + travelPropertyName + '"]'
-wiggleStrengthDataPath = '["' + wiggleStrengthPropertyName + '"]'
+travelDataPath = getDataPathFromPropertyName(travelPropertyName)
+wiggleStrengthDataPath = getDataPathFromPropertyName(wiggleStrengthPropertyName)
+wiggleScaleDataPath = getDataPathFromPropertyName(wiggleScalePropertyName)
+slowInDataPath = getDataPathFromPropertyName(slowInPropertyName)
+slowOutDataPath = getDataPathFromPropertyName(slowOutPropertyName)
+loadingTimeDataPath = getDataPathFromPropertyName(loadingTimePropertyName)
+stayTimePropertyName = getDataPathFromPropertyName(stayTimePropertyName)
 
 useListSeparator = False
 
@@ -136,7 +146,7 @@ def newDataEmpty():
 	setCustomProperty(dataEmpty, travelPropertyName, 1.0, min = 1.0, description = "Progress of Animation")
 	setCustomProperty(dataEmpty, "stops", [], description = "Stores the frames where an target is fully loaded.")
 	setCustomProperty(dataEmpty, wiggleStrengthPropertyName, 0.0, min = 0.0, max = 1.0, description = "Higher values result in more wiggle.")
-	setCustomProperty(dataEmpty, "wiggle scale", 5.0, min = 1.0, description = "Higher values result in a slower wiggle.")
+	setCustomProperty(dataEmpty, wiggleScalePropertyName, 5.0, min = 1.0, description = "Higher values result in a slower wiggle.")
 	setCustomProperty(dataEmpty, inertiaStrengthPropertyName, 0.0, min = 0.0, description = "Set how far the camera will overshoot the targets.")
 	dataEmpty.hide = True
 	lockCurrentTransforms(dataEmpty)
@@ -454,10 +464,10 @@ def newRealTarget(target):
 	empty.empty_draw_size = 0.2
 	setParentWithoutInverse(empty, target)
 	
-	setCustomProperty(empty, "loading time", 25, min = 1, description = "Frames needed to move to this target.")
-	setCustomProperty(empty, "stay time", 20, min = 0, description = "How many frames will the camera hold on this target.")
-	setCustomProperty(empty, "slow in", 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera stop on this target.")
-	setCustomProperty(empty, "slow out", 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera start on this target.")
+	setCustomProperty(empty, loadingTimePropertyName, 25, min = 1, description = "Frames needed to move to this target.")
+	setCustomProperty(empty, stayTimePropertyName, 20, min = 0, description = "How many frames will the camera hold on this target.")
+	setCustomProperty(empty, slowInPropertyName, 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera stop on this target.")
+	setCustomProperty(empty, slowOutPropertyName, 0.8, min = 0.0, max = 1.0, description = "Higher values result in a smoother camera start on this target.")
 	
 	makePartOfTargetCamera(empty)
 	
@@ -634,27 +644,27 @@ def correctPropertiesOfTarget(target):
 	setSlowOut(target, getSlowOut(target))
 
 def setLoadingTime(target, value):
-	target["loading time"] = value
+	target[loadingTimePropertyName] = value
 def setStayTime(target, value):
-	target["stay time"] = value
+	target[stayTimePropertyName] = value
 def setSlowIn(target, value):
-	target["slow in"] = value
+	target[slowInPropertyName] = value
 def setSlowOut(target, value):
-	target["slow out"] = value
+	target[slowOutPropertyName] = value
 
 def getLoadingTime(target):
-	return target["loading time"]
+	return target[loadingTimePropertyName]
 def getStayTime(target):
-	return target["stay time"]
+	return target[stayTimePropertyName]
 def getSlowIn(target):
-	return target["slow in"]
+	return target[slowInPropertyName]
 def getSlowOut(target):
-	return target["slow out"]
+	return target[slowOutPropertyName]
 	
 def setWiggleScale(value):
-	getDataEmpty()["wiggle scale"] = value
+	getDataEmpty()[wiggleScalePropertyName] = value
 def getWiggleScale():
-	return getDataEmpty()["wiggle scale"]
+	return getDataEmpty()[wiggleScalePropertyName]
 def getTravelValue():
 	return round(getDataEmpty().get(travelPropertyName), 3)
 	
@@ -748,15 +758,15 @@ class TargetCameraPanel(bpy.types.Panel):
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
 			
 			col = box.column(align = True)
-			col.prop(target, '["slow in"]', slider = False, text = "Slow In")
-			col.prop(target, '["slow out"]', slider = False, text = "Slow Out")
+			col.prop(target, slowInDataPath, slider = False, text = "Slow In")
+			col.prop(target, slowOutDataPath, slider = False, text = "Slow Out")
 			copyToAll = col.operator("camera_tools.copy_interpolation_properties_to_all", text = "Copy to All", icon = "COPYDOWN")
 			copyToAll.currentIndex = targetList.index(target)			
 			
 		col = layout.column(align = True)
 		col.label("Camera Wiggle")
 		col.prop(dataEmpty, wiggleStrengthDataPath, text = "Strength")
-		col.prop(dataEmpty, '["wiggle scale"]', text = "Time Scale")
+		col.prop(dataEmpty, wiggleScaleDataPath, text = "Time Scale")
 		
 		layout.prop(dataEmpty, '["'+ inertiaStrengthPropertyName +'"]', text = "Inertia Strength")
 		

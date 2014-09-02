@@ -315,4 +315,7 @@ def swapAreaTypes(area1, area2):
 	type1 = area1.type
 	area1.type = area2.type
 	area2.type = type1
+	
+def getDataPathFromPropertyName(name):
+	return '["' + name + '"]'
 					
