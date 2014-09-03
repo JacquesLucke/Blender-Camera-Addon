@@ -52,21 +52,11 @@ class CameraToolsPanel(bpy.types.Panel):
 		if target_camera.targetCameraSetupExists(): col.label("Settings are in 'Target Camera' tab.", icon = "INFO")
 		
 		col = layout.column(align = True)
-		col.operator("camera_tools.set_active_camera")
 		col.operator("camera_tools.seperate_text")
 		col.operator("camera_tools.text_to_name")
 		
 		
 # operators
-
-class SetActiveCameraOperator(bpy.types.Operator):
-	bl_idname = "camera_tools.set_active_camera"
-	bl_label = "Set Active Camera"
-	bl_description = "Set selected camera as camera which will render."
-	
-	def execute(self, context):
-		bpy.context.scene.camera = getActive()
-		return{"FINISHED"}
 		
 class TextToNameOperator(bpy.types.Operator):
 	bl_idname = "camera_tools.text_to_name"
