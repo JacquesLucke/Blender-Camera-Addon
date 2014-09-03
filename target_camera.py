@@ -345,9 +345,9 @@ def positionKeyframeHandles(targetList):
 			sourceX = keyframe.co.x
 			sourceY = keyframe.co.y
 			beforeX = getObjectFromValidIndex(keyframes, i-1).co.x
-			beforeY = getObjectFromValidIndex(keyframes, i-1).co.x
+			beforeY = getObjectFromValidIndex(keyframes, i-1).co.y
 			afterX = getObjectFromValidIndex(keyframes, i+1).co.x
-			afterY = getObjectFromValidIndex(keyframes, i+1).co.x
+			afterY = getObjectFromValidIndex(keyframes, i+1).co.y
 				
 			(easyIn, strengthIn, easyOut, strengthOut) = getInterpolationParameters(targetList[int(sourceY) - 1])
 			keyframe.handle_left.x = (beforeX - sourceX) * easyIn * strengthIn + sourceX
