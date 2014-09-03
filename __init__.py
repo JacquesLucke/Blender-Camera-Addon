@@ -20,7 +20,7 @@ Created by Jacques Lucke
 
 import sys, os, bpy
 sys.path.append(os.path.dirname(__file__)) 
-import rotating_camera, target_camera
+import target_camera
 from utils import *
 
 
@@ -49,7 +49,6 @@ class CameraToolsPanel(bpy.types.Panel):
 		
 		col = layout.column(align = True)
 		col.operator("camera_tools.insert_target_camera", icon = "OUTLINER_DATA_CAMERA")
-		col.operator("camera_tools.add_rotating_camera", icon = "OUTLINER_DATA_CAMERA")
 		if target_camera.targetCameraSetupExists(): col.label("Settings are in 'Target Camera' tab.", icon = "INFO")
 		
 		col = layout.column(align = True)
@@ -96,12 +95,10 @@ class SeperateTextOperator(bpy.types.Operator):
 
 def register():
 	bpy.utils.register_module(__name__)
-	rotating_camera.register()
 	target_camera.register()
 
 def unregister():
 	bpy.utils.unregister_module(__name__)
-	rotating_camera.unregister()
 	target_camera.unregister()
 
 if __name__ == "__main__":
