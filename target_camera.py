@@ -90,7 +90,7 @@ def insertTargetCamera():
 	insertWiggleConstraint(wiggle, strongWiggle, dataEmpty)
 	
 	setSelectedObjects(oldSelection)
-	newTargets()
+	newTargetsFromSelection()
 	
 def removeOldTargetCameraObjects():
 	for object in bpy.context.scene.objects:
@@ -175,7 +175,7 @@ def recalculateAnimation():
 	
 def createFullAnimation(targetList):
 	global oldHash
-	getAnimationDataFromExtraObject(targetList)
+	getKeyframesFromAnimationDataEmpty(targetList)
 	oldSelection = getSelectedObjects()
 	cleanupScene(targetList)
 	removeAnimation()
@@ -418,7 +418,7 @@ def setKeyframesOnAnimationDataEmpty():
 		animationData.keyframe_insert(data_path = travelDataPath, frame = keyframe.co.x)
 	selectKeyframes(getKeyframePoints(animationData, travelDataPath), selectedKeyframeFrames)
 		
-def getAnimationDataFromExtraObject(targets):
+def getKeyframesFromAnimationDataEmpty(targets):
 	animationData = getAnimationDataEmpty()
 	keyframes = getKeyframePoints(animationData, travelDataPath)
 	
@@ -443,7 +443,7 @@ def isValidKeyframeAmount(keyframes, targetList):
 # target operations
 #############################
 
-def newTargets():
+def newTargetsFromSelection():
 	targets = getTargetList()
 	selectedObjects = []
 	for object in getSelectedObjects():
@@ -528,7 +528,8 @@ def targetCameraSetupExists():
 		getFocusEmpty() is None or
 		getMovementEmpty() is None or
 		getDataEmpty() is None or
-		getStrongWiggleEmpty() is None): return False
+		getStrongWiggleEmpty() is None or
+		getAnimationDataEmpty() is None): return False
 	else: return True
 def isTargetCamera(object):
 	return object.name == targetCameraName
@@ -789,7 +790,7 @@ class SetupTargetObject(bpy.types.Operator):
 	bl_description = "Use selected objects as targets."
 	
 	def execute(self, context):
-		newTargets()
+		newTargetsFromSelection()
 		return{"FINISHED"}
 		
 class DeleteTargetOperator(bpy.types.Operator):
