@@ -602,7 +602,7 @@ def isTargetName(name):
 	return name[:len(realTargetPrefix)] == realTargetPrefix
 	
 def getTargetObjectFromTarget(target):
-	return target.parent
+	return target.parent.parent
 def getSelectedTargets(targetList):
 	objects = getSelectedObjects()
 	targets = []
