@@ -318,4 +318,7 @@ def swapAreaTypes(area1, area2):
 	
 def getDataPathFromPropertyName(name):
 	return '["' + name + '"]'
+	
+def getObjectFromValidIndex(list, index):
+	return list[clamp(index, 0, len(list) - 1)]
 					

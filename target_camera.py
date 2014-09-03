@@ -192,8 +192,7 @@ def createFullAnimation(targetList):
 	
 	for i in range(len(targetList)):
 		target = targetList[i]
-		if i == 0: targetBefore = target
-		else: targetBefore = targetList[i-1]
+		targetBefore = getObjectFromValidIndex(targetList, i-1)
 		
 		base = createInertiaEmpties(target, targetBefore)
 		inertiaBases.append(base)
@@ -244,6 +243,7 @@ def createInertiaEmpties(target, targetBefore):
 	emptyAfter.hide = True
 	emptyBefore.hide = True
 	return base
+	
 def createPositionConstraint(object, target, before, negate = False):
 	constraint = object.constraints.new(type = "LIMIT_LOCATION")
 	setUseMinMaxToTrue(constraint)
@@ -265,6 +265,7 @@ def createPositionConstraint(object, target, before, negate = False):
 	if negate: driver.expression = "-(z1-z2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001)*distance+z1"
 	else: driver.expression = "(z1-z2)/(sqrt((x1-x2)**2 + (y1-y2)**2 + (z1-z2)**2)+0.000001)*distance+z1"
 	createCopyValueDriver(object, 'constraints["' + constraint.name + '"].min_z', object, 'constraints["' + constraint.name + '"].max_z')
+
 def linkVariablesToIntertiaDriver(driver, target, before):
 	dataEmpty = getDataEmpty()
 	linkTransformChannelToDriver(driver, "x1", target, "LOC_X")
@@ -274,15 +275,16 @@ def linkVariablesToIntertiaDriver(driver, target, before):
 	linkTransformChannelToDriver(driver, "z1", target, "LOC_Z")
 	linkTransformChannelToDriver(driver, "z2", before, "LOC_Z")
 	linkFloatPropertyToDriver(driver, "distance", dataEmpty, '["'+ inertiaStrengthPropertyName +'"]')
+	
 def setBaseBetweenInertiaEmpties(base, emptyAfter, emptyBefore):
 	constraint = base.constraints.new(type = "LIMIT_LOCATION")
 	setUseMinMaxToTrue(constraint)
 	createDriversToCopyConstraintValues(emptyAfter, emptyAfter.constraints[0], base, constraint)
-	
 	constraint = base.constraints.new(type = "LIMIT_LOCATION")
 	constraint.influence = 0.5
 	setUseMinMaxToTrue(constraint)
 	createDriversToCopyConstraintValues(emptyBefore, emptyBefore.constraints[0], base, constraint)
+	
 def createDriversToCopyConstraintValues(fromObject, fromConstraint, toObject, toConstraint):
 	createCopyValueDriver(fromObject, 'constraints["' + fromConstraint.name + '"].min_x', toObject, 'constraints["' + toConstraint.name + '"].min_x')
 	createCopyValueDriver(toObject, 'constraints["' + toConstraint.name + '"].min_x', toObject, 'constraints["' + toConstraint.name + '"].max_x')
@@ -342,18 +344,10 @@ def positionKeyframeHandles(targetList):
 			keyframe = keyframes[i]
 			sourceX = keyframe.co.x
 			sourceY = keyframe.co.y
-			if i > 0:
-				beforeX = keyframes[i-1].co.x
-				beforeY = keyframes[i-1].co.y
-			else:
-				beforeX = sourceX
-				beforeY = sourceY
-			if i < len(keyframes) - 1: 
-				afterX = keyframes[i+1].co.x
-				afterY = keyframes[i+1].co.y
-			else:
-				afterX = sourceX
-				afterY = sourceY
+			beforeX = getObjectFromValidIndex(keyframes, i-1).co.x
+			beforeY = getObjectFromValidIndex(keyframes, i-1).co.x
+			afterX = getObjectFromValidIndex(keyframes, i+1).co.x
+			afterY = getObjectFromValidIndex(keyframes, i+1).co.x
 				
 			(easyIn, strengthIn, easyOut, strengthOut) = getInterpolationParameters(targetList[int(sourceY) - 1])
 			keyframe.handle_left.x = (beforeX - sourceX) * easyIn * strengthIn + sourceX
