@@ -703,8 +703,8 @@ def openDopeSheet():
 class TargetCameraPanel(bpy.types.Panel):
 	bl_space_type = "VIEW_3D"
 	bl_region_type = "TOOLS"
-	bl_category = "Target Camera"
-	bl_label = "Target Camera"
+	bl_category = "Sniper"
+	bl_label = "Sniper"
 	bl_context = "objectmode"
 	
 	@classmethod
@@ -720,13 +720,13 @@ class TargetCameraPanel(bpy.types.Panel):
 		targetList = getTargetList()
 		
 		col = layout.column(align = True)
-		col.operator("camera_tools.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
-		col.operator("camera_tools.open_dope_sheet", text = "Manipulate Timing", icon = "ACTION")
+		col.operator("sniper.recalculate_animation", text = "Recalculate", icon = "ACTION_TWEAK")
+		col.operator("sniper.open_dope_sheet", text = "Manipulate Timing", icon = "ACTION")
 			
 		row = layout.row(align = True)
-		row.operator("camera_tools.go_to_previous_target", icon = 'TRIA_LEFT', text = "")
+		row.operator("sniper.go_to_previous_target", icon = 'TRIA_LEFT', text = "")
 		row.label("Travel: " + str(getTravelValue()))
-		row.operator("camera_tools.go_to_next_target", icon = 'TRIA_RIGHT', text = "")
+		row.operator("sniper.go_to_next_target", icon = 'TRIA_RIGHT', text = "")
 		
 		box = layout.box()
 		col = box.column(align = True)
@@ -734,16 +734,16 @@ class TargetCameraPanel(bpy.types.Panel):
 		for i in range(len(targetList)):
 			row = col.split(percentage=0.6, align = True)
 			row.scale_y = 1.35
-			name = row.operator("camera_tools.select_target", getTargetObjectFromTarget(targetList[i]).name)
+			name = row.operator("sniper.select_target", getTargetObjectFromTarget(targetList[i]).name)
 			name.currentIndex = i
-			up = row.operator("camera_tools.move_target_up", icon = 'TRIA_UP', text = "")
+			up = row.operator("sniper.move_target_up", icon = 'TRIA_UP', text = "")
 			up.currentIndex = i
-			down = row.operator("camera_tools.move_target_down", icon = 'TRIA_DOWN', text = "")
+			down = row.operator("sniper.move_target_down", icon = 'TRIA_DOWN', text = "")
 			down.currentIndex = i
-			delete = row.operator("camera_tools.delete_target", icon = 'X', text = "")
+			delete = row.operator("sniper.delete_target", icon = 'X', text = "")
 			delete.currentIndex = i
 			if useListSeparator: col.separator()
-		box.operator("camera_tools.new_target_object", icon = 'PLUS')
+		box.operator("sniper.new_target_object", icon = 'PLUS')
 		
 		selectedTargets = getSelectedTargets(targetList)
 		selectedTargets.reverse()
@@ -754,7 +754,7 @@ class TargetCameraPanel(bpy.types.Panel):
 			col = box.column(align = True)
 			col.prop(target, slowInDataPath, slider = False, text = "Slow In")
 			col.prop(target, slowOutDataPath, slider = False, text = "Slow Out")
-			copyToAll = col.operator("camera_tools.copy_interpolation_properties_to_all", text = "Copy to All", icon = "COPYDOWN")
+			copyToAll = col.operator("sniper.copy_interpolation_properties_to_all", text = "Copy to All", icon = "COPYDOWN")
 			copyToAll.currentIndex = targetList.index(target)			
 			
 		col = layout.column(align = True)
@@ -772,7 +772,7 @@ class TargetCameraPanel(bpy.types.Panel):
 #############################
 		
 class AddTargetCamera(bpy.types.Operator):
-	bl_idname = "camera_tools.insert_target_camera"
+	bl_idname = "sniper.insert_target_camera"
 	bl_label = "Add Target Camera"
 	bl_description = "Create new active camera and create targets from selection."
 	
@@ -785,7 +785,7 @@ class AddTargetCamera(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SetupTargetObject(bpy.types.Operator):
-	bl_idname = "camera_tools.new_target_object"
+	bl_idname = "sniper.new_target_object"
 	bl_label = "New Targets From Selection"
 	bl_description = "Use selected objects as targets."
 	
@@ -794,7 +794,7 @@ class SetupTargetObject(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class DeleteTargetOperator(bpy.types.Operator):
-	bl_idname = "camera_tools.delete_target"
+	bl_idname = "sniper.delete_target"
 	bl_label = "Delete Target"
 	bl_description = "Delete the target from the list."
 	currentIndex = bpy.props.IntProperty()
@@ -804,7 +804,7 @@ class DeleteTargetOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class RecalculateAnimationOperator(bpy.types.Operator):
-	bl_idname = "camera_tools.recalculate_animation"
+	bl_idname = "sniper.recalculate_animation"
 	bl_label = "Recalculate Animation"
 	bl_description = "Regenerates most of the constraints, drivers and keyframes."
 	
@@ -813,7 +813,7 @@ class RecalculateAnimationOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class MoveTargetUp(bpy.types.Operator):
-	bl_idname = "camera_tools.move_target_up"
+	bl_idname = "sniper.move_target_up"
 	bl_label = "Move Target Up"
 	currentIndex = bpy.props.IntProperty()
 	
@@ -822,7 +822,7 @@ class MoveTargetUp(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class MoveTargetDown(bpy.types.Operator):
-	bl_idname = "camera_tools.move_target_down"
+	bl_idname = "sniper.move_target_down"
 	bl_label = "Move Target Down"
 	currentIndex = bpy.props.IntProperty()
 	
@@ -831,7 +831,7 @@ class MoveTargetDown(bpy.types.Operator):
 		return{"FINISHED"}		
 		
 class SelectTarget(bpy.types.Operator):
-	bl_idname = "camera_tools.select_target"
+	bl_idname = "sniper.select_target"
 	bl_label = "Select Target"
 	bl_description = "Select that target."
 	currentIndex = bpy.props.IntProperty()
@@ -841,7 +841,7 @@ class SelectTarget(bpy.types.Operator):
 		return{"FINISHED"}
 
 class GoToNextTarget(bpy.types.Operator):		
-	bl_idname = "camera_tools.go_to_next_target"
+	bl_idname = "sniper.go_to_next_target"
 	bl_label = "Go To Next Target"
 	bl_description = "Change frame to show next target."
 	
@@ -850,7 +850,7 @@ class GoToNextTarget(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class GoToPreviousTarget(bpy.types.Operator):		
-	bl_idname = "camera_tools.go_to_previous_target"
+	bl_idname = "sniper.go_to_previous_target"
 	bl_label = "Go To Previous Target"
 	bl_description = "Change frame to show previous target."
 	
@@ -859,7 +859,7 @@ class GoToPreviousTarget(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class CopyInterpolationPropertiesToAll(bpy.types.Operator):
-	bl_idname = "camera_tools.copy_interpolation_properties_to_all"
+	bl_idname = "sniper.copy_interpolation_properties_to_all"
 	bl_label = "Copy Interpolation Properties"
 	bl_description = "All targets will have these interpolation values."
 	currentIndex = bpy.props.IntProperty()
@@ -869,7 +869,7 @@ class CopyInterpolationPropertiesToAll(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class OpenDopeSheet(bpy.types.Operator):
-	bl_idname = "camera_tools.open_dope_sheet"
+	bl_idname = "sniper.open_dope_sheet"
 	bl_label = "Open Dope Sheet"
 	bl_description = "Open dope sheet to manipulate the timing."
 	

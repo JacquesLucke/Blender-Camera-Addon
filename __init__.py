@@ -25,7 +25,7 @@ from utils import *
 
 
 bl_info = {
-    "name":        "Camera Tools",
+    "name":        "Sniper",
     "description": "A tool to make good camera animations faster",
     "author":      "Jacques Lucke",
     "version":     (1, 0, 0),
@@ -41,25 +41,25 @@ class CameraToolsPanel(bpy.types.Panel):
 	bl_space_type = "VIEW_3D"
 	bl_region_type = "TOOLS"
 	bl_category = "Animation"
-	bl_label = "Camera Tools"
+	bl_label = "Sniper"
 	bl_context = "objectmode"
 	
 	def draw(self, context):
 		layout = self.layout
 		
 		col = layout.column(align = True)
-		col.operator("camera_tools.insert_target_camera", icon = "OUTLINER_DATA_CAMERA")
-		if target_camera.targetCameraSetupExists(): col.label("Settings are in 'Target Camera' tab.", icon = "INFO")
+		col.operator("sniper.insert_target_camera", icon = "OUTLINER_DATA_CAMERA")
+		if target_camera.targetCameraSetupExists(): col.label("Settings are in 'Sniper' tab.", icon = "INFO")
 		
 		col = layout.column(align = True)
-		col.operator("camera_tools.seperate_text")
-		col.operator("camera_tools.text_to_name")
+		col.operator("sniper.seperate_text")
+		col.operator("sniper.text_to_name")
 		
 		
 # operators
 		
 class TextToNameOperator(bpy.types.Operator):
-	bl_idname = "camera_tools.text_to_name"
+	bl_idname = "sniper.text_to_name"
 	bl_label = "Text to Name"
 	bl_description = "Rename all text objects to their content."
 	
@@ -68,7 +68,7 @@ class TextToNameOperator(bpy.types.Operator):
 		return{"FINISHED"}
 		
 class SeperateTextOperator(bpy.types.Operator):
-	bl_idname = "camera_tools.seperate_text"
+	bl_idname = "sniper.seperate_text"
 	bl_label = "Seperate Text"
 	bl_description = "Create new text object for every line in active text object."
 	
