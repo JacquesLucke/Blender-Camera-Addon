@@ -26,7 +26,7 @@ from utils import *
 
 bl_info = {
     "name":        "Sniper",
-    "description": "A tool to make good camera animations faster",
+    "description": "Professional camera animations for motion graphics.",
     "author":      "Jacques Lucke",
     "version":     (1, 0, 0),
     "blender":     (2, 7, 1),
