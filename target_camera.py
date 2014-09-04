@@ -19,7 +19,7 @@ Created by Jacques Lucke
 '''
 
 import bpy, math
-from utils import *
+from sniper_utils import *
 
 # object names
 targetCameraName = "TARGET CAMERA"

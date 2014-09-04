@@ -21,7 +21,7 @@ Created by Jacques Lucke
 import sys, os, bpy
 sys.path.append(os.path.dirname(__file__)) 
 import target_camera
-from utils import *
+from sniper_utils import *
 
 
 bl_info = {
