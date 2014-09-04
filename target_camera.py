@@ -197,7 +197,7 @@ def createFullAnimation(targetList):
 		base = createInertiaEmpties(target, targetBefore)
 		inertiaBases.append(base)
 		createConstraintSet(movement, base)
-		createConstraintSet(focus, getTargetObjectFromTarget(base))
+		createConstraintSet(focus, getTargetObjectFromBase(base))
 		
 	createTravelToConstraintDrivers(movement)
 	createTravelToConstraintDrivers(focus)	
@@ -602,7 +602,10 @@ def isTargetName(name):
 	return name[:len(realTargetPrefix)] == realTargetPrefix
 	
 def getTargetObjectFromTarget(target):
-	return target.parent.parent
+	return target.parent
+def getTargetObjectFromBase(base):
+	return base.parent.parent
+	
 def getSelectedTargets(targetList):
 	objects = getSelectedObjects()
 	targets = []
