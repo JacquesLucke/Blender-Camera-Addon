@@ -267,7 +267,8 @@ def isTextObject(object):
 	return False
 	
 def delete(object):
-	deselectAll()
+	deselectAll()	
+	object.layers[getActiveSceneLayer()] = True
 	object.select = True
 	object.hide = False
 	object.name = "DELETED" + object.name
@@ -321,4 +322,7 @@ def getDataPathFromPropertyName(name):
 	
 def getObjectFromValidIndex(list, index):
 	return list[clamp(index, 0, len(list) - 1)]
+	
+def getActiveSceneLayer():
+	return bpy.context.scene.active_layer
 					
