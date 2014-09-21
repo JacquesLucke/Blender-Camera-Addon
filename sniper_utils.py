@@ -18,7 +18,7 @@ Created by Jacques Lucke
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import bpy
+import bpy, mathutils
 
 def newEmpty(name = "Empty", location = [0, 0, 0], hide = False, type = "PLAIN_AXES"):
 	bpy.ops.object.empty_add(location = location, type = type)
@@ -325,4 +325,76 @@ def getObjectFromValidIndex(list, index):
 	
 def getActiveSceneLayer():
 	return bpy.context.scene.active_layer
+	
+	
+#  fcurve sampling
+def getInterpolatedVector(t, p0, p1, p2, p3):
+	return (1-t)**3 * p0 + 3*t*(1-t)**2 * p1 + 3*t**2*(1-t) * p2 + t**3 * p3
+
+def clamp(value, minValue, maxValue):
+	return max(min(value, maxValue), minValue)
+
+def hasAnimationData(object):
+	if object.animation_data is not None:
+		if object.animation_data.action is not None:
+			return True
+	return False
+
+def getFCurvesWithDataPath(object, dataPath):
+	fcurves = []
+	if hasAnimationData(object):
+		for fcurve in object.animation_data.action.fcurves:
+			if fcurve.data_path == dataPath:
+				fcurves.append(fcurve)
+	return fcurves
+
+def getKeyframePoints(object, dataPath, index = 0):
+	fcurves = getFCurvesWithDataPath(object, dataPath)
+	if len(fcurves) > index: return fcurves[index].keyframe_points
+	return []
+
+def getKeyframesAroundFrame(frame, object, dataPath, index = 0):
+	keyframes = getKeyframePoints(object, dataPath, index)
+	keyframeBefore = keyframes[0]
+	keyframeAfter = keyframes[0]
+	for keyframe in keyframes:
+		if keyframe.co.x <= frame:
+			keyframeBefore = keyframe
+			keyframeAfter = keyframe
+		if keyframe.co.x >= frame:
+			keyframeAfter = keyframe
+			break
+	return (keyframeBefore, keyframeAfter)
+
+def getActive():
+	return bpy.context.scene.objects.active
+
+def getControlPointsAroundFrame(frame, object, dataPath, index = 0):
+	keyframes = getKeyframesAroundFrame(frame, object, dataPath, index)
+	p0 = mathutils.Vector(keyframes[0].co)
+	p1 = mathutils.Vector(keyframes[0].handle_right)
+	p2 = mathutils.Vector(keyframes[1].handle_left)
+	p3 = mathutils.Vector(keyframes[1].co)
+	return (p0, p1, p2, p3)
+
+def sampleFCurveAtFrame(frame, object, dataPath, index = 0):
+	(p0, p1, p2, p3) = getControlPointsAroundFrame(frame, object, dataPath, index)
+	change = 1.0
+	vector = mathutils.Vector((-100, -100))
+	testValue = 0
+	target = clamp(frame, p0.x, p3.x)
+	while abs(vector.x - target) > 0.00001:
+		vector = getInterpolatedVector(testValue, p0, p1, p2, p3)
+		if target > vector.x:
+			testValue += change
+		else:
+			testValue -= change
+		change /= 2.0
+	return vector.y
+
+def getSpeedAtFrame(frame, object, dataPath, index = 0):
+	valueBefore = sampleFCurveAtFrame(frame - 1, object, dataPath, index)
+	valueNow = sampleFCurveAtFrame(frame, object, dataPath, index)
+	return valueNow - valueBefore
+
 					
