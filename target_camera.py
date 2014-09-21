@@ -755,8 +755,8 @@ class TargetCameraPanel(bpy.types.Panel):
 			box.label(target.parent.name + "  (" + str(targetList.index(target) + 1) + ")")
 			
 			col = box.column(align = True)
-			col.prop(target, slowInDataPath, slider = False, text = "Slow In")
-			col.prop(target, slowOutDataPath, slider = False, text = "Slow Out")
+			col.prop(target, slowInDataPath, slider = False, text = "Ease In")
+			col.prop(target, slowOutDataPath, slider = False, text = "Ease Out")
 			copyToAll = col.operator("sniper.copy_interpolation_properties_to_all", text = "Copy to All", icon = "COPYDOWN")
 			copyToAll.currentIndex = targetList.index(target)			
 			
