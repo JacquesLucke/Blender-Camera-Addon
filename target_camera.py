@@ -566,6 +566,7 @@ def selectTarget(index):
 	deselectAll()
 	target = getTargetList()[index]
 	setActive(target)
+	bpy.context.screen.scene.frame_current = getFrameOfTravelValue(index+1)
 		
 		
 def getTargetAmount():
