@@ -28,7 +28,7 @@ bl_info = {
     "name":        "Sniper",
     "description": "Professional camera animations for motion graphics.",
     "author":      "Jacques Lucke",
-    "version":     (1, 3, 1),
+    "version":     (1, 3, 2),
     "blender":     (2, 7, 1),
 	"location":    "View 3D > Tool Shelf > Animation/Sniper",
     "category":    "Animation"
