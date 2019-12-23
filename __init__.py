@@ -29,7 +29,7 @@ bl_info = {
     "description": "Professional camera animations for motion graphics.",
     "author":      "Jacques Lucke",
     "version":     (1, 3, 2),
-    "blender":     (2, 7, 1),
+    "blender":     (2, 80, 0),
 	"location":    "View 3D > Tool Shelf > Animation/Sniper",
     "category":    "Animation"
     }
@@ -39,7 +39,7 @@ bl_info = {
 
 class CameraToolsPanel(bpy.types.Panel):
 	bl_space_type = "VIEW_3D"
-	bl_region_type = "TOOLS"
+	bl_region_type = "UI"
 	bl_category = "Animation"
 	bl_label = "Sniper"
 	bl_context = "objectmode"
@@ -49,7 +49,7 @@ class CameraToolsPanel(bpy.types.Panel):
 		
 		col = layout.column(align = True)
 		col.operator("sniper.insert_target_camera", icon = "OUTLINER_DATA_CAMERA")
-		if target_camera.targetCameraSetupExists(): col.label("Settings are in 'Sniper' tab.", icon = "INFO")
+		if target_camera.targetCameraSetupExists(): col.label(text="Settings are in 'Sniper' tab.", icon = "INFO")
 		
 		col = layout.column(align = True)
 		col.operator("sniper.seperate_text")
@@ -83,12 +83,22 @@ class SeperateTextOperator(bpy.types.Operator):
 
 #registration
 
+classes = (
+	CameraToolsPanel,
+	TextToNameOperator,
+	SeperateTextOperator,
+)
+
 def register():
-	bpy.utils.register_module(__name__)
+	for c in classes:
+		bpy.utils.register_class(c)
+	
 	target_camera.register()
 
 def unregister():
-	bpy.utils.unregister_module(__name__)
+	for c in reversed(classes):
+		bpy.utils.unregister_class(c)
+	
 	target_camera.unregister()
 
 if __name__ == "__main__":
