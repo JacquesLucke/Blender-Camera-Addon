@@ -37,19 +37,19 @@ def newText(name = "Text", location = [0, 0, 0], text = "text"):
 
 def setTrackTo(child, trackTo):
 	deselectAll()
-	child.select = True
+	child.select_set(True)
 	setActive(trackTo)
 	bpy.ops.object.track_set(type = "TRACKTO")   
 
 def setParent(child, parent):
 	deselectAll()
-	child.select = True
+	child.select_set(True)
 	setActive(parent)
 	bpy.ops.object.parent_set(type = "OBJECT", keep_transform = True)
 	
 def setParentWithoutInverse(child, parent):
 	deselectAll()
-	child.select = True
+	child.select_set(True)
 	setActive(parent)
 	bpy.ops.object.parent_no_inverse_set()
 	
@@ -92,11 +92,11 @@ def deselectAll():
 	bpy.ops.object.select_all(action = "DESELECT")
 	
 def getActive():
-	return bpy.context.scene.objects.active
+	return bpy.context.active_object
 	
 def setActive(object):
-	object.select = True
-	bpy.context.scene.objects.active = object
+	object.select_set(True)
+	bpy.context.view_layer.objects.active = object
 	
 def deleteSelectedObjects():
 	bpy.ops.object.delete(use_global=False)
@@ -257,7 +257,7 @@ def getSelectedObjects():
 def setSelectedObjects(selection):
 	deselectAll()
 	for object in selection:
-		object.select = True
+		object.select_set(True)
 		setActive(object)
 		
 def isTextObject(object):
@@ -268,14 +268,13 @@ def isTextObject(object):
 	
 def delete(object):
 	deselectAll()	
-	object.layers[getActiveSceneLayer()] = True
-	object.select = True
-	object.hide = False
+	object.select_set(True)
+	object.hide_viewport = False
 	object.name = "DELETED" + object.name
 	bpy.ops.object.delete()
 	
 def getCurrentFrame():
-	return bpy.context.screen.scene.frame_current
+	return bpy.context.window.scene.frame_current
 	
 def insertWiggle(object, dataPath, strength, scale):
 	object.keyframe_insert(data_path = dataPath, frame = getCurrentFrame())
