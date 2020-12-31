@@ -51,7 +51,7 @@ wiggleScaleDataPath = getDataPathFromPropertyName(wiggleScalePropertyName)
 slowInDataPath = getDataPathFromPropertyName(slowInPropertyName)
 slowOutDataPath = getDataPathFromPropertyName(slowOutPropertyName)
 loadingTimeDataPath = getDataPathFromPropertyName(loadingTimePropertyName)
-stayTimePropertyName = getDataPathFromPropertyName(stayTimePropertyName)
+stayTimeDataPath = getDataPathFromPropertyName(stayTimePropertyName)
 
 useListSeparator = False
 
